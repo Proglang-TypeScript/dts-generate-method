@@ -1,0 +1,23 @@
+{
+  "name": "module-function",
+  "version": "1.0.0",
+  "description": "",
+  "main": "compareModuleFunction.js",
+  "scripts": {
+    "generate": "node dist/index.js",
+    "prestart": "npm run build",
+    "start": "node dist/index.js",
+    "prebuild": "rm -rf dist",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "fcristiani",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/command-line-args": "^5.0.0",
+    "@types/node": "^10.12.12"
+  },
+  "dependencies": {
+    "command-line-args": "^5.1.1"
+  }
+}

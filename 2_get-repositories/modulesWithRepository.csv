@@ -1,0 +1,11 @@
+a-big-triangle,git://github.com/mikolalysenko/a-big-triangle.git
+a11y-dialog,git+https://github.com/edenspiekermann/a11y-dialog.git
+abbrev,git+ssh://git@github.com/isaacs/abbrev-js.git
+abs,git+ssh://git@github.com/IonicaBizau/abs.git
+absolute,git://github.com/bahamas10/node-absolute.git
+abstract-leveldown,git+https://github.com/Level/abstract-leveldown.git
+acc-wizard,
+accept,git://github.com/hapijs/accept.git
+accept-language-parser,git://github.com/opentable/accept-language-parser.git
+accepts,git+https://github.com/jshttp/accepts.git
+accounting,git://github.com/openexchangerates/accounting.js.git

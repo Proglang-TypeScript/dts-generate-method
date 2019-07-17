@@ -1,0 +1,15 @@
+#!/bin/bash
+
+SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
+
+PARSED_DECLARATION_FILES_DIRECTORY=$1
+
+PARSED_DTS_FILE="parsed-dts.json"
+
+for MODULE in $PARSED_DECLARATION_FILES_DIRECTORY/*; do
+	MODULE_NAME=$(basename $MODULE)
+
+	TYPE=$($SCRIPT_PATH/getTypeDTS.sh $MODULE/$PARSED_DTS_FILE)
+
+	echo "$MODULE_NAME;$TYPE";
+done
