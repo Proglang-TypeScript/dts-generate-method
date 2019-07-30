@@ -13,7 +13,7 @@ AWK_ARG='/```js/{filename="'\
 "$OUTPUT_CODE_DIRECTORY/$MODULE_NAME/$MODULE_NAME"\
 '_"NR".js.tmp"}; {print>filename}'
 
-cat $README_FILE | sed 's/```javascript/```js/g' | sed -n '/^```js/,/^```/ p' | \
+cat $README_FILE | sed 's/```javascript/```js/g' | sed -n '/^```js/,/^```/ p' | sed 's/const /var /g' | \
 awk "$AWK_ARG"
 
 for f in $OUTPUT_CODE_DIRECTORY/$MODULE_NAME/*.js.tmp; do
