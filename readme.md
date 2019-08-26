@@ -1,3 +1,21 @@
+# dts-generate
+## Installation
+Clone this repository and then run:
+
+```shell
+./install.sh
+```
+
+## Usage
+```shell
+./0_method/dts-generate [NPM_MODULE] [OUTPUT_DIRECTORY]
+```
+
+## Example
+```shell
+./0_method/dts-generate abs /tmp/output
+```
+
 ### 1_extract-modules
 Extracts a list of node modules from the DefinitelyTyped repository.
 
