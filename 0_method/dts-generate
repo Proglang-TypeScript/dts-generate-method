@@ -4,7 +4,7 @@ SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 ROOT_PATH=$SCRIPT_PATH/..
 
 MODULE=$1
-OUTPUT_DIR=$SCRIPT_PATH/output-declaration-files
+OUTPUT_DIR=$2
 
 rm -rf $OUTPUT_DIR
 
