@@ -27,7 +27,7 @@ do
 
 	mkdir $SCRIPT_PATH/modules/$MODULE_NAME/$JS_FILE_NAME/typescript
 
-	$SCRIPT_PATH/../../ts-declaration-file-generator-service/bin/run.sh \
+	$SCRIPT_PATH/../../lib/bin/run.sh \
 		$SCRIPT_PATH/modules/$MODULE_NAME/$JS_FILE_NAME/index.js \
 		$MODULE_NAME \
 		$SCRIPT_PATH/modules/$MODULE_NAME/$JS_FILE_NAME/typescript

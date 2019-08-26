@@ -27,7 +27,7 @@ do
 
 	mkdir -p $SCRIPT_PATH/runtime-info/$MODULE_NAME/$JS_FILE_NAME/output
 
-	OUTPUT_RUNTIME=$($SCRIPT_PATH/../../ts-declaration-file-generator-service/cli/getRuntimeInformation.sh \
+	OUTPUT_RUNTIME=$($SCRIPT_PATH/../lib/cli/getRuntimeInformation.sh \
 		$SCRIPT_PATH/runtime-info/$MODULE_NAME/$JS_FILE_NAME/index.js \
 		$SCRIPT_PATH/runtime-info/$MODULE_NAME/$JS_FILE_NAME/output/output.json \
 		120 2>&1)
