@@ -3,7 +3,7 @@
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
 DEFINITELY_TYPED_REPO="https://github.com/DefinitelyTyped/DefinitelyTyped.git"
-DEST_FOLDER=definitely-typed
+DEST_FOLDER=$1
 MODULES_FILE=modules.csv
 
 rm -rf $SCRIPT_PATH/$DEST_FOLDER
