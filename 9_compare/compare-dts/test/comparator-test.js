@@ -4,7 +4,7 @@ const expect = chai.expect;
 
 const fs = require('fs');
 const Comparator = require('../dist/Comparator').Comparator;
-const ConstructorParameterTypeDifference = require('../dist/difference/ConstructorParameterTypeDifference').ConstructorParameterTypeDifference;
+const ParameterTypeDifference = require('../dist/difference/ParameterTypeDifference').ParameterTypeDifference;
 
 describe('Comparator', () => {
 	describe('module-class', () => {
@@ -25,19 +25,82 @@ describe('Comparator', () => {
 				const comparator = new Comparator();
 				expect(comparator.compare(parsedClassExpected, parsedClassActual))
 					.to.be.an('array')
-					.that.contains.something.that.deep.equals(new ConstructorParameterTypeDifference(
-						0,
-						"a",
+					.that.contains.something.that.deep.equals(new ParameterTypeDifference(
 						{
-							kind: "primitive_keyword",
-							value: "number"
+							name: "a",
+							type: {
+								kind: "primitive_keyword",
+								value: "number"
+							},
+							optional: false
 						},
 						{
-							kind: "primitive_keyword",
-							value: "string"
+							name: "a1",
+							type: {
+								kind: "primitive_keyword",
+								value: "string"
+							},
+							optional: false
 						}
 					));
 			});
+		});
+
+		describe('methods', () => {
+			it('should detect different types for the same parameter', () => {
+				let parsedClassExpected = readJsonFromFile("test/files/comparator-module-class/method/parameters/one-class-one-method.json");
+				let parsedClassActual = readJsonFromFile("test/files/comparator-module-class/method/parameters/one-class-one-method-different-parameter.json");
+
+				const comparator = new Comparator();
+				expect(comparator.compare(parsedClassExpected, parsedClassActual))
+					.to.be.an('array')
+					.that.contains.something.that.deep.equals(new ParameterTypeDifference(
+						{
+							name: "a",
+							type: {
+								kind: "primitive_keyword",
+								value: "string"
+							},
+							optional: false
+						},
+						{
+							name: "a",
+							type: {
+								kind: "primitive_keyword",
+								value: "number"
+							},
+							optional: false
+						}
+					));
+			});
+
+			it('should ignore differences in the name for the same parameter', () => {
+				let parsedClassExpected = readJsonFromFile("test/files/comparator-module-class/method/parameters/one-class-one-method.json");
+				let parsedClassActual = readJsonFromFile("test/files/comparator-module-class/method/parameters/one-class-one-method-same-parameter-different-name.json");
+
+				const comparator = new Comparator();
+				expect(comparator.compare(parsedClassExpected, parsedClassActual)).to.be.an('array').that.is.empty;
+			});
+
+			// it('should detect extra parameters', () => {
+			// 	let parsedClassExpected = readJsonFromFile("test/files/comparator-module-class/method/parameters/one-class-one-method.json");
+			// 	let parsedClassActual = readJsonFromFile("test/files/comparator-module-class/method/parameters/one-class-one-method-extra-parameter.json");
+
+			// 	const comparator = new Comparator();
+			// 	expect(comparator.compare(parsedClassExpected, parsedClassActual))
+			// 		.to.be.an('array')
+			// 		.that.contains.something.that.deep.equals(new ParameterTypeDifference(
+			// 			null,
+			// 			{
+			// 				name: "b",
+			// 				type: {
+			// 					kind: "primitive_keyword",
+			// 					value: "number"
+			// 				},
+			// 				optional: false
+			// 			}
+			// 		));
+			// });
 		});
 	});
 });

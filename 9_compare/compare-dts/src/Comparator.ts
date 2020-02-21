@@ -1,5 +1,8 @@
 import { Difference } from "./difference/Difference";
-import { ConstructorParameterTypeDifference } from "./difference/ConstructorParameterTypeDifference";
+import { ClassDeclaration } from "./parsed-model/class";
+import { MethodDeclaration } from "./parsed-model/method";
+import { parse } from "querystring";
+import { MethodParametersComparison } from "./comparison/methodParametersComparison";
 
 export class Comparator {
 	compare(parsedExpectedFile: any, parsedActualFile: any) : Difference[] {
@@ -18,7 +21,10 @@ export class Comparator {
 
 		let differences: Difference[] = [];
 
-		differences = differences.concat(this.compareConstructorParameters(exportedClassActual, exportedClassExpected));
+		differences = differences.concat(
+			this.compareConstructorParameters(exportedClassExpected, exportedClassActual),
+			this.compareMethodsParameters(exportedClassExpected, exportedClassActual)
+		);
 
 		return differences;
 	}
@@ -28,11 +34,15 @@ export class Comparator {
 	}
 
 	private getNameExportedClass(parsedDeclarationFile: any): string {
-		return parsedDeclarationFile.exportAssignments.shift() || "";
+		if (parsedDeclarationFile.exportAssignments.length === 0) {
+			return "";
+		}
+
+		return parsedDeclarationFile.exportAssignments[0];
 	}
 
-	private getClassByName(parsedDeclarationFile: any, name: string): { [key: string]: any } {
-		let classes: [{ [key: string]: any }] = parsedDeclarationFile.classes;
+	private getClassByName(parsedDeclarationFile: any, name: string): ClassDeclaration {
+		let classes: [ClassDeclaration] = parsedDeclarationFile.classes;
 		let classesWithName = classes.filter((c => {
 			return (c.name === name);
 		}));
@@ -41,25 +51,28 @@ export class Comparator {
 			throw "No class with name '" + name + "'";
 		}
 
-		return classesWithName.shift() || {};
+		return classesWithName[0];
 	}
 
-	private compareConstructorParameters(classActual: { [key: string]: any }, classExpected: { [key: string]: any }) : Difference[] {
-		let parametersActual = this.extractParametersFromConstructor(classActual);
-		let parametersExpected = this.extractParametersFromConstructor(classExpected);
+	private compareConstructorParameters(classExpected: ClassDeclaration, classActual: ClassDeclaration) : Difference[] {
+		return new MethodParametersComparison(
+			this.getConstructorFromClass(classExpected),
+			this.getConstructorFromClass(classActual)
+		).compare();
+	}
 
+	private compareMethodsParameters(classExpected: ClassDeclaration, classActual: ClassDeclaration) : Difference[] {
 		let differences : Difference[] = [];
-		parametersActual.forEach(parameterActual => {
-			parametersExpected.forEach(parameterExpected => {
-				if (parameterActual.name === parameterExpected.name) {
-					if (JSON.stringify(parameterActual.type) !== JSON.stringify(parameterExpected.type)) {
-						differences = differences.concat(new ConstructorParameterTypeDifference(
-							0,
-							parameterActual.name,
-							parameterExpected.type,
-							parameterActual.type
-						));
-					}
+
+		classExpected.methods.forEach(methodExpected => {
+			classActual.methods.forEach(methodActual => {
+				if (methodExpected.name === methodActual.name) {
+					differences = differences.concat(
+						new MethodParametersComparison(
+							methodExpected,
+							methodActual
+						).compare()
+					)
 				}
 			});
 		});
@@ -67,11 +80,15 @@ export class Comparator {
 		return differences;
 	}
 
-	private extractParametersFromConstructor(parsedClass: { [key: string]: any }): { [key: string]: any }[] {
+	private getConstructorFromClass(parsedClass: ClassDeclaration) : MethodDeclaration {
 		if (parsedClass.constructors.length === 0) {
-			return [];
+			return {
+				name: "",
+				parameters: [],
+				returnType: ""
+			};
 		}
 
-		return parsedClass.constructors[0].parameters;
+		return parsedClass.constructors[0];
 	}
 }

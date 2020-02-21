@@ -6,22 +6,13 @@
 		{
 			"name": "OneClass",
 			"properties": [],
-			"methods": [],
-			"constructors": [
+			"methods": [
 				{
-					"name": "constructor",
-					"returnType": "",
+					"name": "next",
+					"returnType": "string",
 					"parameters": [
 						{
 							"name": "a1",
-							"type": {
-								"kind": "primitive_keyword",
-								"value": "string"
-							},
-							"optional": false
-						},
-						{
-							"name": "b",
 							"type": {
 								"kind": "primitive_keyword",
 								"value": "string"
@@ -31,13 +22,32 @@
 					],
 					"modifiers": []
 				}
+			],
+			"constructors": [
+				{
+					"name": "constructor",
+					"returnType": "",
+					"parameters": [],
+					"modifiers": []
+				}
 			]
 		}
 	],
 	"exportAssignments": [
 		"OneClass"
 	],
-	"namespaces": {},
+	"namespaces": {
+		"OneClass": {
+			"name": "OneClass",
+			"interfaces": [],
+			"functions": [],
+			"classes": [],
+			"exportAssignments": [],
+			"namespaces": {},
+			"errors": false,
+			"errorMessages": []
+		}
+	},
 	"errors": false,
 	"errorMessages": []
 }
