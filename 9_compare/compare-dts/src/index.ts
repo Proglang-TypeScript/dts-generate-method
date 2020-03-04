@@ -1,7 +1,8 @@
+#!/usr/bin/env node
+
 import commandLineArgs from 'command-line-args';
 import * as fs from 'fs';
 import { Comparator } from './Comparator';
-
 
 const optionDefinitions = [
 	{ name: 'generated-file', alias: 'g', type: String, defaultValue: '' },
@@ -18,7 +19,7 @@ try {
 	
 	let resultComparation = comparator.compare(parsedDefinitelyTypedFile, parsedGeneratedFile);
 	
-	console.log(resultComparation);
+	console.log(JSON.stringify(resultComparation, null, 4));
 } catch (error) {
 	console.log("Error: " + JSON.stringify(error));
 	process.exit(1);	

@@ -1,5 +1,10 @@
+export interface ParameterTypeDeclaration {
+	kind: string;
+	value: any;
+}
+
 export interface ParameterDeclaration {
 	name: string,
-	type: { [key: string]: any },
+	type: ParameterTypeDeclaration,
 	optional: boolean
 }

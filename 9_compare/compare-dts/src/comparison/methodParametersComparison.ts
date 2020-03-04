@@ -1,16 +1,25 @@
 import { Difference } from "../difference/Difference";
 import { Comparison } from "./comparison";
 import { MethodDeclaration } from "../parsed-model/method";
-import { ParameterTypeDifference } from "../difference/ParameterTypeDifference";
-import { ParameterDeclaration } from "../parsed-model/parameter";
+import { NamespaceDeclaration } from "../parsed-model/namespace";
+import { ParametersComparison } from "./parametersComparison";
 
 export class MethodParametersComparison implements Comparison {
 	private methodExpected: MethodDeclaration;
 	private methodActual: MethodDeclaration;
+	private parsedExpectedFile: NamespaceDeclaration;
+	private parsedActualFile: NamespaceDeclaration;
 
-	constructor(methodExpected: MethodDeclaration, methodActual: MethodDeclaration) {
+	constructor(
+		methodExpected: MethodDeclaration,
+		methodActual: MethodDeclaration,
+		parsedExpectedFile: NamespaceDeclaration,
+		parsedActualFile: NamespaceDeclaration
+	) {
 		this.methodExpected = methodExpected;
 		this.methodActual = methodActual;
+		this.parsedExpectedFile = parsedExpectedFile;
+		this.parsedActualFile = parsedActualFile;
 	}
 
 	compare() : Difference[] {
@@ -20,28 +29,19 @@ export class MethodParametersComparison implements Comparison {
 		let differences: Difference[] = [];
 
 		for (let i = 0; i < Math.min(parametersExpected.length, parametersActual.length); i++) {
-			const parameterExpected = parametersExpected[i];
-			const parameterActual = parametersActual[i];
+			let parameterExpected = parametersExpected[i];
+			let parameterActual = parametersActual[i];
 
-			if (this.areDifferent(parameterExpected, parameterActual)) {
-				differences = differences.concat(new ParameterTypeDifference(
+			differences = differences.concat(
+				new ParametersComparison(
 					parameterExpected,
-					parameterActual
-				));
-			}
+					parameterActual,
+					this.parsedExpectedFile,
+					this.parsedActualFile
+				).compare()
+			);
 		}
 
 		return differences;
-	}
-
-	private areDifferent(parameterExpected: ParameterDeclaration, parameterActual: ParameterDeclaration) {
-		return this.serialize(parameterExpected) !== this.serialize(parameterActual);
-	}
-
-	private serialize(parameter: ParameterDeclaration) {
-		let p = JSON.parse(JSON.stringify(parameter));
-		p.name = "";
-
-		return JSON.stringify(p);
 	}
 }

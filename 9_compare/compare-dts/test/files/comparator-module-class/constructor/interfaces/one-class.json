@@ -1,0 +1,82 @@
+{
+	"name": "__GLOBAL__",
+	"interfaces": [],
+	"functions": [],
+	"classes": [
+		{
+			"name": "OneClass",
+			"properties": [],
+			"methods": [],
+			"constructors": [
+				{
+					"name": "constructor",
+					"returnType": "",
+					"parameters": [
+						{
+							"name": "a",
+							"type": {
+								"kind": "primitive_keyword",
+								"value": "OneClass.SomeInterface"
+							},
+							"optional": false
+						}
+					],
+					"modifiers": []
+				}
+			]
+		}
+	],
+	"exportAssignments": [
+		"OneClass"
+	],
+	"namespaces": {
+		"OneClass": {
+			"name": "OneClass",
+			"interfaces": [
+				{
+					"name": "SomeInterface",
+					"properties": [
+						{
+							"name": "a",
+							"type": {
+								"kind": "primitive_keyword",
+								"value": "string"
+							},
+							"optional": false
+						},
+						{
+							"name": "b",
+							"type": {
+								"kind": "primitive_keyword",
+								"value": "number"
+							},
+							"optional": false
+						},
+						{
+							"name": "c",
+							"type": {
+								"kind": "array_type",
+								"value": {
+									"kind": "primitive_keyword",
+									"value": "string"
+								}
+							},
+							"optional": false
+						}
+					],
+					"methods": [],
+					"classes": [],
+					"callSignatures": []
+				}
+			],
+			"functions": [],
+			"classes": [],
+			"exportAssignments": [],
+			"namespaces": {},
+			"errors": false,
+			"errorMessages": []
+		}
+	},
+	"errors": false,
+	"errorMessages": []
+}
