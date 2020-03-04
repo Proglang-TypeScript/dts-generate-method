@@ -22,3 +22,8 @@ WORKDIR /usr/local/app
 
 COPY --from=builder /usr/local/app/node_modules ./node_modules
 COPY --from=builder /usr/local/app/dist ./dist
+COPY --from=builder /usr/local/app/package.json ./package.json
+
+RUN npm link
+
+ENTRYPOINT [ "compare-dts" ]

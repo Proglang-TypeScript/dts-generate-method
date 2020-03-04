@@ -2,7 +2,10 @@
   "name": "compare-dts",
   "version": "1.0.0",
   "description": "Compares 2 parsed typescript declaration files",
-  "main": "index.js",
+  "bin": {
+    "compare-dts": "dist/index.js"
+  },
+  "main": "dist/index.js",
   "scripts": {
     "compare": "node dist/index.js",
     "prestart": "npm run build",
