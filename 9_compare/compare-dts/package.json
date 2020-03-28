@@ -7,12 +7,11 @@
     "parse-dts": "dist/parse.js"
   },
   "scripts": {
-    "compare": "compare-dts",
-    "parse": "parse-dts",
-    "prestart": "npm run build",
-    "start": "npm run compare",
+    "compare": "npm run build && compare-dts",
+    "parse": "npm run build && parse-dts",
     "prebuild": "rm -rf dist",
-    "build": "npx tsc && npm link",
+    "build": "npx tsc",
+    "postbuild": "npm link",
     "test": "jest"
   },
   "author": "fcristiani",
