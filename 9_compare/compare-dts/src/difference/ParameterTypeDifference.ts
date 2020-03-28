@@ -1,11 +1,11 @@
 import Difference from "./Difference";
-import { ParameterDeclaration } from "../parsed-model/parameter";
+import { DeclaredProperty } from "../parser/model/DeclaredProperty";
 
 export default class ParameterTypeDifference implements Difference {
-	private parameterExpected: ParameterDeclaration;
-	private parameterActual: ParameterDeclaration;
+	private parameterExpected: DeclaredProperty;
+	private parameterActual: DeclaredProperty;
 
-	constructor(parameterExpected: ParameterDeclaration, parameterActual: ParameterDeclaration) {
+	constructor(parameterExpected: DeclaredProperty, parameterActual: DeclaredProperty) {
 		this.parameterExpected = parameterExpected;
 		this.parameterActual = parameterActual;
 	}

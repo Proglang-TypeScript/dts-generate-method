@@ -3,28 +3,29 @@
   "version": "1.0.0",
   "description": "Compares 2 parsed typescript declaration files",
   "bin": {
-    "compare-dts": "dist/index.js"
+    "compare-dts": "dist/index.js",
+    "parse-dts": "dist/parse.js"
   },
-  "main": "dist/index.js",
   "scripts": {
-    "compare": "node dist/index.js",
+    "compare": "compare-dts",
+    "parse": "parse-dts",
     "prestart": "npm run build",
     "start": "npm run compare",
     "prebuild": "rm -rf dist",
-    "build": "npx tsc",
+    "build": "npx tsc && npm link",
     "test": "jest"
   },
   "author": "fcristiani",
   "license": "MIT",
   "dependencies": {
-    "command-line-args": "^5.1.1"
+    "command-line-args": "^5.1.1",
+    "typescript": "^3.8.3"
   },
   "devDependencies": {
     "@types/command-line-args": "^5.0.0",
     "@types/jest": "^25.1.4",
     "@types/node": "^13.7.0",
     "jest": "^25.2.3",
-    "ts-jest": "^25.2.1",
-    "typescript": "^3.8.3"
+    "ts-jest": "^25.2.1"
   }
 }

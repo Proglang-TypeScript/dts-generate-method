@@ -1,22 +1,22 @@
 import Difference from "../difference/Difference";
 import { Comparison } from "./comparison";
-import { NamespaceDeclaration } from "../parsed-model/namespace";
+import { DeclaredNamespace } from "../parser/model/DeclaredNamespace";
 import ParameterTypeDifference from "../difference/ParameterTypeDifference";
-import { ParameterDeclaration } from "../parsed-model/parameter";
-import { InterfaceDeclaration } from "../parsed-model/interface";
+import { DeclaredProperty } from "../parser/model/DeclaredProperty";
+import { DeclaredInterface } from "../parser/model/DeclaredInterface";
 import { InterfaceComparison } from "./interfaceComparison";
 
 export class ParametersComparison implements Comparison {
-	private parameterExpected: ParameterDeclaration;
-	private parameterActual: ParameterDeclaration;
-	private parsedExpectedFile: NamespaceDeclaration;
-	private parsedActualFile: NamespaceDeclaration;
+	private parameterExpected: DeclaredProperty;
+	private parameterActual: DeclaredProperty;
+	private parsedExpectedFile: DeclaredNamespace;
+	private parsedActualFile: DeclaredNamespace;
 
 	constructor(
-		parameterExpected: ParameterDeclaration,
-		parameterActual: ParameterDeclaration,
-		parsedExpectedFile: NamespaceDeclaration,
-		parsedActualFile: NamespaceDeclaration
+		parameterExpected: DeclaredProperty,
+		parameterActual: DeclaredProperty,
+		parsedExpectedFile: DeclaredNamespace,
+		parsedActualFile: DeclaredNamespace
 	) {
 		this.parameterExpected = parameterExpected;
 		this.parameterActual = parameterActual;
@@ -49,15 +49,9 @@ export class ParametersComparison implements Comparison {
 		return differences;
 	}
 
-	private getInterface(parameter: ParameterDeclaration, parsedFile: NamespaceDeclaration) : InterfaceDeclaration {
+	private getInterface(parameter: DeclaredProperty, parsedFile: DeclaredNamespace) : DeclaredInterface {
 		if (parameter.type.kind !== "primitive_keyword") {
-			return {
-				name: "",
-				properties: [],
-				methods: [],
-				classes: [],
-				callSignatures: []
-			}
+			return new DeclaredInterface("");
 		}
 
 		let interfaceName = parameter.type.value;
@@ -65,14 +59,8 @@ export class ParametersComparison implements Comparison {
 		return this.searchInterface(interfaceName, parsedFile);
 	}
 
-	private searchInterface(interfaceName: string, parsedFile: NamespaceDeclaration) : InterfaceDeclaration {
-		let i: InterfaceDeclaration = {
-			name: "",
-			properties: [],
-			methods: [],
-			classes: [],
-			callSignatures: []
-		};
+	private searchInterface(interfaceName: string, parsedFile: DeclaredNamespace) : DeclaredInterface {
+		let i = new DeclaredInterface("");
 
 		let interfaceNameSplittedByNamespaceSeparator = interfaceName.split(".");
 		let interfaceNameWithoutNamespaces = interfaceNameSplittedByNamespaceSeparator[interfaceNameSplittedByNamespaceSeparator.length - 1];
@@ -93,11 +81,11 @@ export class ParametersComparison implements Comparison {
 		return i;
 	}
 
-	private areDifferent(parameterExpected: ParameterDeclaration, parameterActual: ParameterDeclaration) {
+	private areDifferent(parameterExpected: DeclaredProperty, parameterActual: DeclaredProperty) {
 		return this.serialize(parameterExpected) !== this.serialize(parameterActual);
 	}
 
-	private serialize(parameter: ParameterDeclaration) {
+	private serialize(parameter: DeclaredProperty) {
 		let p = JSON.parse(JSON.stringify(parameter));
 		p.name = "";
 

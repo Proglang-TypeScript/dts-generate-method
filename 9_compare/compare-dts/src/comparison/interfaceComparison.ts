@@ -1,20 +1,20 @@
 import Difference from "../difference/Difference";
 import { Comparison } from "./comparison";
-import { NamespaceDeclaration } from "../parsed-model/namespace";
-import { InterfaceDeclaration } from "../parsed-model/interface";
+import { DeclaredNamespace } from "../parser/model/DeclaredNamespace";
+import { DeclaredInterface } from "../parser/model/DeclaredInterface";
 import { ParametersComparison } from "./parametersComparison";
 
 export class InterfaceComparison implements Comparison {
-	private interfaceExpected: InterfaceDeclaration;
-	private interfaceActual: InterfaceDeclaration;
-	private parsedExpectedFile: NamespaceDeclaration;
-	private parsedActualFile: NamespaceDeclaration;
+	private interfaceExpected: DeclaredInterface;
+	private interfaceActual: DeclaredInterface;
+	private parsedExpectedFile: DeclaredNamespace;
+	private parsedActualFile: DeclaredNamespace;
 
 	constructor(
-		interfaceExpected: InterfaceDeclaration,
-		interfaceActual: InterfaceDeclaration,
-		parsedExpectedFile: NamespaceDeclaration,
-		parsedActualFile: NamespaceDeclaration
+		interfaceExpected: DeclaredInterface,
+		interfaceActual: DeclaredInterface,
+		parsedExpectedFile: DeclaredNamespace,
+		parsedActualFile: DeclaredNamespace
 	) {
 		this.interfaceExpected = interfaceExpected;
 		this.interfaceActual = interfaceActual;

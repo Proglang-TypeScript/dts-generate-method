@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 import commandLineArgs from 'command-line-args';
-import fs from 'fs';
 import Comparator from './Comparator';
+import DeclarationFileParser from './parser/DeclarationFileParser';
 
 const optionDefinitions = [
 	{ name: 'generated-file', alias: 'g', type: String, defaultValue: '' },
@@ -11,12 +11,14 @@ const optionDefinitions = [
 
 let options = commandLineArgs(optionDefinitions);
 
+const parser = new DeclarationFileParser();
+
 try {
-	let parsedGeneratedFile = JSON.parse(fs.readFileSync(options['generated-file']).toString());
-	let parsedDefinitelyTypedFile = JSON.parse(fs.readFileSync(options['definitely-typed-file']).toString());
+	let parsedGeneratedFile = parser.parse(options['generated-file']);
+	let parsedDefinitelyTypedFile = parser.parse(options['definitely-typed-file']);
 	
 	let comparator = new Comparator();
-	
+
 	let resultComparation = comparator.compare(parsedDefinitelyTypedFile, parsedGeneratedFile);
 	
 	console.log(JSON.stringify(resultComparation, null, 4));

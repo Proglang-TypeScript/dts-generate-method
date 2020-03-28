@@ -1,20 +1,20 @@
 import Difference from "../difference/Difference";
 import { Comparison } from "./comparison";
-import { MethodDeclaration } from "../parsed-model/method";
-import { NamespaceDeclaration } from "../parsed-model/namespace";
+import { DeclaredFunction } from "../parser/model/DeclaredFunction";
+import { DeclaredNamespace } from "../parser/model/DeclaredNamespace";
 import { ParametersComparison } from "./parametersComparison";
 
 export class MethodParametersComparison implements Comparison {
-	private methodExpected: MethodDeclaration;
-	private methodActual: MethodDeclaration;
-	private parsedExpectedFile: NamespaceDeclaration;
-	private parsedActualFile: NamespaceDeclaration;
+	private methodExpected: DeclaredFunction;
+	private methodActual: DeclaredFunction;
+	private parsedExpectedFile: DeclaredNamespace;
+	private parsedActualFile: DeclaredNamespace;
 
 	constructor(
-		methodExpected: MethodDeclaration,
-		methodActual: MethodDeclaration,
-		parsedExpectedFile: NamespaceDeclaration,
-		parsedActualFile: NamespaceDeclaration
+		methodExpected: DeclaredFunction,
+		methodActual: DeclaredFunction,
+		parsedExpectedFile: DeclaredNamespace,
+		parsedActualFile: DeclaredNamespace
 	) {
 		this.methodExpected = methodExpected;
 		this.methodActual = methodActual;

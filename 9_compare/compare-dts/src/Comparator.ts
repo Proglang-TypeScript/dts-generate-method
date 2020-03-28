@@ -1,11 +1,11 @@
 import Difference from "./difference/Difference";
-import { ClassDeclaration } from "./parsed-model/class";
-import { MethodDeclaration } from "./parsed-model/method";
+import { DeclaredClass } from "./parser/model/DeclaredClass";
+import { DeclaredFunction } from "./parser/model/DeclaredFunction";
 import { MethodParametersComparison } from "./comparison/methodParametersComparison";
-import { NamespaceDeclaration } from "./parsed-model/namespace";
+import { DeclaredNamespace } from "./parser/model/DeclaredNamespace";
 
 export default class Comparator {
-	compare(parsedExpectedFile: NamespaceDeclaration, parsedActualFile: NamespaceDeclaration) : Difference[] {
+	compare(parsedExpectedFile: DeclaredNamespace, parsedActualFile: DeclaredNamespace) : Difference[] {
 		let moduleTemplateExpectedFile = this.getModuleTemplate(parsedExpectedFile);
 		let moduleTemplateActualFile = this.getModuleTemplate(parsedActualFile);
 	
@@ -29,11 +29,11 @@ export default class Comparator {
 		return differences;
 	}
 
-	private getModuleTemplate(parsedDeclarationFile: NamespaceDeclaration) {
+	private getModuleTemplate(parsedDeclarationFile: DeclaredNamespace) {
 		return "module-class";
 	}
 
-	private getNameExportedClass(parsedDeclarationFile: NamespaceDeclaration): string {
+	private getNameExportedClass(parsedDeclarationFile: DeclaredNamespace): string {
 		if (parsedDeclarationFile.exportAssignments.length === 0) {
 			return "";
 		}
@@ -41,7 +41,7 @@ export default class Comparator {
 		return parsedDeclarationFile.exportAssignments[0];
 	}
 
-	private getClassByName(parsedDeclarationFile: NamespaceDeclaration, name: string): ClassDeclaration {
+	private getClassByName(parsedDeclarationFile: DeclaredNamespace, name: string): DeclaredClass {
 		let classes = parsedDeclarationFile.classes;
 		let classesWithName = classes.filter((c => {
 			return (c.name === name);
@@ -55,10 +55,10 @@ export default class Comparator {
 	}
 
 	private compareConstructorParameters(
-		classExpected: ClassDeclaration,
-		classActual: ClassDeclaration,
-		parsedExpectedFile: NamespaceDeclaration,
-		parsedActualFile: NamespaceDeclaration
+		classExpected: DeclaredClass,
+		classActual: DeclaredClass,
+		parsedExpectedFile: DeclaredNamespace,
+		parsedActualFile: DeclaredNamespace
 	) : Difference[] {
 		return new MethodParametersComparison(
 			this.getConstructorFromClass(classExpected),
@@ -69,10 +69,10 @@ export default class Comparator {
 	}
 
 	private compareMethodsParameters(
-		classExpected: ClassDeclaration,
-		classActual: ClassDeclaration,
-		parsedExpectedFile: NamespaceDeclaration,
-		parsedActualFile: NamespaceDeclaration
+		classExpected: DeclaredClass,
+		classActual: DeclaredClass,
+		parsedExpectedFile: DeclaredNamespace,
+		parsedActualFile: DeclaredNamespace
 	) : Difference[] {
 		let differences : Difference[] = [];
 
@@ -94,13 +94,9 @@ export default class Comparator {
 		return differences;
 	}
 
-	private getConstructorFromClass(parsedClass: ClassDeclaration) : MethodDeclaration {
+	private getConstructorFromClass(parsedClass: DeclaredClass) : DeclaredFunction {
 		if (parsedClass.constructors.length === 0) {
-			return {
-				name: "",
-				parameters: [],
-				returnType: ""
-			};
+			return new DeclaredFunction("", "");
 		}
 
 		return parsedClass.constructors[0];
