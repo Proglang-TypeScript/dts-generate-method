@@ -12,15 +12,14 @@ const optionDefinitions = [
 let options = commandLineArgs(optionDefinitions);
 
 const parser = new DeclarationFileParser();
+const comparator = new Comparator();
 
 try {
-	let parsedGeneratedFile = parser.parse(options['generated-file']);
-	let parsedDefinitelyTypedFile = parser.parse(options['definitely-typed-file']);
-	
-	let comparator = new Comparator();
+	const resultComparation = comparator.compare(
+		parser.parse(options['definitely-typed-file']),
+		parser.parse(options['generated-file'])
+	);
 
-	let resultComparation = comparator.compare(parsedDefinitelyTypedFile, parsedGeneratedFile);
-	
 	console.log(JSON.stringify(resultComparation, null, 4));
 } catch (error) {
 	console.log("Error: " + JSON.stringify(error));
