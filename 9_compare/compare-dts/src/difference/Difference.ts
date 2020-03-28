@@ -1,3 +1,3 @@
-export interface Difference {
+export default interface Difference {
 	
 }

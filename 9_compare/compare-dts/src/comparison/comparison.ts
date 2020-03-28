@@ -1,4 +1,4 @@
-import { Difference } from "../difference/Difference";
+import Difference from "../difference/Difference";
 
 export interface Comparison {
 	compare() : Difference[]

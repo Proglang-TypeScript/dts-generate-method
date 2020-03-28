@@ -1,4 +1,4 @@
-import { Difference } from "../difference/Difference";
+import Difference from "../difference/Difference";
 import { Comparison } from "./comparison";
 import { NamespaceDeclaration } from "../parsed-model/namespace";
 import { InterfaceDeclaration } from "../parsed-model/interface";

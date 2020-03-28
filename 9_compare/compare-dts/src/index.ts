@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 import commandLineArgs from 'command-line-args';
-import * as fs from 'fs';
-import { Comparator } from './Comparator';
+import fs from 'fs';
+import Comparator from './Comparator';
 
 const optionDefinitions = [
 	{ name: 'generated-file', alias: 'g', type: String, defaultValue: '' },
