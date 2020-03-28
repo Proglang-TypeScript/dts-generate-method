@@ -1,7 +1,7 @@
 import { Difference } from "./Difference";
 import { ParameterDeclaration } from "../parsed-model/parameter";
 
-export class ParameterTypeDifference implements Difference {
+export default class ParameterTypeDifference implements Difference {
 	private parameterExpected: ParameterDeclaration;
 	private parameterActual: ParameterDeclaration;
 

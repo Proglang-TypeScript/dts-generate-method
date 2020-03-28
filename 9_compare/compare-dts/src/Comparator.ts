@@ -4,7 +4,7 @@ import { MethodDeclaration } from "./parsed-model/method";
 import { MethodParametersComparison } from "./comparison/methodParametersComparison";
 import { NamespaceDeclaration } from "./parsed-model/namespace";
 
-export class Comparator {
+export default class Comparator {
 	compare(parsedExpectedFile: NamespaceDeclaration, parsedActualFile: NamespaceDeclaration) : Difference[] {
 		let moduleTemplateExpectedFile = this.getModuleTemplate(parsedExpectedFile);
 		let moduleTemplateActualFile = this.getModuleTemplate(parsedActualFile);

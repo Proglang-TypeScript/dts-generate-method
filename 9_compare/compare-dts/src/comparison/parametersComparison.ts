@@ -1,7 +1,7 @@
 import { Difference } from "../difference/Difference";
 import { Comparison } from "./comparison";
 import { NamespaceDeclaration } from "../parsed-model/namespace";
-import { ParameterTypeDifference } from "../difference/ParameterTypeDifference";
+import ParameterTypeDifference from "../difference/ParameterTypeDifference";
 import { ParameterDeclaration } from "../parsed-model/parameter";
 import { InterfaceDeclaration } from "../parsed-model/interface";
 import { InterfaceComparison } from "./interfaceComparison";
