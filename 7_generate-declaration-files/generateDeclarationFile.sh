@@ -20,7 +20,7 @@ npm --prefix $PLAYGROUND install $MODULE_NAME
 rm -rf $OUTPUT_DIRECTORY/$JS_FILE_NAME/typescript
 mkdir -p $OUTPUT_DIRECTORY/$JS_FILE_NAME/typescript
 
-$SCRIPT_PATH/../../ts-declaration-file-generator-service/bin/run.sh \
+$SCRIPT_PATH/../lib/bin/run.sh \
 	$PLAYGROUND/index.js \
 	$MODULE_NAME \
 		$OUTPUT_DIRECTORY/$JS_FILE_NAME/typescript
