@@ -3,6 +3,8 @@ import { Comparison } from "./comparison";
 import { DeclaredNamespace } from "../parser/model/DeclaredNamespace";
 import { DeclaredInterface } from "../parser/model/DeclaredInterface";
 import { ParametersComparison } from "./parametersComparison";
+import ParameterMissingDifference from "../difference/ParameterMissingDifference"
+import { DeclaredProperty } from "../parser/model/DeclaredProperty";
 
 export class InterfaceComparison implements Comparison {
 	private interfaceExpected: DeclaredInterface;
@@ -25,20 +27,30 @@ export class InterfaceComparison implements Comparison {
 	compare() : Difference[] {
 		let differences: Difference[] = [];
 
+		let propertiesExpected = new Map();
 		this.interfaceExpected.properties.forEach(propertyExpected => {
-			this.interfaceActual.properties.forEach(propertyActual => {
-				if (propertyExpected.name === propertyActual.name) {
-					differences = differences.concat(
-						new ParametersComparison(
-							propertyExpected,
-							propertyActual,
-							this.parsedExpectedFile,
-							this.parsedActualFile
-						).compare()
-					);
-				}
-			})
-		})
+			propertiesExpected.set(propertyExpected.name, propertyExpected);
+		});
+
+		let propertiesActual = new Map();
+		this.interfaceActual.properties.forEach(propertyActual => {
+			propertiesActual.set(propertyActual.name, propertyActual);
+		});
+
+		propertiesExpected.forEach((propertyExpected, nameExpected) => {
+			if (!propertiesActual.has(nameExpected)) {
+				differences = differences.concat(new ParameterMissingDifference(propertyExpected));
+			} else {
+				differences = differences.concat(
+					new ParametersComparison(
+						propertyExpected,
+						propertiesActual.get(nameExpected),
+						this.parsedExpectedFile,
+						this.parsedActualFile
+					).compare()
+				);
+			}
+		});
 
 		return differences;
 	}

@@ -2,6 +2,7 @@ import fs from 'fs';
 
 import Comparator from '../src/Comparator';
 import ParameterTypeDifference from '../src/difference/ParameterTypeDifference';
+import ParameterMissingDifference from '../src/difference/ParameterMissingDifference';
 
 import DeclarationFileParser from '../src/parser/DeclarationFileParser';
 
@@ -90,8 +91,8 @@ describe('Comparator', () => {
 
 	describe('interfaces', () => {
 		it('should detect differences in the types of the common properties', () => {
-			let parsedClassExpected = parser.parse("tests/files/comparator-module-class/constructor/interfaces/one-class.d.ts");
-			let parsedClassActual = parser.parse("tests/files/comparator-module-class/constructor/interfaces/one-class-with-different-constructor-parameter-type.d.ts");
+			let parsedClassExpected = parser.parse("tests/files/comparator-module-class/interfaces/one-class.d.ts");
+			let parsedClassActual = parser.parse("tests/files/comparator-module-class/interfaces/one-class-with-different-constructor-parameter-type.d.ts");
 
 			const comparator = new Comparator();
 			let result = comparator.compare(parsedClassExpected, parsedClassActual);
@@ -142,7 +143,38 @@ describe('Comparator', () => {
 				));
 		});
 
-		it.skip('should detect missing properties of the interface', () => {
+		it('should detect missing properties of the interface', () => {
+			const parsedClassExpected = parser.parse("tests/files/comparator-module-class/interfaces/one-class.d.ts");
+			const parsedClassActual = parser.parse("tests/files/comparator-module-class/interfaces/one-class-missing-properties.d.ts");
+
+			const comparator = new Comparator();
+			const result = comparator.compare(parsedClassExpected, parsedClassActual);
+			expect(result)
+				.toContainEqual(new ParameterMissingDifference(
+					{
+						name: "b",
+						type: {
+							kind: "primitive_keyword",
+							value: "number"
+						},
+						optional: false
+					}
+				));
+
+			expect(result)
+				.toContainEqual(new ParameterMissingDifference(
+					{
+						name: "c",
+						type: {
+							kind: "array_type",
+							value: {
+								kind: "primitive_keyword",
+								value: "string"
+							}
+						},
+						optional: false
+					}
+				));
 		});
 
 		it.skip('should detect extra properties', () => {
