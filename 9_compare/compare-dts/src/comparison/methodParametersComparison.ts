@@ -3,6 +3,7 @@ import { Comparison } from "./comparison";
 import { DeclaredFunction } from "../parser/model/DeclaredFunction";
 import { DeclaredNamespace } from "../parser/model/DeclaredNamespace";
 import { ParametersComparison } from "./parametersComparison";
+import ParameterMissingDifference from "../difference/ParameterMissingDifference";
 
 export class MethodParametersComparison implements Comparison {
 	private methodExpected: DeclaredFunction;
@@ -28,18 +29,22 @@ export class MethodParametersComparison implements Comparison {
 
 		let differences: Difference[] = [];
 
-		for (let i = 0; i < Math.min(parametersExpected.length, parametersActual.length); i++) {
-			let parameterExpected = parametersExpected[i];
-			let parameterActual = parametersActual[i];
+		for (let i = 0; i < Math.max(parametersExpected.length, parametersActual.length); i++) {
+			const parameterExpected = parametersExpected[i];
+			const parameterActual = parametersActual[i];
 
-			differences = differences.concat(
-				new ParametersComparison(
-					parameterExpected,
-					parameterActual,
-					this.parsedExpectedFile,
-					this.parsedActualFile
-				).compare()
-			);
+			if (parameterExpected && parameterActual) {
+				differences = differences.concat(
+					new ParametersComparison(
+						parameterExpected,
+						parameterActual,
+						this.parsedExpectedFile,
+						this.parsedActualFile
+					).compare()
+				);
+			} else if (parameterExpected && !parameterActual) {
+				differences = differences.concat(new ParameterMissingDifference(parameterExpected));
+			}
 		}
 
 		return differences;

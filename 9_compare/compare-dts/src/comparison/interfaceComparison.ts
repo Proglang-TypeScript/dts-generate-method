@@ -5,6 +5,7 @@ import { DeclaredInterface } from "../parser/model/DeclaredInterface";
 import { ParametersComparison } from "./parametersComparison";
 import ParameterMissingDifference from "../difference/ParameterMissingDifference"
 import { DeclaredProperty } from "../parser/model/DeclaredProperty";
+import ParameterExtraDifference from "../difference/ParameterExtraDifference";
 
 export class InterfaceComparison implements Comparison {
 	private interfaceExpected: DeclaredInterface;
@@ -49,6 +50,12 @@ export class InterfaceComparison implements Comparison {
 						this.parsedActualFile
 					).compare()
 				);
+			}
+		});
+
+		propertiesActual.forEach((propertyActual, nameActual) => {
+			if (!propertiesExpected.has(nameActual)) {
+				differences = differences.concat(new ParameterExtraDifference(propertyActual));
 			}
 		});
 

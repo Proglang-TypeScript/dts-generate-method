@@ -3,6 +3,7 @@ import fs from 'fs';
 import Comparator from '../src/Comparator';
 import ParameterTypeDifference from '../src/difference/ParameterTypeDifference';
 import ParameterMissingDifference from '../src/difference/ParameterMissingDifference';
+import ParameterExtraDifference from '../src/difference/ParameterExtraDifference';
 
 import DeclarationFileParser from '../src/parser/DeclarationFileParser';
 
@@ -83,7 +84,43 @@ describe('Comparator', () => {
 				expect(comparator.compare(parsedClassExpected, parsedClassActual)).toHaveLength(0);
 			});
 
-			it.skip('should detect extra parameters', () => { });
+			it('should detect missing parameters', () => {
+				const parsedClassExpected = parser.parse("tests/files/comparator-module-class/method/parameters/one-class-one-method.d.ts");
+				const parsedClassActual = parser.parse("tests/files/comparator-module-class/method/parameters/one-class-one-method-missing-parameter.d.ts");
+
+				const comparator = new Comparator();
+				const result = comparator.compare(parsedClassExpected, parsedClassActual);
+				expect(result)
+					.toContainEqual(new ParameterMissingDifference(
+						{
+							name: "a",
+							type: {
+								kind: "primitive_keyword",
+								value: "string"
+							},
+							optional: false
+						}
+					));
+			});
+
+			it.skip('should detect extra parameters', () => {
+				const parsedClassExpected = parser.parse("tests/files/comparator-module-class/method/parameters/one-class-one-method.d.ts");
+				const parsedClassActual = parser.parse("tests/files/comparator-module-class/method/parameters/one-class-one-method-extra-parameter.d.ts");
+
+				const comparator = new Comparator();
+				const result = comparator.compare(parsedClassExpected, parsedClassActual);
+				expect(result)
+					.toContainEqual(new ParameterExtraDifference(
+						{
+							name: "b",
+							type: {
+								kind: "primitive_keyword",
+								value: "string"
+							},
+							optional: false
+						}
+					));
+			});
 		});
 
 		it.skip('should detect missing methods', () => {});
@@ -177,7 +214,38 @@ describe('Comparator', () => {
 				));
 		});
 
-		it.skip('should detect extra properties', () => {
+		it('should detect extra properties', () => {
+			const parsedClassExpected = parser.parse("tests/files/comparator-module-class/interfaces/one-class.d.ts");
+			const parsedClassActual = parser.parse("tests/files/comparator-module-class/interfaces/one-class-extra-properties.d.ts");
+
+			const comparator = new Comparator();
+			const result = comparator.compare(parsedClassExpected, parsedClassActual);
+			expect(result)
+				.toContainEqual(new ParameterExtraDifference(
+					{
+						name: "something",
+						type: {
+							kind: "primitive_keyword",
+							value: "number"
+						},
+						optional: false
+					}
+				));
+
+			expect(result)
+				.toContainEqual(new ParameterExtraDifference(
+					{
+						name: "anotherThing",
+						type: {
+							kind: "array_type",
+							value: {
+								kind: "primitive_keyword",
+								value: "string"
+							}
+						},
+						optional: false
+					}
+				));
 		});
 
 		it.skip('should detect be able to handle recursively nested Interfaces', () => {
