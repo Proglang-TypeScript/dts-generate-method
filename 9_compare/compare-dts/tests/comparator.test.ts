@@ -103,7 +103,7 @@ describe('Comparator', () => {
 					));
 			});
 
-			it.skip('should detect extra parameters', () => {
+			it('should detect extra parameters', () => {
 				const parsedClassExpected = parser.parse("tests/files/comparator-module-class/method/parameters/one-class-one-method.d.ts");
 				const parsedClassActual = parser.parse("tests/files/comparator-module-class/method/parameters/one-class-one-method-extra-parameter.d.ts");
 

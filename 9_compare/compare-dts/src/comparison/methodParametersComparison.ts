@@ -4,6 +4,7 @@ import { DeclaredFunction } from "../parser/model/DeclaredFunction";
 import { DeclaredNamespace } from "../parser/model/DeclaredNamespace";
 import { ParametersComparison } from "./parametersComparison";
 import ParameterMissingDifference from "../difference/ParameterMissingDifference";
+import ParameterExtraDifference from "../difference/ParameterExtraDifference";
 
 export class MethodParametersComparison implements Comparison {
 	private methodExpected: DeclaredFunction;
@@ -42,8 +43,18 @@ export class MethodParametersComparison implements Comparison {
 						this.parsedActualFile
 					).compare()
 				);
-			} else if (parameterExpected && !parameterActual) {
+
+				continue;
+			}
+
+			if (parameterExpected && !parameterActual) {
 				differences = differences.concat(new ParameterMissingDifference(parameterExpected));
+				continue;
+			}
+
+			if (!parameterExpected && parameterActual) {
+				differences = differences.concat(new ParameterExtraDifference(parameterActual));
+				continue;
 			}
 		}
 

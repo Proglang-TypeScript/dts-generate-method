@@ -2,7 +2,7 @@ export default Greeter;
 
 declare class Greeter {
 	constructor(message: string);
-	showGreeting(p: Greeter.Person): void;
+	showGreeting(p: Greeter.Person, extraParameter: number[]): void;
 	logMessage(): void;
 }
 
