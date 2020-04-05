@@ -4,7 +4,6 @@ import { DeclaredNamespace } from "../parser/model/DeclaredNamespace";
 import { DeclaredInterface } from "../parser/model/DeclaredInterface";
 import { ParametersComparison } from "./parametersComparison";
 import ParameterMissingDifference from "../difference/ParameterMissingDifference"
-import { DeclaredProperty } from "../parser/model/DeclaredProperty";
 import ParameterExtraDifference from "../difference/ParameterExtraDifference";
 
 export class InterfaceComparison implements Comparison {
