@@ -9,12 +9,13 @@ import DeclaredPropertyType from './model/declared-property-types/DeclaredProper
 import { DeclaredProperty } from './model/DeclaredProperty';
 import { DeclaredPropertyTypePrimitiveKeyword } from './model/declared-property-types/DeclaredPropertyTypePrimitiveKeyword';
 import { DeclaredPropertyTypeFunctionType } from './model/declared-property-types/DeclaredPropertyTypeFunctionType';
-import { DeclaredPropertyTypeLiteralType } from './model/declared-property-types/DeclaredPropertyTypeLiteralType';
+import { DeclaredPropertyTypeInterface } from './model/declared-property-types/DeclaredPropertyTypeInterface';
 import { DeclaredPropertyTypeUnionType } from './model/declared-property-types/DeclaredPropertyTypeUnionType';
 import { DeclaredPropertyTypeLiterals } from './model/declared-property-types/DeclaredPropertyTypeLiterals';
 import { DeclaredPropertyArrayType } from './model/declared-property-types/DeclaredPropertyArrayType';
 import { AddClass } from './AddClass';
 import { DeclaredClass } from './model/DeclaredClass';
+import { DeclaredPropertyTypeReferenceType } from './model/declared-property-types/DeclaredPropertyTypeReferenceType';
 
 interface SimplifiedFunctionDeclaration {
 	name?: ts.Identifier | ts.StringLiteral | ts.NumericLiteral | ts.PropertyName | undefined;
@@ -52,7 +53,7 @@ export class ASTNodesHandler {
 		return declaredFunction;
 	}
 
-	addInterfaceDeclaration(node: SimplifiedInterfaceDeclaration, parentDeclarationObject: AddInterface) {
+	addInterfaceDeclaration(node: SimplifiedInterfaceDeclaration, parentDeclarationObject: AddInterface, symbol: ts.Symbol | undefined) {
 		let declaredInterface = this.getDeclaredInterface(node);
 
 		parentDeclarationObject.addInterface(declaredInterface);
@@ -176,7 +177,7 @@ export class ASTNodesHandler {
 				case ts.SyntaxKind.TypeLiteral:
 					const typeLiteralNode = type as ts.TypeLiteralNode;
 
-					return new DeclaredPropertyTypeLiteralType(
+					return new DeclaredPropertyTypeInterface(
 							this.getDeclaredInterface(typeLiteralNode as SimplifiedInterfaceDeclaration)
 					);
 					break;
@@ -204,6 +205,11 @@ export class ASTNodesHandler {
 						this.getDeclaredPropertyType(arrayTypeNode.elementType)
 					);
 					break;
+
+				case ts.SyntaxKind.TypeReference:
+					const typeReferenceNode = type as ts.TypeReferenceNode;
+
+					return new DeclaredPropertyTypePrimitiveKeyword(typeReferenceNode.getText());
 			}
 		}
 

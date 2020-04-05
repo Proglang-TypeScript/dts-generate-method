@@ -1,5 +1,3 @@
-import fs from 'fs';
-
 import Comparator from '../src/Comparator';
 import ParameterTypeDifference from '../src/difference/ParameterTypeDifference';
 import ParameterMissingDifference from '../src/difference/ParameterMissingDifference';

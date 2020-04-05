@@ -27,12 +27,12 @@ export default class DeclarationFileParser {
 
 		this.addSyntaxErrors(sourceFile.fileName, declarationMap);
 
-		ts.forEachChild(sourceFile, this.visit(declarationMap));
+		ts.forEachChild(sourceFile, this.visit(declarationMap, checker));
 
 		return declarationMap;
 	}
 
-	private visit(declarationMap: DeclaredNamespace) {
+	private visit(declarationMap: DeclaredNamespace, checker: ts.TypeChecker) {
 		let dis = this;
 
 		return function(node: any) {
@@ -49,7 +49,7 @@ export default class DeclarationFileParser {
 						declarationMap
 					);
 
-					ts.forEachChild(node, dis.visit(declaredNamespace));
+					ts.forEachChild(node, dis.visit(declaredNamespace, checker));
 					break;
 
 				case ts.SyntaxKind.FunctionDeclaration:
@@ -63,7 +63,8 @@ export default class DeclarationFileParser {
 				case ts.SyntaxKind.InterfaceDeclaration:
 					dis.astNodesHandler.addInterfaceDeclaration(
 						node as ts.InterfaceDeclaration,
-						declarationMap as AddInterface
+						declarationMap as AddInterface,
+						checker.getSymbolAtLocation(node.name)
 					);
 
 					break;
@@ -77,7 +78,7 @@ export default class DeclarationFileParser {
 					break;
 
 				default:
-					ts.forEachChild(node, dis.visit(declarationMap));
+					ts.forEachChild(node, dis.visit(declarationMap, checker));
 			}
 		}
 	}
