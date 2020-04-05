@@ -9,11 +9,11 @@ declare namespace OneClass {
 		a: string;
 		b: number;
 		c: string[];
-		d: AnotherInterface;
+		d: OneClass.AnotherInterface;
 	}
 
 	export interface AnotherInterface {
 		a: string;
-		b: number;
+		b: string;
 	}
 }

@@ -6,6 +6,8 @@ import ParameterMissingDifference from '../src/difference/ParameterMissingDiffer
 import ParameterExtraDifference from '../src/difference/ParameterExtraDifference';
 
 import DeclarationFileParser from '../src/parser/DeclarationFileParser';
+import { DeclaredProperty } from '../src/parser/model/DeclaredProperty';
+import { DeclaredPropertyTypePrimitiveKeyword } from '../src/parser/model/declared-property-types/DeclaredPropertyTypePrimitiveKeyword';
 
 const parser = new DeclarationFileParser();
 
@@ -249,6 +251,24 @@ describe('Comparator', () => {
 		});
 
 		it.skip('should detect be able to handle recursively nested Interfaces', () => {
+			const parsedClassExpected = parser.parse("tests/files/comparator-module-class/interfaces/one-class.d.ts");
+			const parsedClassActual = parser.parse("tests/files/comparator-module-class/interfaces/one-class-nested-interfaces.d.ts");
+
+			const comparator = new Comparator();
+			const result = comparator.compare(parsedClassExpected, parsedClassActual);
+			expect(result)
+				.toContainEqual(new ParameterTypeDifference(
+					new DeclaredProperty(
+						"b",
+						new DeclaredPropertyTypePrimitiveKeyword("number"),
+						false
+					),
+					new DeclaredProperty(
+						"b",
+						new DeclaredPropertyTypePrimitiveKeyword("string"),
+						false
+					)
+				));
 		});
 	});
 });
