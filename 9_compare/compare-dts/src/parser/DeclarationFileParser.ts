@@ -1,38 +1,39 @@
-import * as ts from 'typescript';
+import ts from 'typescript';
 import { DeclaredNamespace } from './model/DeclaredNamespace';
 import { ASTNodesHandler } from './ASTNodesHandler';
 import { AddFunction } from './AddFunction';
 import { AddInterface } from './AddInterface';
 
-import * as fs from 'fs';
+import fs from 'fs';
 import { AddClass } from './AddClass';
 
 export default class DeclarationFileParser {
-	astNodesHandler: ASTNodesHandler;
+	private astNodesHandler: ASTNodesHandler;
+	private program: ts.Program;
+	private checker: ts.TypeChecker;
+	private sourceFile: ts.SourceFile;
 
-	constructor() {
-		this.astNodesHandler = new ASTNodesHandler();
+	constructor(fileName: string) {
+		this.program = ts.createProgram([fileName], {});
+		this.checker = this.program.getTypeChecker();
+
+		this.astNodesHandler = new ASTNodesHandler(this.checker);
+		this.sourceFile = this.program.getSourceFiles().filter(s => {
+			return (s.fileName === fileName);
+		})[0];
 	}
 
-	parse(filename: string): DeclaredNamespace {
-		let program = ts.createProgram([filename], {});
-		let checker = program.getTypeChecker();
-		let sourceFiles = program.getSourceFiles();
-
-		let sourceFile = sourceFiles.filter(s => {
-			return (s.fileName === filename);
-		})[0];
-
+	parse(): DeclaredNamespace {
 		let declarationMap = new DeclaredNamespace("__GLOBAL__");
 
-		this.addSyntaxErrors(sourceFile.fileName, declarationMap);
+		this.addSyntaxErrors(this.sourceFile.fileName, declarationMap);
 
-		ts.forEachChild(sourceFile, this.visit(declarationMap, checker));
+		ts.forEachChild(this.sourceFile, this.visit(declarationMap));
 
 		return declarationMap;
 	}
 
-	private visit(declarationMap: DeclaredNamespace, checker: ts.TypeChecker) {
+	private visit(declarationMap: DeclaredNamespace) {
 		let dis = this;
 
 		return function(node: any) {
@@ -49,7 +50,7 @@ export default class DeclarationFileParser {
 						declarationMap
 					);
 
-					ts.forEachChild(node, dis.visit(declaredNamespace, checker));
+					ts.forEachChild(node, dis.visit(declaredNamespace));
 					break;
 
 				case ts.SyntaxKind.FunctionDeclaration:
@@ -63,8 +64,7 @@ export default class DeclarationFileParser {
 				case ts.SyntaxKind.InterfaceDeclaration:
 					dis.astNodesHandler.addInterfaceDeclaration(
 						node as ts.InterfaceDeclaration,
-						declarationMap as AddInterface,
-						checker.getSymbolAtLocation(node.name)
+						declarationMap as AddInterface
 					);
 
 					break;
@@ -78,7 +78,7 @@ export default class DeclarationFileParser {
 					break;
 
 				default:
-					ts.forEachChild(node, dis.visit(declarationMap, checker));
+					ts.forEachChild(node, dis.visit(declarationMap));
 			}
 		}
 	}

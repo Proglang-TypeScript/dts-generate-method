@@ -36,6 +36,14 @@ interface SimplifiedPropertyDeclaration {
 }
 
 export class ASTNodesHandler {
+	private mapSymbolInterfaces: Map<ts.Symbol, DeclaredInterface> = new Map();
+
+	private tsChecker: ts.TypeChecker;
+
+	constructor(tsChecker: ts.TypeChecker) {
+		this.tsChecker = tsChecker;
+	}
+
 	addNamespace(node: ts.ModuleDeclaration, declarationMap: DeclaredNamespace): DeclaredNamespace {
 		let namespaceName: string = node.name.text;
 
@@ -47,16 +55,23 @@ export class ASTNodesHandler {
 
 	addFunctionDeclaration(node: SimplifiedFunctionDeclaration, parentDeclarationObject: AddFunction): DeclaredFunction {
 		let declaredFunction = this.getDeclaredFunction(node);
-
 		parentDeclarationObject.addFunction(declaredFunction);
 
 		return declaredFunction;
 	}
 
-	addInterfaceDeclaration(node: SimplifiedInterfaceDeclaration, parentDeclarationObject: AddInterface, symbol: ts.Symbol | undefined) {
-		let declaredInterface = this.getDeclaredInterface(node);
-
+	addInterfaceDeclaration(node: SimplifiedInterfaceDeclaration, parentDeclarationObject: AddInterface) {
+		const declaredInterface = this.getDeclaredInterface(node);
 		parentDeclarationObject.addInterface(declaredInterface);
+
+		const symbol = this.tsChecker.getSymbolAtLocation(node.name as ts.Node);
+		if (symbol !== undefined) {
+			symbol.declarations.forEach(d => {
+				if (d.kind === ts.SyntaxKind.InterfaceDeclaration) {
+					this.mapSymbolInterfaces.set(symbol, declaredInterface);
+				}
+			});
+		}
 
 		return declaredInterface;
 	}
@@ -83,8 +98,6 @@ export class ASTNodesHandler {
 
 		if (node.modifiers) {
 			node.modifiers.forEach(m => {
-				const modifierNode = m as ts.Modifier;
-
 				declaredFunction.addModifier(m.getText());
 			});
 		}
@@ -208,6 +221,8 @@ export class ASTNodesHandler {
 
 				case ts.SyntaxKind.TypeReference:
 					const typeReferenceNode = type as ts.TypeReferenceNode;
+
+					
 
 					return new DeclaredPropertyTypePrimitiveKeyword(typeReferenceNode.getText());
 			}

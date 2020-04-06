@@ -2,7 +2,7 @@
 
 import  DeclarationFileParser from './parser/DeclarationFileParser';
 import commandLineArgs from 'command-line-args';
-import * as fs from 'fs';
+import fs from 'fs';
 
 const optionDefinitions = [
     { name: 'input-declaration-file', alias: 'i', type: String, defaultValue: null },
@@ -11,8 +11,8 @@ const optionDefinitions = [
 
 let options = commandLineArgs(optionDefinitions);
 
-let parser = new DeclarationFileParser();
-let declarationMap = parser.parse(options['input-declaration-file']);
+let parser = new DeclarationFileParser(options['input-declaration-file']);
+let declarationMap = parser.parse();
 
 const content = JSON.stringify(declarationMap, null, '\t');
 if (options['output-file'] === '') {

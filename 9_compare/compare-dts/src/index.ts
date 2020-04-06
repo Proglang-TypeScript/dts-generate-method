@@ -11,13 +11,12 @@ const optionDefinitions = [
 
 let options = commandLineArgs(optionDefinitions);
 
-const parser = new DeclarationFileParser();
 const comparator = new Comparator();
 
 try {
 	const resultComparation = comparator.compare(
-		parser.parse(options['definitely-typed-file']),
-		parser.parse(options['generated-file'])
+		new DeclarationFileParser(options['definitely-typed-file']).parse(),
+		new DeclarationFileParser(options['generated-file']).parse()
 	);
 
 	console.log(JSON.stringify(resultComparation, null, 4));

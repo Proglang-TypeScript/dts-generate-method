@@ -7,8 +7,6 @@ import DeclarationFileParser from '../src/parser/DeclarationFileParser';
 import { DeclaredProperty } from '../src/parser/model/DeclaredProperty';
 import { DeclaredPropertyTypePrimitiveKeyword } from '../src/parser/model/declared-property-types/DeclaredPropertyTypePrimitiveKeyword';
 
-const parser = new DeclarationFileParser();
-
 describe('Comparator', () => {
 	describe('templates', () => {
 		it('should return no differences for same class', () => {
@@ -16,8 +14,8 @@ describe('Comparator', () => {
 
 			const comparator = new Comparator();
 			expect(comparator.compare(
-				parser.parse(declarationFile),
-				parser.parse(declarationFile)
+				new DeclarationFileParser(declarationFile).parse(),
+				new DeclarationFileParser(declarationFile).parse()
 			)).toHaveLength(0);
 		});
 	});
@@ -25,8 +23,8 @@ describe('Comparator', () => {
 	describe('methods', () => {
 		describe('parameters', () => {
 			it('should detect different types for the same parameter in the constructor', () => {
-				let parsedClassExpected = parser.parse("tests/files/comparator-module-class/constructor/parameters/one-class.d.ts");
-				let parsedClassActual = parser.parse("tests/files/comparator-module-class/constructor/parameters/one-class-with-only-one-different-constructor-parameter-type.d.ts");
+				let parsedClassExpected = new DeclarationFileParser("tests/files/comparator-module-class/constructor/parameters/one-class.d.ts").parse();
+				let parsedClassActual = new DeclarationFileParser("tests/files/comparator-module-class/constructor/parameters/one-class-with-only-one-different-constructor-parameter-type.d.ts").parse();
 
 				const comparator = new Comparator();
 				expect(comparator.compare(parsedClassExpected, parsedClassActual))
@@ -51,8 +49,8 @@ describe('Comparator', () => {
 			});
 
 			it('should detect different types for the same parameter', () => {
-				let parsedClassExpected = parser.parse("tests/files/comparator-module-class/method/parameters/one-class-one-method.d.ts");
-				let parsedClassActual = parser.parse("tests/files/comparator-module-class/method/parameters/one-class-one-method-different-parameter.d.ts");
+				let parsedClassExpected = new DeclarationFileParser("tests/files/comparator-module-class/method/parameters/one-class-one-method.d.ts").parse();
+				let parsedClassActual = new DeclarationFileParser("tests/files/comparator-module-class/method/parameters/one-class-one-method-different-parameter.d.ts").parse();
 
 				const comparator = new Comparator();
 				expect(comparator.compare(parsedClassExpected, parsedClassActual))
@@ -77,16 +75,16 @@ describe('Comparator', () => {
 			});
 
 			it('should ignore differences in the name for the same parameter', () => {
-				let parsedClassExpected = parser.parse("tests/files/comparator-module-class/method/parameters/one-class-one-method.d.ts");
-				let parsedClassActual = parser.parse("tests/files/comparator-module-class/method/parameters/one-class-one-method-same-parameter-different-name.d.ts");
+				let parsedClassExpected = new DeclarationFileParser("tests/files/comparator-module-class/method/parameters/one-class-one-method.d.ts").parse();
+				let parsedClassActual = new DeclarationFileParser("tests/files/comparator-module-class/method/parameters/one-class-one-method-same-parameter-different-name.d.ts").parse();
 
 				const comparator = new Comparator();
 				expect(comparator.compare(parsedClassExpected, parsedClassActual)).toHaveLength(0);
 			});
 
 			it('should detect missing parameters', () => {
-				const parsedClassExpected = parser.parse("tests/files/comparator-module-class/method/parameters/one-class-one-method.d.ts");
-				const parsedClassActual = parser.parse("tests/files/comparator-module-class/method/parameters/one-class-one-method-missing-parameter.d.ts");
+				const parsedClassExpected = new DeclarationFileParser("tests/files/comparator-module-class/method/parameters/one-class-one-method.d.ts").parse();
+				const parsedClassActual = new DeclarationFileParser("tests/files/comparator-module-class/method/parameters/one-class-one-method-missing-parameter.d.ts").parse();
 
 				const comparator = new Comparator();
 				const result = comparator.compare(parsedClassExpected, parsedClassActual);
@@ -104,8 +102,8 @@ describe('Comparator', () => {
 			});
 
 			it('should detect extra parameters', () => {
-				const parsedClassExpected = parser.parse("tests/files/comparator-module-class/method/parameters/one-class-one-method.d.ts");
-				const parsedClassActual = parser.parse("tests/files/comparator-module-class/method/parameters/one-class-one-method-extra-parameter.d.ts");
+				const parsedClassExpected = new DeclarationFileParser("tests/files/comparator-module-class/method/parameters/one-class-one-method.d.ts").parse();
+				const parsedClassActual = new DeclarationFileParser("tests/files/comparator-module-class/method/parameters/one-class-one-method-extra-parameter.d.ts").parse();
 
 				const comparator = new Comparator();
 				const result = comparator.compare(parsedClassExpected, parsedClassActual);
@@ -128,8 +126,8 @@ describe('Comparator', () => {
 
 	describe('interfaces', () => {
 		it('should detect differences in the types of the common properties', () => {
-			let parsedClassExpected = parser.parse("tests/files/comparator-module-class/interfaces/one-class.d.ts");
-			let parsedClassActual = parser.parse("tests/files/comparator-module-class/interfaces/one-class-with-different-constructor-parameter-type.d.ts");
+			let parsedClassExpected = new DeclarationFileParser("tests/files/comparator-module-class/interfaces/one-class.d.ts").parse();
+			let parsedClassActual = new DeclarationFileParser("tests/files/comparator-module-class/interfaces/one-class-with-different-constructor-parameter-type.d.ts").parse();
 
 			const comparator = new Comparator();
 			let result = comparator.compare(parsedClassExpected, parsedClassActual);
@@ -181,8 +179,8 @@ describe('Comparator', () => {
 		});
 
 		it('should detect missing properties of the interface', () => {
-			const parsedClassExpected = parser.parse("tests/files/comparator-module-class/interfaces/one-class.d.ts");
-			const parsedClassActual = parser.parse("tests/files/comparator-module-class/interfaces/one-class-missing-properties.d.ts");
+			const parsedClassExpected = new DeclarationFileParser("tests/files/comparator-module-class/interfaces/one-class.d.ts").parse();
+			const parsedClassActual = new DeclarationFileParser("tests/files/comparator-module-class/interfaces/one-class-missing-properties.d.ts").parse();
 
 			const comparator = new Comparator();
 			const result = comparator.compare(parsedClassExpected, parsedClassActual);
@@ -215,8 +213,8 @@ describe('Comparator', () => {
 		});
 
 		it('should detect extra properties', () => {
-			const parsedClassExpected = parser.parse("tests/files/comparator-module-class/interfaces/one-class.d.ts");
-			const parsedClassActual = parser.parse("tests/files/comparator-module-class/interfaces/one-class-extra-properties.d.ts");
+			const parsedClassExpected = new DeclarationFileParser("tests/files/comparator-module-class/interfaces/one-class.d.ts").parse();
+			const parsedClassActual = new DeclarationFileParser("tests/files/comparator-module-class/interfaces/one-class-extra-properties.d.ts").parse();
 
 			const comparator = new Comparator();
 			const result = comparator.compare(parsedClassExpected, parsedClassActual);
@@ -249,8 +247,8 @@ describe('Comparator', () => {
 		});
 
 		it.skip('should detect be able to handle recursively nested Interfaces', () => {
-			const parsedClassExpected = parser.parse("tests/files/comparator-module-class/interfaces/one-class.d.ts");
-			const parsedClassActual = parser.parse("tests/files/comparator-module-class/interfaces/one-class-nested-interfaces.d.ts");
+			const parsedClassExpected = new DeclarationFileParser("tests/files/comparator-module-class/interfaces/one-class.d.ts").parse();
+			const parsedClassActual = new DeclarationFileParser("tests/files/comparator-module-class/interfaces/one-class-nested-interfaces.d.ts").parse();
 
 			const comparator = new Comparator();
 			const result = comparator.compare(parsedClassExpected, parsedClassActual);
