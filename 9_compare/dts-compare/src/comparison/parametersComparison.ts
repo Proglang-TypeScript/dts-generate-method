@@ -59,6 +59,10 @@ export class ParametersComparison implements Comparison {
 	}
 
 	private areDifferent(parameterExpected: DeclaredProperty, parameterActual: DeclaredProperty) {
+		if (parameterExpected.type instanceof DeclaredPropertyTypeInterface || parameterActual.type instanceof DeclaredPropertyTypeInterface) {
+			return false;
+		}
+
 		return this.serialize(parameterExpected) !== this.serialize(parameterActual);
 	}
 
