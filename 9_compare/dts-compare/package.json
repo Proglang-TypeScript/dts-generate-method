@@ -1,14 +1,14 @@
 {
-  "name": "compare-dts",
+  "name": "dts-compare",
   "version": "1.0.0",
   "description": "Compares 2 parsed typescript declaration files",
   "bin": {
-    "compare-dts": "dist/index.js",
-    "parse-dts": "dist/parse.js"
+    "dts-compare": "dist/index.js",
+    "dts-parse": "dist/parse.js"
   },
   "scripts": {
-    "compare": "npm run build && compare-dts",
-    "parse": "npm run build && parse-dts",
+    "compare": "npm run build && dts-compare",
+    "parse": "npm run build && dts-parse",
     "prebuild": "rm -rf dist",
     "build": "npx tsc",
     "postbuild": "npm link",

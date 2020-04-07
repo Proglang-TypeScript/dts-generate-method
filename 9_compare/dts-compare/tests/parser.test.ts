@@ -34,7 +34,7 @@ describe('Parser', () => {
 			);
 		});
 	
-		it.skip('should reference to the declared interface when the interface is not a literal', () => {
+		it('should reference to the declared interface when the interface is not a literal', () => {
 			const parsedFile = new DeclarationFileParser("tests/files/parser/interfaces/declared-interface.d.ts")
 				.parse();
 

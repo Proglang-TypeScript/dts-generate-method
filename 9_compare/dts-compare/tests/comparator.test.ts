@@ -246,7 +246,7 @@ describe('Comparator', () => {
 				));
 		});
 
-		it.skip('should detect be able to handle recursively nested Interfaces', () => {
+		it('should detect be able to handle recursively nested Interfaces', () => {
 			const parsedClassExpected = new DeclarationFileParser("tests/files/comparator-module-class/interfaces/one-class.d.ts").parse();
 			const parsedClassActual = new DeclarationFileParser("tests/files/comparator-module-class/interfaces/one-class-nested-interfaces.d.ts").parse();
 

@@ -15,7 +15,6 @@ import { DeclaredPropertyTypeLiterals } from './model/declared-property-types/De
 import { DeclaredPropertyArrayType } from './model/declared-property-types/DeclaredPropertyArrayType';
 import { AddClass } from './AddClass';
 import { DeclaredClass } from './model/DeclaredClass';
-import { DeclaredPropertyTypeReferenceType } from './model/declared-property-types/DeclaredPropertyTypeReferenceType';
 
 interface SimplifiedFunctionDeclaration {
 	name?: ts.Identifier | ts.StringLiteral | ts.NumericLiteral | ts.PropertyName | undefined;
@@ -36,7 +35,7 @@ interface SimplifiedPropertyDeclaration {
 }
 
 export class ASTNodesHandler {
-	private mapSymbolInterfaces: Map<ts.Symbol, DeclaredInterface> = new Map();
+	private mapSymbolInterfaces: Map<string, DeclaredInterface> = new Map();
 
 	private tsChecker: ts.TypeChecker;
 
@@ -63,15 +62,6 @@ export class ASTNodesHandler {
 	addInterfaceDeclaration(node: SimplifiedInterfaceDeclaration, parentDeclarationObject: AddInterface) {
 		const declaredInterface = this.getDeclaredInterface(node);
 		parentDeclarationObject.addInterface(declaredInterface);
-
-		const symbol = this.tsChecker.getSymbolAtLocation(node.name as ts.Node);
-		if (symbol !== undefined) {
-			symbol.declarations.forEach(d => {
-				if (d.kind === ts.SyntaxKind.InterfaceDeclaration) {
-					this.mapSymbolInterfaces.set(symbol, declaredInterface);
-				}
-			});
-		}
 
 		return declaredInterface;
 	}
@@ -127,6 +117,15 @@ export class ASTNodesHandler {
 					break;
 			}
 		});
+
+		const symbol = this.tsChecker.getSymbolAtLocation(node.name as ts.Node);
+		if (symbol !== undefined) {
+			symbol.declarations.forEach(d => {
+				if (d.kind === ts.SyntaxKind.InterfaceDeclaration) {
+					this.mapSymbolInterfaces.set(symbol.escapedName.toString(), declaredInterface);
+				}
+			});
+		}
 
 		return declaredInterface;
 	}
@@ -222,9 +221,24 @@ export class ASTNodesHandler {
 				case ts.SyntaxKind.TypeReference:
 					const typeReferenceNode = type as ts.TypeReferenceNode;
 
-					
+					const tsSymbol = this.tsChecker.getSymbolAtLocation(typeReferenceNode.typeName);
+					if (tsSymbol !== undefined) {
+						let interfaceForSymbol = this.mapSymbolInterfaces.get(tsSymbol.escapedName.toString());
+						if (interfaceForSymbol === undefined) {
+							let interfaceDeclaration = tsSymbol.declarations.filter(d => {
+								return (d.kind === ts.SyntaxKind.InterfaceDeclaration);
+							})[0] as ts.InterfaceDeclaration;
 
-					return new DeclaredPropertyTypePrimitiveKeyword(typeReferenceNode.getText());
+							if (interfaceDeclaration) {
+								const declaredInterface = this.getDeclaredInterface(interfaceDeclaration as SimplifiedInterfaceDeclaration);
+								return new DeclaredPropertyTypeInterface(declaredInterface);
+							}
+						} else {
+							return new DeclaredPropertyTypeInterface(interfaceForSymbol);
+						}
+					}
+
+					break;
 			}
 		}
 

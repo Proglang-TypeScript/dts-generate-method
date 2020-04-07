@@ -5,6 +5,7 @@ import ParameterTypeDifference from "../difference/ParameterTypeDifference";
 import { DeclaredProperty } from "../parser/model/DeclaredProperty";
 import { DeclaredInterface } from "../parser/model/DeclaredInterface";
 import { InterfaceComparison } from "./interfaceComparison";
+import { DeclaredPropertyTypeInterface } from "../parser/model/declared-property-types/DeclaredPropertyTypeInterface";
 
 export class ParametersComparison implements Comparison {
 	private parameterExpected: DeclaredProperty;
@@ -50,35 +51,11 @@ export class ParametersComparison implements Comparison {
 	}
 
 	private getInterface(parameter: DeclaredProperty, parsedFile: DeclaredNamespace) : DeclaredInterface {
-		if (parameter.type.kind !== "primitive_keyword") {
+		if (!(parameter.type instanceof DeclaredPropertyTypeInterface)) {
 			return new DeclaredInterface("");
 		}
 
-		let interfaceName = parameter.type.value;
-
-		return this.searchInterface(interfaceName, parsedFile);
-	}
-
-	private searchInterface(interfaceName: string, parsedFile: DeclaredNamespace) : DeclaredInterface {
-		let i = new DeclaredInterface("");
-
-		let interfaceNameSplittedByNamespaceSeparator = interfaceName.split(".");
-		let interfaceNameWithoutNamespaces = interfaceNameSplittedByNamespaceSeparator[interfaceNameSplittedByNamespaceSeparator.length - 1];
-		let interfaceNamespacesPath = interfaceNameSplittedByNamespaceSeparator.splice(0, interfaceNameSplittedByNamespaceSeparator.length - 1);
-
-		let currentNamespace = parsedFile;
-		interfaceNamespacesPath.forEach(namespace => {
-			currentNamespace = parsedFile.namespaces[namespace] || currentNamespace;
-		});
-
-		currentNamespace.interfaces.forEach(v => {
-			if (v.name === interfaceNameWithoutNamespaces) {
-				i = v;
-				return;
-			}
-		});
-
-		return i;
+		return parameter.type.value;
 	}
 
 	private areDifferent(parameterExpected: DeclaredProperty, parameterActual: DeclaredProperty) {
