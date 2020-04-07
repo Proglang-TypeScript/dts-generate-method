@@ -1,20 +1,20 @@
-FROM node:10-alpine AS builder
+FROM node:lts-alpine AS builder
+
+RUN apk update
 
 WORKDIR /usr/local/app
+COPY package*.json ./
+RUN npm install
+
 COPY . .
 
-RUN apk update && \
-	apk add git
-
-RUN npm install npm@latest -g && \
-	npm install -g typescript && \
-	npm install
-
-RUN npm run test
+RUN npm run test && \
+	npm run build && \
+	npm prune --production
 
 # -------------------------------------------------
 
-FROM node:10-alpine
+FROM node:lts-alpine
 
 RUN apk update
 
@@ -26,4 +26,4 @@ COPY --from=builder /usr/local/app/package.json ./package.json
 
 RUN npm link
 
-ENTRYPOINT [ "compare-dts" ]
+ENTRYPOINT [ "dts-compare" ]
