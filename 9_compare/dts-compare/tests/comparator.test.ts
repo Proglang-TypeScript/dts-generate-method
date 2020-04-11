@@ -266,5 +266,14 @@ describe('Comparator', () => {
 					)
 				));
 		});
+
+		it('should ignore differences in the names of the same Interface', () => {
+			const parsedClassExpected = new DeclarationFileParser("tests/files/comparator-module-class/interfaces/one-class.d.ts").parse();
+			const parsedClassActual = new DeclarationFileParser("tests/files/comparator-module-class/interfaces/one-class-different-interface-name.d.ts").parse();
+
+			const comparator = new Comparator();
+			const result = comparator.compare(parsedClassExpected, parsedClassActual);
+			expect(result).toHaveLength(0);
+		});
 	});
 });

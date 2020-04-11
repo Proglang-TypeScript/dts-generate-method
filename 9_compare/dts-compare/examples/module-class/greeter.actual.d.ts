@@ -1,13 +1,13 @@
 export default Greeter;
 
 declare class Greeter {
-	constructor(message: string);
-	showGreeting(p: Greeter.Person, extraParameter: number[]): void;
+	constructor(message: number);
+	showGreeting(p: Greeter.Personnnn, extraParameter: number[]): void;
 	logMessage(): void;
 }
 
 declare namespace Greeter {
-	export interface Person {
+	export interface Personnnn {
 		name: string;
 		lastName: string;
 	}
