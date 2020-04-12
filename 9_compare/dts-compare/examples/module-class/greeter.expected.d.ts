@@ -1,5 +1,7 @@
 export default Greeter;
 
+declare function Greeter(a: string): number;
+
 declare class Greeter {
 	constructor(message: string | string[]);
 	showGreeting(p: Greeter.Person): void;

@@ -4,7 +4,6 @@ import commandLineArgs from 'command-line-args';
 import Comparator from './Comparator';
 import DeclarationFileParser from './parser/DeclarationFileParser';
 import fs from 'fs';
-import Difference from './difference/Difference';
 
 const optionDefinitions = [
 	{ name: 'actual-declaration-file', alias: 'a', type: String, defaultValue: '' },
@@ -22,23 +21,7 @@ try {
 		new DeclarationFileParser(options['actual-declaration-file']).parse()
 	);
 
-	const differencesBySeverity: { [k: string]: Difference[] } = {};
-	resultComparison.forEach(d => {
-		const code = d.getSeverity().getCode();
-
-		if (!differencesBySeverity[code]) {
-			differencesBySeverity[code] = [];
-		}
-
-		differencesBySeverity[code]?.push(d);
-	});
-
-	const output = {
-		"score": resultComparison.map(r => r.getSeverity().getScore()).reduce((a, b) => a + b, 0),
-		"differences": differencesBySeverity
-	};
-
-	const content = JSON.stringify(output, null, 4);
+	const content = JSON.stringify(resultComparison, null, 4);
 
 	if (options['output-file'] === '') {
 		console.log(content);
@@ -50,5 +33,5 @@ try {
 	}
 } catch (error) {
 	console.log("Error: " + JSON.stringify(error));
-	process.exit(1);	
+	process.exit(1);
 }

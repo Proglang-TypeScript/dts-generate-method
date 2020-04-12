@@ -3,37 +3,78 @@ import { DeclaredClass } from "./parser/model/DeclaredClass";
 import { DeclaredFunction } from "./parser/model/DeclaredFunction";
 import { MethodParametersComparison } from "./comparison/methodParametersComparison";
 import { DeclaredNamespace } from "./parser/model/DeclaredNamespace";
+import TemplateDifference from "./difference/TemplateDifference";
 
 export default class Comparator {
 	compare(parsedExpectedFile: DeclaredNamespace, parsedActualFile: DeclaredNamespace) : Difference[] {
 		let moduleTemplateExpectedFile = this.getModuleTemplate(parsedExpectedFile);
 		let moduleTemplateActualFile = this.getModuleTemplate(parsedActualFile);
 	
-		let exportedClassExpected = this.getClassByName(
-			parsedExpectedFile,
-			this.getNameExportedClass(parsedExpectedFile)
-		);
-
-		let exportedClassActual = this.getClassByName(
-			parsedActualFile,
-			this.getNameExportedClass(parsedActualFile)
-		);
-
 		let differences: Difference[] = [];
-		
-		differences = differences.concat(
-			this.compareConstructorParameters(exportedClassExpected, exportedClassActual, parsedExpectedFile, parsedActualFile),
-			this.compareMethodsParameters(exportedClassExpected, exportedClassActual, parsedExpectedFile, parsedActualFile)
-		);
+
+		if (moduleTemplateExpectedFile !== moduleTemplateActualFile) {
+			differences = differences.concat(new TemplateDifference(moduleTemplateExpectedFile, moduleTemplateActualFile));
+		} else {
+			differences = differences.concat(this.compareTemplate(
+				parsedExpectedFile,
+				parsedActualFile,
+				moduleTemplateExpectedFile
+			));
+		}
 
 		return differences;
 	}
 
-	private getModuleTemplate(parsedDeclarationFile: DeclaredNamespace) {
-		return "module-class";
+	private compareTemplate(parsedExpectedFile: DeclaredNamespace, parsedActualFile: DeclaredNamespace, template: string): Difference[] {
+		const compareFunctions: { [k: string] : (a: DeclaredNamespace, b: DeclaredNamespace) => Difference[] } = {
+			'module-class': this.compareTemplateModuleClass.bind(this)
+		};
+
+		if (template in compareFunctions) {
+			return compareFunctions[template](parsedExpectedFile, parsedActualFile);
+		} else {
+			return [];
+		}
 	}
 
-	private getNameExportedClass(parsedDeclarationFile: DeclaredNamespace): string {
+	private compareTemplateModuleClass(parsedExpectedFile: DeclaredNamespace, parsedActualFile: DeclaredNamespace): Difference[] {
+		let exportedClassExpected = this.getClassByName(
+			parsedExpectedFile,
+			this.getFirstExportAssignment(parsedExpectedFile)
+		);
+
+		let exportedClassActual = this.getClassByName(
+			parsedActualFile,
+			this.getFirstExportAssignment(parsedActualFile)
+		);
+
+		let differences: Difference[] = [];
+		return differences.concat(
+			this.compareConstructorParameters(exportedClassExpected, exportedClassActual, parsedExpectedFile, parsedActualFile),
+			this.compareMethodsParameters(exportedClassExpected, exportedClassActual, parsedExpectedFile, parsedActualFile)
+		);
+	}
+
+	private getModuleTemplate(parsedDeclarationFile: DeclaredNamespace) {
+		if (parsedDeclarationFile.exportAssignments.length > 1) {
+			return "module";
+		}
+
+		try {
+			const c = this.getClassByName(
+				parsedDeclarationFile,
+				this.getFirstExportAssignment(parsedDeclarationFile)
+			);
+
+			if (c) {
+				return "module-class";
+			}
+		} catch (error) {}
+
+		return "module-function";
+	}
+
+	private getFirstExportAssignment(parsedDeclarationFile: DeclaredNamespace): string {
 		if (parsedDeclarationFile.exportAssignments.length === 0) {
 			return "";
 		}

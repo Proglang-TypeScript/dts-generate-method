@@ -1,14 +1,33 @@
 import Comparator from '../src/Comparator';
-import ParameterTypeDifference from '../src/difference/ParameterTypeDifference';
+import ParameterTypeEmptyIntersectionDifference from '../src/difference/ParameterTypeEmptyIntersectionDifference';
 import ParameterMissingDifference from '../src/difference/ParameterMissingDifference';
 import ParameterExtraDifference from '../src/difference/ParameterExtraDifference';
 
 import DeclarationFileParser from '../src/parser/DeclarationFileParser';
 import { DeclaredProperty } from '../src/parser/model/DeclaredProperty';
 import { DeclaredPropertyTypePrimitiveKeyword } from '../src/parser/model/declared-property-types/DeclaredPropertyTypePrimitiveKeyword';
+import ParameterTypeNonEmptyIntersectionDifference from '../src/difference/ParameterTypeNonEmptyIntersectionDifference';
+import TemplateDifference from '../src/difference/TemplateDifference';
+import { DeclaredPropertyTypeUnionType } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeUnionType';
 
 describe('Comparator', () => {
 	describe('templates', () => {
+		it('should return one difference for different modules', () => {
+			let parsedExpectedFile = new DeclarationFileParser("tests/files/comparator-module-class/constructor/parameters/one-class.d.ts").parse();
+			let parsedActualFile = new DeclarationFileParser("tests/files/comparator-module-function/myfunction.d.ts").parse();
+
+			const comparator = new Comparator();
+			const comparison = comparator.compare(
+				parsedExpectedFile,
+				parsedActualFile
+			);
+
+			expect(comparison).toHaveLength(1);
+			expect(comparison).toContainEqual(
+				new TemplateDifference("module-class", "module-function")
+			);
+		});
+
 		it('should return no differences for same class', () => {
 			const declarationFile = "tests/files/comparator-module-class/one-class.d.ts";
 
@@ -28,7 +47,7 @@ describe('Comparator', () => {
 
 				const comparator = new Comparator();
 				expect(comparator.compare(parsedClassExpected, parsedClassActual))
-					.toContainEqual(new ParameterTypeDifference(
+					.toContainEqual(new ParameterTypeEmptyIntersectionDifference(
 						{
 							name: "a",
 							type: {
@@ -54,7 +73,7 @@ describe('Comparator', () => {
 
 				const comparator = new Comparator();
 				expect(comparator.compare(parsedClassExpected, parsedClassActual))
-					.toContainEqual(new ParameterTypeDifference(
+					.toContainEqual(new ParameterTypeEmptyIntersectionDifference(
 						{
 							name: "a",
 							type: {
@@ -71,6 +90,61 @@ describe('Comparator', () => {
 							},
 							optional: false
 						}
+					));
+			});
+
+			it('should detect different types for the same parameter as a empty intersection', () => {
+				let parsedClassExpected = new DeclarationFileParser("tests/files/comparator-module-class/method/parameters/one-class-one-method-union-type.d.ts").parse();
+				let parsedClassActual = new DeclarationFileParser("tests/files/comparator-module-class/method/parameters/one-class-one-method-different-type-union-empty-intersection.d.ts").parse();
+				
+				const comparator = new Comparator();
+				expect(comparator.compare(parsedClassExpected, parsedClassActual))
+					.toContainEqual(new ParameterTypeEmptyIntersectionDifference(
+						new DeclaredProperty(
+							"a",
+							new DeclaredPropertyTypeUnionType([
+								new DeclaredPropertyTypePrimitiveKeyword("string"),
+								new DeclaredPropertyTypePrimitiveKeyword("number"),
+							]), false
+						),
+						new DeclaredProperty("a", new DeclaredPropertyTypePrimitiveKeyword("boolean"), false)
+					));
+			});
+
+			it('should detect different types for the same parameter as a non empty intersection', () => {
+				let parsedClassExpected = new DeclarationFileParser("tests/files/comparator-module-class/method/parameters/one-class-one-method-union-type.d.ts").parse();
+				let parsedClassActual = new DeclarationFileParser("tests/files/comparator-module-class/method/parameters/one-class-one-method-different-type-union.d.ts").parse();
+
+				const comparator = new Comparator();
+				expect(comparator.compare(parsedClassExpected, parsedClassActual))
+					.toContainEqual(new ParameterTypeNonEmptyIntersectionDifference(
+						new DeclaredProperty(
+							"a",
+							new DeclaredPropertyTypeUnionType([
+								new DeclaredPropertyTypePrimitiveKeyword("string"),
+								new DeclaredPropertyTypePrimitiveKeyword("number"),
+							]), false
+						),
+						new DeclaredProperty("a", new DeclaredPropertyTypePrimitiveKeyword("string"), false)
+					));
+
+				expect(comparator.compare(parsedClassExpected, parsedClassActual))
+					.toContainEqual(new ParameterTypeNonEmptyIntersectionDifference(
+						new DeclaredProperty(
+							"a",
+							new DeclaredPropertyTypeUnionType([
+								new DeclaredPropertyTypePrimitiveKeyword("string"),
+								new DeclaredPropertyTypePrimitiveKeyword("number"),
+								new DeclaredPropertyTypePrimitiveKeyword("boolean"),
+							]), false
+						),
+						new DeclaredProperty(
+							"a",
+							new DeclaredPropertyTypeUnionType([
+								new DeclaredPropertyTypePrimitiveKeyword("string"),
+								new DeclaredPropertyTypePrimitiveKeyword("boolean"),
+							]), false
+						),
 					));
 			});
 
@@ -132,7 +206,7 @@ describe('Comparator', () => {
 			const comparator = new Comparator();
 			let result = comparator.compare(parsedClassExpected, parsedClassActual);
 			expect(result)
-				.toContainEqual(new ParameterTypeDifference(
+				.toContainEqual(new ParameterTypeEmptyIntersectionDifference(
 					{
 						name: "a",
 						type: {
@@ -152,7 +226,7 @@ describe('Comparator', () => {
 				));
 			
 			expect(result)
-				.toContainEqual(new ParameterTypeDifference(
+				.toContainEqual(new ParameterTypeEmptyIntersectionDifference(
 					{
 						name: "c",
 						type: {
@@ -253,7 +327,7 @@ describe('Comparator', () => {
 			const comparator = new Comparator();
 			const result = comparator.compare(parsedClassExpected, parsedClassActual);
 			expect(result)
-				.toContainEqual(new ParameterTypeDifference(
+				.toContainEqual(new ParameterTypeEmptyIntersectionDifference(
 					new DeclaredProperty(
 						"b",
 						new DeclaredPropertyTypePrimitiveKeyword("number"),
