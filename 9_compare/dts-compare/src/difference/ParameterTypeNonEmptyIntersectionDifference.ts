@@ -5,7 +5,9 @@ export default class ParameterTypeNonEmptyIntersectionDifference implements Diff
 	private parameterExpected: DeclaredProperty;
 	private parameterActual: DeclaredProperty;
 
-	code = "type-non-empty-intersection";
+	static CODE = "type-non-empty-intersection"
+
+	code = ParameterTypeNonEmptyIntersectionDifference.CODE;
 
 	constructor(parameterExpected: DeclaredProperty, parameterActual: DeclaredProperty) {
 		this.parameterExpected = parameterExpected;

@@ -4,7 +4,9 @@ import { DeclaredProperty } from "../parser/model/DeclaredProperty";
 export default class ParameterExtraDifference implements Difference {
 	private parameterExtra: DeclaredProperty;
 
-	code = "extra-parameter";
+	static CODE = "extra-parameter";
+
+	code = ParameterExtraDifference.CODE;
 
 	constructor(parameterExtra: DeclaredProperty) {
 		this.parameterExtra = parameterExtra;

@@ -6,7 +6,7 @@ import { DeclaredNamespace } from "./parser/model/DeclaredNamespace";
 import TemplateDifference from "./difference/TemplateDifference";
 
 export default class Comparator {
-	compare(parsedExpectedFile: DeclaredNamespace, parsedActualFile: DeclaredNamespace) : Difference[] {
+	compare(parsedExpectedFile: DeclaredNamespace, parsedActualFile: DeclaredNamespace): ResultComparison {
 		let moduleTemplateExpectedFile = this.getModuleTemplate(parsedExpectedFile);
 		let moduleTemplateActualFile = this.getModuleTemplate(parsedActualFile);
 	
@@ -22,7 +22,10 @@ export default class Comparator {
 			));
 		}
 
-		return differences;
+		return {
+			template: moduleTemplateExpectedFile,
+			differences
+		};
 	}
 
 	private compareTemplate(parsedExpectedFile: DeclaredNamespace, parsedActualFile: DeclaredNamespace, template: string): Difference[] {
@@ -142,4 +145,9 @@ export default class Comparator {
 
 		return parsedClass.constructors[0];
 	}
+}
+
+export interface ResultComparison {
+	template: string;
+	differences: Difference[]
 }

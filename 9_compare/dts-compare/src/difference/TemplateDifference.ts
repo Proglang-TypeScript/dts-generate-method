@@ -4,7 +4,9 @@ export default class TemplateDifference implements Difference {
 	private templateExpected: string;
 	private templateActual: string;
 
-	code = "template-is-different";
+	static CODE = "template-is-different";
+
+	code = TemplateDifference.CODE;
 
 	constructor(templateExpected: string, templateActual: string) {
 		this.templateExpected = templateExpected;
