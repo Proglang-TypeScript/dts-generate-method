@@ -8,6 +8,7 @@ import Formatter from './formatters/Formatter';
 import JsonFormatter from './formatters/JsonFormatter';
 import CSVFormatter from './formatters/CSVFormatter';
 
+
 const optionDefinitions = [
 	{ name: 'actual-declaration-file', alias: 'a', type: String, defaultValue: '' },
 	{ name: 'expected-declaration-file', alias: 'e', type: String, defaultValue: '' },
@@ -44,6 +45,7 @@ try {
 		);
 	}
 } catch (error) {
-	console.log("Error: " + JSON.stringify(error));
+	console.error("Error: ");
+	console.error(error);
 	process.exit(1);
 }
