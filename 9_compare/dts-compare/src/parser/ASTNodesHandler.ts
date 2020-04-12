@@ -15,6 +15,7 @@ import { DeclaredPropertyTypeLiterals } from './model/declared-property-types/De
 import { DeclaredPropertyArrayType } from './model/declared-property-types/DeclaredPropertyArrayType';
 import { AddClass } from './AddClass';
 import { DeclaredClass } from './model/DeclaredClass';
+import { DeclaredPropertyTypeReferenceType } from './model/declared-property-types/DeclaredPropertyTypeReferenceType';
 
 interface SimplifiedFunctionDeclaration {
 	name?: ts.Identifier | ts.StringLiteral | ts.NumericLiteral | ts.PropertyName | undefined;
@@ -38,9 +39,11 @@ export class ASTNodesHandler {
 	private mapSymbolInterfaces: Map<string, DeclaredInterface> = new Map();
 
 	private tsChecker: ts.TypeChecker;
+	private sourceFile: ts.SourceFile;
 
-	constructor(tsChecker: ts.TypeChecker) {
+	constructor(tsChecker: ts.TypeChecker, sourceFile: ts.SourceFile) {
 		this.tsChecker = tsChecker;
+		this.sourceFile = sourceFile;
 	}
 
 	addNamespace(node: ts.ModuleDeclaration, declarationMap: DeclaredNamespace): DeclaredNamespace {
@@ -226,7 +229,10 @@ export class ASTNodesHandler {
 						let interfaceForSymbol = this.mapSymbolInterfaces.get(tsSymbol.escapedName.toString());
 						if (interfaceForSymbol === undefined) {
 							let interfaceDeclaration = tsSymbol.declarations.filter(d => {
-								return (d.kind === ts.SyntaxKind.InterfaceDeclaration);
+								return (
+									(d.kind === ts.SyntaxKind.InterfaceDeclaration) &&
+									(d.getSourceFile().fileName === this.sourceFile.fileName)
+								);
 							})[0] as ts.InterfaceDeclaration;
 
 							if (interfaceDeclaration) {
@@ -237,6 +243,8 @@ export class ASTNodesHandler {
 							return new DeclaredPropertyTypeInterface(interfaceForSymbol);
 						}
 					}
+
+					return new DeclaredPropertyTypeReferenceType(typeReferenceNode.getText());
 
 					break;
 			}

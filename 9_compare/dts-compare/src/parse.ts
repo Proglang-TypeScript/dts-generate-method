@@ -12,14 +12,21 @@ const optionDefinitions = [
 let options = commandLineArgs(optionDefinitions);
 
 let parser = new DeclarationFileParser(options['input-declaration-file']);
-let declarationMap = parser.parse();
 
-const content = JSON.stringify(declarationMap, null, '\t');
-if (options['output-file'] === '') {
-	console.log(content);
-} else {
-	fs.writeFileSync(
-		options['output-file'],
-		content
-	);
+try {
+	let declarationMap = parser.parse();
+
+	const content = JSON.stringify(declarationMap, null, '\t');
+	if (options['output-file'] === '') {
+		console.log(content);
+	} else {
+		fs.writeFileSync(
+			options['output-file'],
+			content
+		);
+	}
+} catch (error) {
+	console.error("Error: ");
+	// console.error(error);
+	process.exit(1);	
 }

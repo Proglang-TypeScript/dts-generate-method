@@ -17,10 +17,11 @@ export default class DeclarationFileParser {
 		this.program = ts.createProgram([fileName], {});
 		this.checker = this.program.getTypeChecker();
 
-		this.astNodesHandler = new ASTNodesHandler(this.checker);
 		this.sourceFile = this.program.getSourceFiles().filter(s => {
 			return (s.fileName === fileName);
 		})[0];
+
+		this.astNodesHandler = new ASTNodesHandler(this.checker, this.sourceFile);
 	}
 
 	parse(): DeclaredNamespace {
