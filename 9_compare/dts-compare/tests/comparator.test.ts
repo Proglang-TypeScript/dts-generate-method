@@ -8,8 +8,10 @@ import { DeclaredProperty } from '../src/parser/model/DeclaredProperty';
 import { DeclaredPropertyTypePrimitiveKeyword } from '../src/parser/model/declared-property-types/DeclaredPropertyTypePrimitiveKeyword';
 import ParameterTypeNonEmptyIntersectionDifference from '../src/difference/ParameterTypeNonEmptyIntersectionDifference';
 import TemplateDifference from '../src/difference/TemplateDifference';
+import FunctionMissingDifference from '../src/difference/FunctionMissingDifference';
 import { DeclaredPropertyTypeUnionType } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeUnionType';
 import { DeclaredPropertyTypeLiterals } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeLiterals';
+import { DeclaredFunction } from '../src/parser/model/DeclaredFunction';
 
 describe('Comparator', () => {
 	describe('templates', () => {
@@ -272,7 +274,18 @@ describe('Comparator', () => {
 			});
 		});
 
-		it.skip('should detect missing methods', () => {});
+		it('should detect missing methods', () => {
+			let parsedClassExpected = new DeclarationFileParser("tests/files/comparator-module-class/method/one-class.d.ts").parse();
+			let parsedClassActual = new DeclarationFileParser("tests/files/comparator-module-class/method/one-class-without-method.d.ts").parse();
+
+			const comparator = new Comparator();
+			const differences = comparator.compare(parsedClassExpected, parsedClassActual).differences;
+
+			const missingFunction = new DeclaredFunction("myMethod", "void")
+				.addParameter(new DeclaredProperty("a", new DeclaredPropertyTypePrimitiveKeyword("number"), false));
+
+			expect(differences).toContainEqual(new FunctionMissingDifference(missingFunction));
+		});
 	});
 
 	describe('interfaces', () => {

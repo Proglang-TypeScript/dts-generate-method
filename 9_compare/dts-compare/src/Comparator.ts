@@ -4,6 +4,7 @@ import { DeclaredFunction } from "./parser/model/DeclaredFunction";
 import { MethodParametersComparison } from "./comparison/methodParametersComparison";
 import { DeclaredNamespace } from "./parser/model/DeclaredNamespace";
 import TemplateDifference from "./difference/TemplateDifference";
+import { FunctionsComparison } from "./comparison/functionsComparison";
 
 export default class Comparator {
 	compare(parsedExpectedFile: DeclaredNamespace, parsedActualFile: DeclaredNamespace): ResultComparison {
@@ -53,8 +54,9 @@ export default class Comparator {
 
 		let differences: Difference[] = [];
 		return differences.concat(
-			this.compareConstructorParameters(exportedClassExpected, exportedClassActual, parsedExpectedFile, parsedActualFile),
-			this.compareMethodsParameters(exportedClassExpected, exportedClassActual, parsedExpectedFile, parsedActualFile)
+			this.compareClassConstructorParameters(exportedClassExpected, exportedClassActual, parsedExpectedFile, parsedActualFile),
+			this.compareClassMethodsParameters(exportedClassExpected, exportedClassActual, parsedExpectedFile, parsedActualFile),
+			this.compareClassMethods(exportedClassExpected, exportedClassActual, parsedExpectedFile, parsedActualFile)
 		);
 	}
 
@@ -102,7 +104,7 @@ export default class Comparator {
 		return classesWithName[0];
 	}
 
-	private compareConstructorParameters(
+	private compareClassConstructorParameters(
 		classExpected: DeclaredClass,
 		classActual: DeclaredClass,
 		parsedExpectedFile: DeclaredNamespace,
@@ -116,7 +118,7 @@ export default class Comparator {
 		).compare();
 	}
 
-	private compareMethodsParameters(
+	private compareClassMethodsParameters(
 		classExpected: DeclaredClass,
 		classActual: DeclaredClass,
 		parsedExpectedFile: DeclaredNamespace,
@@ -140,6 +142,21 @@ export default class Comparator {
 		});
 
 		return differences;
+	}
+
+	private compareClassMethods(
+		classExpected: DeclaredClass,
+		classActual: DeclaredClass,
+		parsedExpectedFile: DeclaredNamespace,
+		parsedActualFile: DeclaredNamespace
+	) : Difference[] {
+		
+		return new FunctionsComparison(
+			classExpected.methods,
+			classActual.methods,
+			parsedExpectedFile,
+			parsedActualFile
+		).compare();
 	}
 
 	private getConstructorFromClass(parsedClass: DeclaredClass) : DeclaredFunction {

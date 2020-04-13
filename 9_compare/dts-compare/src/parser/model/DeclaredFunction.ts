@@ -13,11 +13,13 @@ export class DeclaredFunction {
 		this.modifiers = [];
 	}
 
-	addParameter(p: DeclaredProperty) {
+	addParameter(p: DeclaredProperty): DeclaredFunction {
 		this.parameters.push(p);
+		return this;
 	}
 
-	addModifier(m: string) {
+	addModifier(m: string) : DeclaredFunction {
 		this.modifiers.push(m);
+		return this;
 	}
 }
