@@ -97,6 +97,13 @@ export class ParametersComparison implements Comparison {
 			}
 		}
 
+		if (this.parameterExpected.optional === true && this.parameterActual.type.value === "undefined") {
+			return new ParameterTypeNonEmptyIntersectionDifference(
+				this.parameterExpected,
+				this.parameterActual
+			);
+		}
+
 		return new ParameterTypeEmptyIntersectionDifference(
 			this.parameterExpected,
 			this.parameterActual

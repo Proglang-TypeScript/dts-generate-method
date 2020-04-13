@@ -116,7 +116,8 @@ describe('Comparator', () => {
 				let parsedClassActual = new DeclarationFileParser("tests/files/comparator-module-class/method/parameters/one-class-one-method-different-type-union.d.ts").parse();
 
 				const comparator = new Comparator();
-				expect(comparator.compare(parsedClassExpected, parsedClassActual).differences)
+				const differences = comparator.compare(parsedClassExpected, parsedClassActual).differences;
+				expect(differences)
 					.toContainEqual(new ParameterTypeNonEmptyIntersectionDifference(
 						new DeclaredProperty(
 							"a",
@@ -128,7 +129,7 @@ describe('Comparator', () => {
 						new DeclaredProperty("a", new DeclaredPropertyTypePrimitiveKeyword("string"), false)
 					));
 
-				expect(comparator.compare(parsedClassExpected, parsedClassActual).differences)
+				expect(differences)
 					.toContainEqual(new ParameterTypeNonEmptyIntersectionDifference(
 						new DeclaredProperty(
 							"a",
@@ -144,6 +145,20 @@ describe('Comparator', () => {
 								new DeclaredPropertyTypePrimitiveKeyword("string"),
 								new DeclaredPropertyTypePrimitiveKeyword("boolean"),
 							]), false
+						),
+					));
+
+				expect(differences)
+					.toContainEqual(new ParameterTypeNonEmptyIntersectionDifference(
+						new DeclaredProperty(
+							"a",
+							new DeclaredPropertyTypePrimitiveKeyword("string"),
+							true
+						),
+						new DeclaredProperty(
+							"a",
+							new DeclaredPropertyTypePrimitiveKeyword("undefined"),
+							false
 						),
 					));
 			});
