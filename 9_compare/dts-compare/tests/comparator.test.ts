@@ -20,7 +20,7 @@ describe('Comparator', () => {
 			const comparison = comparator.compare(
 				parsedExpectedFile,
 				parsedActualFile
-			);
+			).differences;
 
 			expect(comparison).toHaveLength(1);
 			expect(comparison).toContainEqual(
@@ -35,7 +35,7 @@ describe('Comparator', () => {
 			expect(comparator.compare(
 				new DeclarationFileParser(declarationFile).parse(),
 				new DeclarationFileParser(declarationFile).parse()
-			)).toHaveLength(0);
+			).differences).toHaveLength(0);
 		});
 	});
 
@@ -46,7 +46,7 @@ describe('Comparator', () => {
 				let parsedClassActual = new DeclarationFileParser("tests/files/comparator-module-class/constructor/parameters/one-class-with-only-one-different-constructor-parameter-type.d.ts").parse();
 
 				const comparator = new Comparator();
-				expect(comparator.compare(parsedClassExpected, parsedClassActual))
+				expect(comparator.compare(parsedClassExpected, parsedClassActual).differences)
 					.toContainEqual(new ParameterTypeEmptyIntersectionDifference(
 						{
 							name: "a",
@@ -72,7 +72,7 @@ describe('Comparator', () => {
 				let parsedClassActual = new DeclarationFileParser("tests/files/comparator-module-class/method/parameters/one-class-one-method-different-parameter.d.ts").parse();
 
 				const comparator = new Comparator();
-				expect(comparator.compare(parsedClassExpected, parsedClassActual))
+				expect(comparator.compare(parsedClassExpected, parsedClassActual).differences)
 					.toContainEqual(new ParameterTypeEmptyIntersectionDifference(
 						{
 							name: "a",
@@ -98,7 +98,7 @@ describe('Comparator', () => {
 				let parsedClassActual = new DeclarationFileParser("tests/files/comparator-module-class/method/parameters/one-class-one-method-different-type-union-empty-intersection.d.ts").parse();
 				
 				const comparator = new Comparator();
-				expect(comparator.compare(parsedClassExpected, parsedClassActual))
+				expect(comparator.compare(parsedClassExpected, parsedClassActual).differences)
 					.toContainEqual(new ParameterTypeEmptyIntersectionDifference(
 						new DeclaredProperty(
 							"a",
@@ -116,7 +116,7 @@ describe('Comparator', () => {
 				let parsedClassActual = new DeclarationFileParser("tests/files/comparator-module-class/method/parameters/one-class-one-method-different-type-union.d.ts").parse();
 
 				const comparator = new Comparator();
-				expect(comparator.compare(parsedClassExpected, parsedClassActual))
+				expect(comparator.compare(parsedClassExpected, parsedClassActual).differences)
 					.toContainEqual(new ParameterTypeNonEmptyIntersectionDifference(
 						new DeclaredProperty(
 							"a",
@@ -128,7 +128,7 @@ describe('Comparator', () => {
 						new DeclaredProperty("a", new DeclaredPropertyTypePrimitiveKeyword("string"), false)
 					));
 
-				expect(comparator.compare(parsedClassExpected, parsedClassActual))
+				expect(comparator.compare(parsedClassExpected, parsedClassActual).differences)
 					.toContainEqual(new ParameterTypeNonEmptyIntersectionDifference(
 						new DeclaredProperty(
 							"a",
@@ -153,7 +153,7 @@ describe('Comparator', () => {
 				let parsedClassActual = new DeclarationFileParser("tests/files/comparator-module-class/method/parameters/one-class-one-method-same-parameter-different-name.d.ts").parse();
 
 				const comparator = new Comparator();
-				expect(comparator.compare(parsedClassExpected, parsedClassActual)).toHaveLength(0);
+				expect(comparator.compare(parsedClassExpected, parsedClassActual).differences).toHaveLength(0);
 			});
 
 			it('should detect missing parameters', () => {
@@ -161,7 +161,7 @@ describe('Comparator', () => {
 				const parsedClassActual = new DeclarationFileParser("tests/files/comparator-module-class/method/parameters/one-class-one-method-missing-parameter.d.ts").parse();
 
 				const comparator = new Comparator();
-				const result = comparator.compare(parsedClassExpected, parsedClassActual);
+				const result = comparator.compare(parsedClassExpected, parsedClassActual).differences;
 				expect(result)
 					.toContainEqual(new ParameterMissingDifference(
 						{
@@ -180,7 +180,7 @@ describe('Comparator', () => {
 				const parsedClassActual = new DeclarationFileParser("tests/files/comparator-module-class/method/parameters/one-class-one-method-extra-parameter.d.ts").parse();
 
 				const comparator = new Comparator();
-				const result = comparator.compare(parsedClassExpected, parsedClassActual);
+				const result = comparator.compare(parsedClassExpected, parsedClassActual).differences;
 				expect(result)
 					.toContainEqual(new ParameterExtraDifference(
 						{
@@ -204,7 +204,7 @@ describe('Comparator', () => {
 			let parsedClassActual = new DeclarationFileParser("tests/files/comparator-module-class/interfaces/one-class-with-different-constructor-parameter-type.d.ts").parse();
 
 			const comparator = new Comparator();
-			let result = comparator.compare(parsedClassExpected, parsedClassActual);
+			let result = comparator.compare(parsedClassExpected, parsedClassActual).differences;
 			expect(result)
 				.toContainEqual(new ParameterTypeEmptyIntersectionDifference(
 					{
@@ -257,7 +257,7 @@ describe('Comparator', () => {
 			const parsedClassActual = new DeclarationFileParser("tests/files/comparator-module-class/interfaces/one-class-missing-properties.d.ts").parse();
 
 			const comparator = new Comparator();
-			const result = comparator.compare(parsedClassExpected, parsedClassActual);
+			const result = comparator.compare(parsedClassExpected, parsedClassActual).differences;
 			expect(result)
 				.toContainEqual(new ParameterMissingDifference(
 					{
@@ -291,7 +291,7 @@ describe('Comparator', () => {
 			const parsedClassActual = new DeclarationFileParser("tests/files/comparator-module-class/interfaces/one-class-extra-properties.d.ts").parse();
 
 			const comparator = new Comparator();
-			const result = comparator.compare(parsedClassExpected, parsedClassActual);
+			const result = comparator.compare(parsedClassExpected, parsedClassActual).differences;
 			expect(result)
 				.toContainEqual(new ParameterExtraDifference(
 					{
@@ -325,7 +325,7 @@ describe('Comparator', () => {
 			const parsedClassActual = new DeclarationFileParser("tests/files/comparator-module-class/interfaces/one-class-nested-interfaces.d.ts").parse();
 
 			const comparator = new Comparator();
-			const result = comparator.compare(parsedClassExpected, parsedClassActual);
+			const result = comparator.compare(parsedClassExpected, parsedClassActual).differences;
 			expect(result)
 				.toContainEqual(new ParameterTypeEmptyIntersectionDifference(
 					new DeclaredProperty(
@@ -346,7 +346,7 @@ describe('Comparator', () => {
 			const parsedClassActual = new DeclarationFileParser("tests/files/comparator-module-class/interfaces/one-class-different-interface-name.d.ts").parse();
 
 			const comparator = new Comparator();
-			const result = comparator.compare(parsedClassExpected, parsedClassActual);
+			const result = comparator.compare(parsedClassExpected, parsedClassActual).differences;
 			expect(result).toHaveLength(0);
 		});
 	});
