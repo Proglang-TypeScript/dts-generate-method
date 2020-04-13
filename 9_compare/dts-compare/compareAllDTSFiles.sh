@@ -1,5 +1,4 @@
 #!/bin/bash
-
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
 DECLARATION_FILES_DIRECTORY=$1
@@ -14,10 +13,13 @@ find $DECLARATION_FILES_DIRECTORY -name 'index.d.ts' -print0 |
 		MODULE_NAME=$(basename "$(dirname "$GENERATED_FILE")")
 		DEFINITELY_TYPED_FILE=$2/types/$MODULE_NAME/index.d.ts
 
-		echo "Comparing DTS for $MODULE_NAME"
+		if [ -f "$DEFINITELY_TYPED_FILE" ]; then
+			echo "Comparing DTS for $MODULE_NAME"
 
-		dts-compare --expected-declaration-file $DEFINITELY_TYPED_FILE \
-			--actual-declaration-file $GENERATED_FILE \
-			--output-format csv \
-			--module-name $MODULE_NAME | tee -a $OUTPUT_FILE
+			docker run --rm -v $DEFINITELY_TYPED_FILE:/usr/local/app/expected.d.ts -v $GENERATED_FILE:/usr/local/app/actual.d.ts \
+				dts-compare --expected-declaration-file expected.d.ts \
+					--actual-declaration-file actual.d.ts \
+					--output-format csv \
+					--module-name $MODULE_NAME | tee -a $OUTPUT_FILE
+		fi
     done
