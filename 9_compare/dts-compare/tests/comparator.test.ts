@@ -212,6 +212,19 @@ describe('Comparator', () => {
 					));
 			});
 
+			it('should detect differences in optional flag as non empty intersection', () => {
+				let parsedClassExpected = new DeclarationFileParser("tests/files/comparator-module-class/method/parameters/one-class-one-method-optional-parameter.d.ts").parse();
+				let parsedClassActual = new DeclarationFileParser("tests/files/comparator-module-class/method/parameters/one-class-one-method-optional-parameter-not-marked-as-optional.d.ts").parse();
+
+				const comparator = new Comparator();
+				const differences = comparator.compare(parsedClassExpected, parsedClassActual).differences;
+				expect(differences)
+					.toContainEqual(new ParameterTypeNonEmptyIntersectionDifference(
+						new DeclaredProperty("a", new DeclaredPropertyTypePrimitiveKeyword("string"), true),
+						new DeclaredProperty("a", new DeclaredPropertyTypePrimitiveKeyword("string"), false)
+					));
+			});
+
 			it('should ignore differences in the name for the same parameter', () => {
 				let parsedClassExpected = new DeclarationFileParser("tests/files/comparator-module-class/method/parameters/one-class-one-method.d.ts").parse();
 				let parsedClassActual = new DeclarationFileParser("tests/files/comparator-module-class/method/parameters/one-class-one-method-same-parameter-different-name.d.ts").parse();
