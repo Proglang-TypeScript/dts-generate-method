@@ -16,7 +16,21 @@ let parser = new DeclarationFileParser(options['input-declaration-file']);
 try {
 	let declarationMap = parser.parse();
 
-	const content = JSON.stringify(declarationMap, null, '\t');
+	const getCircularReplacer = () => {
+		const seen = new WeakSet();
+		return (key: string, value: any) => {
+			if (typeof value === "object" && value !== null) {
+				if (seen.has(value)) {
+					return { name: value.name, circular: true };
+				}
+				seen.add(value);
+			}
+			return value;
+		};
+	};
+
+	const content = JSON.stringify(declarationMap, getCircularReplacer(), 4);
+
 	if (options['output-file'] === '') {
 		console.log(content);
 	} else {
@@ -27,6 +41,6 @@ try {
 	}
 } catch (error) {
 	console.error("Error: ");
-	// console.error(error);
-	process.exit(1);	
+	console.error(error);
+	process.exit(1);
 }

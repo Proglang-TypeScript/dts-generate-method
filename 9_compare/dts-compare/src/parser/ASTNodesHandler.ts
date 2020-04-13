@@ -101,6 +101,15 @@ export class ASTNodesHandler {
 	private getDeclaredInterface(node: SimplifiedInterfaceDeclaration) : DeclaredInterface {
 		let declaredInterface = new DeclaredInterface(node.name ? node.name.getText() : "");
 
+		const symbol = this.tsChecker.getSymbolAtLocation(node.name as ts.Node);
+		if (symbol !== undefined) {
+			symbol.declarations.forEach(d => {
+				if (d.kind === ts.SyntaxKind.InterfaceDeclaration) {
+					this.mapSymbolInterfaces.set(symbol.escapedName.toString(), declaredInterface);
+				}
+			});
+		}
+
 		node.members.forEach(m => {
 			switch (m.kind) {
 				case ts.SyntaxKind.PropertySignature:
@@ -120,15 +129,6 @@ export class ASTNodesHandler {
 					break;
 			}
 		});
-
-		const symbol = this.tsChecker.getSymbolAtLocation(node.name as ts.Node);
-		if (symbol !== undefined) {
-			symbol.declarations.forEach(d => {
-				if (d.kind === ts.SyntaxKind.InterfaceDeclaration) {
-					this.mapSymbolInterfaces.set(symbol.escapedName.toString(), declaredInterface);
-				}
-			});
-		}
 
 		return declaredInterface;
 	}
@@ -228,7 +228,7 @@ export class ASTNodesHandler {
 					if (tsSymbol !== undefined) {
 						let interfaceForSymbol = this.mapSymbolInterfaces.get(tsSymbol.escapedName.toString());
 						if (interfaceForSymbol === undefined) {
-							let interfaceDeclaration = tsSymbol.declarations.filter(d => {
+							let interfaceDeclaration = tsSymbol.declarations?.filter(d => {
 								return (
 									(d.kind === ts.SyntaxKind.InterfaceDeclaration) &&
 									(d.getSourceFile().fileName === this.sourceFile.fileName)

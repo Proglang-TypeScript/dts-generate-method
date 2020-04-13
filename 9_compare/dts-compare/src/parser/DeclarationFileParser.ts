@@ -15,6 +15,7 @@ export default class DeclarationFileParser {
 
 	constructor(fileName: string) {
 		this.program = ts.createProgram([fileName], {});
+
 		this.checker = this.program.getTypeChecker();
 
 		this.sourceFile = this.program.getSourceFiles().filter(s => {
