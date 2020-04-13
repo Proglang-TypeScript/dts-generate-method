@@ -59,10 +59,6 @@ export default class Comparator {
 	}
 
 	private getModuleTemplate(parsedDeclarationFile: DeclaredNamespace) {
-		if (parsedDeclarationFile.exportAssignments.length > 1) {
-			return "module";
-		}
-
 		try {
 			const c = this.getClassByName(
 				parsedDeclarationFile,
@@ -74,7 +70,11 @@ export default class Comparator {
 			}
 		} catch (error) {}
 
-		return "module-function";
+		if (this.getFunctionsByName(parsedDeclarationFile, this.getFirstExportAssignment(parsedDeclarationFile)).length > 0) {
+			return "module-function";
+		}
+
+		return "module";
 	}
 
 	private getFirstExportAssignment(parsedDeclarationFile: DeclaredNamespace): string {
@@ -83,6 +83,10 @@ export default class Comparator {
 		}
 
 		return parsedDeclarationFile.exportAssignments[0];
+	}
+
+	private getFunctionsByName(parsedDeclarationFile: DeclaredNamespace, name: string) : DeclaredFunction[] {
+		return parsedDeclarationFile.functions.filter(f => (f.name === name));
 	}
 
 	private getClassByName(parsedDeclarationFile: DeclaredNamespace, name: string): DeclaredClass {
