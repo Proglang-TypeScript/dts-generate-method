@@ -9,6 +9,7 @@ import { DeclaredPropertyTypePrimitiveKeyword } from '../src/parser/model/declar
 import ParameterTypeNonEmptyIntersectionDifference from '../src/difference/ParameterTypeNonEmptyIntersectionDifference';
 import TemplateDifference from '../src/difference/TemplateDifference';
 import { DeclaredPropertyTypeUnionType } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeUnionType';
+import { DeclaredPropertyTypeLiterals } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeLiterals';
 
 describe('Comparator', () => {
 	describe('templates', () => {
@@ -158,6 +159,54 @@ describe('Comparator', () => {
 						new DeclaredProperty(
 							"a",
 							new DeclaredPropertyTypePrimitiveKeyword("undefined"),
+							false
+						),
+					));
+
+				expect(differences)
+					.toContainEqual(new ParameterTypeNonEmptyIntersectionDifference(
+						new DeclaredProperty(
+							"b",
+							new DeclaredPropertyTypePrimitiveKeyword("any"),
+							false
+						),
+						new DeclaredProperty(
+							"b",
+							new DeclaredPropertyTypePrimitiveKeyword("string"),
+							false
+						),
+					));
+
+				expect(differences)
+					.toContainEqual(new ParameterTypeNonEmptyIntersectionDifference(
+						new DeclaredProperty(
+							"c",
+							new DeclaredPropertyTypeLiterals('"hello"'),
+							false
+						),
+						new DeclaredProperty(
+							"c",
+							new DeclaredPropertyTypePrimitiveKeyword("string"),
+							false
+						),
+					));
+
+				expect(differences)
+					.toContainEqual(new ParameterTypeNonEmptyIntersectionDifference(
+						new DeclaredProperty(
+							"d",
+							new DeclaredPropertyTypeUnionType([
+								new DeclaredPropertyTypeLiterals("1"),
+								new DeclaredPropertyTypeLiterals("2"),
+								new DeclaredPropertyTypeLiterals("3"),
+								new DeclaredPropertyTypeLiterals("4"),
+								new DeclaredPropertyTypeLiterals("5")
+							]),
+							false
+						),
+						new DeclaredProperty(
+							"d",
+							new DeclaredPropertyTypePrimitiveKeyword("number"),
 							false
 						),
 					));

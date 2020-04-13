@@ -9,6 +9,8 @@ import { InterfaceComparison } from "./interfaceComparison";
 import { DeclaredPropertyTypeInterface } from "../parser/model/declared-property-types/DeclaredPropertyTypeInterface";
 import { DeclaredPropertyTypeUnionType } from "../parser/model/declared-property-types/DeclaredPropertyTypeUnionType";
 import DeclaredPropertyType from "../parser/model/declared-property-types/DeclaredPropertyType";
+import { DeclaredPropertyTypeLiterals } from "../parser/model/declared-property-types/DeclaredPropertyTypeLiterals";
+import { DeclaredPropertyTypePrimitiveKeyword } from "../parser/model/declared-property-types/DeclaredPropertyTypePrimitiveKeyword";
 
 export class ParametersComparison implements Comparison {
 	private parameterExpected: DeclaredProperty;
@@ -83,8 +85,16 @@ export class ParametersComparison implements Comparison {
 			}
 
 			const expectedType = this.parameterExpected.type as DeclaredPropertyTypeUnionType;
+			const expectedTypeValues = expectedType.value.map(t => {
+				if (t instanceof DeclaredPropertyTypeLiterals) {
+					return this.getEquivalentTypeForLiteral(t);
+				}
+
+				return t;
+			});
+
 			const expectedContainsActualType = actualTypes.filter(actualType => {
-				return expectedType.value.filter(typeOfUnion => {
+				return expectedTypeValues.filter(typeOfUnion => {
 					return this.typesAreEqual(actualType, typeOfUnion);
 				}).length > 0;
 			}).length > 0;
@@ -104,10 +114,36 @@ export class ParametersComparison implements Comparison {
 			);
 		}
 
+		if (this.parameterExpected.type.value === "any") {
+			return new ParameterTypeNonEmptyIntersectionDifference(
+				this.parameterExpected,
+				this.parameterActual
+			);
+		}
+
+		if (this.parameterExpected.type instanceof DeclaredPropertyTypeLiterals) {
+			const equivalentType = this.getEquivalentTypeForLiteral(this.parameterExpected.type);
+			if (this.typesAreEqual(equivalentType, this.parameterActual.type)) {
+				return new ParameterTypeNonEmptyIntersectionDifference(this.parameterExpected, this.parameterActual);
+			}
+		}
+
 		return new ParameterTypeEmptyIntersectionDifference(
 			this.parameterExpected,
 			this.parameterActual
 		);
+	}
+
+	private getEquivalentTypeForLiteral(declaredPropertyTypeLiterals: DeclaredPropertyTypeLiterals) : DeclaredPropertyType {
+		const literalValue: any = Function(`return ${declaredPropertyTypeLiterals.value};`)();
+		const typeOfLiteralValue = typeof literalValue;
+
+		const consideredValues = ['string', 'number', 'boolean'];
+		if (consideredValues.indexOf(typeOfLiteralValue) !== -1) {
+			return new DeclaredPropertyTypePrimitiveKeyword(typeOfLiteralValue);
+		}
+
+		return declaredPropertyTypeLiterals;
 	}
 
 	private typesAreEqual(a: DeclaredPropertyType, b: DeclaredPropertyType): boolean {
