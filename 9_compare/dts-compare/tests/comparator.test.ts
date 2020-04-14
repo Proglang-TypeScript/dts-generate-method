@@ -9,6 +9,7 @@ import { DeclaredPropertyTypePrimitiveKeyword } from '../src/parser/model/declar
 import ParameterTypeNonEmptyIntersectionDifference from '../src/difference/ParameterTypeNonEmptyIntersectionDifference';
 import TemplateDifference from '../src/difference/TemplateDifference';
 import FunctionMissingDifference from '../src/difference/FunctionMissingDifference';
+import FunctionExtraDifference from '../src/difference/FunctionExtraDifference';
 import { DeclaredPropertyTypeUnionType } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeUnionType';
 import { DeclaredPropertyTypeLiterals } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeLiterals';
 import { DeclaredFunction } from '../src/parser/model/DeclaredFunction';
@@ -285,6 +286,20 @@ describe('Comparator', () => {
 				.addParameter(new DeclaredProperty("a", new DeclaredPropertyTypePrimitiveKeyword("number"), false));
 
 			expect(differences).toContainEqual(new FunctionMissingDifference(missingFunction));
+		});
+
+		it('should detect extra methods', () => {
+			let parsedClassExpected = new DeclarationFileParser("tests/files/comparator-module-class/method/one-class.d.ts").parse();
+			let parsedClassActual = new DeclarationFileParser("tests/files/comparator-module-class/method/one-class-with-extra-method.d.ts").parse();
+
+			const comparator = new Comparator();
+			const differences = comparator.compare(parsedClassExpected, parsedClassActual).differences;
+
+			const extraFunction = new DeclaredFunction("myExtraMethod", "void");
+
+			expect(differences).toContainEqual(
+				new FunctionExtraDifference(extraFunction)
+			);
 		});
 	});
 
