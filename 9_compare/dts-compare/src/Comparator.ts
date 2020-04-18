@@ -129,9 +129,9 @@ export default class Comparator {
 		parsedExpectedFile: DeclaredNamespace,
 		parsedActualFile: DeclaredNamespace
 	) : Difference[] {
-		return new FunctionParametersComparison(
-			this.getConstructorFromClass(classExpected),
-			this.getConstructorFromClass(classActual),
+		return new FunctionsComparison(
+			classExpected.constructors,
+			classActual.constructors,
 			parsedExpectedFile,
 			parsedActualFile
 		).compare();
@@ -150,14 +150,6 @@ export default class Comparator {
 			parsedExpectedFile,
 			parsedActualFile
 		).compare();
-	}
-
-	private getConstructorFromClass(parsedClass: DeclaredClass) : DeclaredFunction {
-		if (parsedClass.constructors.length === 0) {
-			return new DeclaredFunction("", "");
-		}
-
-		return parsedClass.constructors[0];
 	}
 }
 

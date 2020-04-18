@@ -141,6 +141,7 @@ export class ASTNodesHandler {
 				case ts.SyntaxKind.Constructor:
 					let constructor = this.getDeclaredFunction(m as ts.ConstructorDeclaration);
 					constructor.name = "constructor";
+					constructor.isConstructor = true;
 
 					declaredClass.addConstructor(constructor);
 					break;
