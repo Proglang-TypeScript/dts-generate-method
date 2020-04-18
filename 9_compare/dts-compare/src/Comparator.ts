@@ -1,7 +1,7 @@
 import Difference from "./difference/Difference";
 import { DeclaredClass } from "./parser/model/DeclaredClass";
 import { DeclaredFunction } from "./parser/model/DeclaredFunction";
-import { MethodParametersComparison } from "./comparison/methodParametersComparison";
+import { FunctionParametersComparison } from "./comparison/functionParametersComparison";
 import { DeclaredNamespace } from "./parser/model/DeclaredNamespace";
 import TemplateDifference from "./difference/TemplateDifference";
 import { FunctionsComparison } from "./comparison/functionsComparison";
@@ -31,7 +31,8 @@ export default class Comparator {
 
 	private compareTemplate(parsedExpectedFile: DeclaredNamespace, parsedActualFile: DeclaredNamespace, template: string): Difference[] {
 		const compareFunctions: { [k: string] : (a: DeclaredNamespace, b: DeclaredNamespace) => Difference[] } = {
-			'module-class': this.compareTemplateModuleClass.bind(this)
+			'module-class': this.compareTemplateModuleClass.bind(this),
+			'module-function': this.compareTemplateModuleFunction.bind(this)
 		};
 
 		if (template in compareFunctions) {
@@ -39,6 +40,25 @@ export default class Comparator {
 		} else {
 			return [];
 		}
+	}
+
+	private compareTemplateModuleFunction(parsedExpectedFile: DeclaredNamespace, parsedActualFile: DeclaredNamespace): Difference[] {
+		let exportedFunctionsExpected = this.getFunctionsByName(
+			parsedExpectedFile,
+			this.getFirstExportAssignment(parsedExpectedFile)
+		);
+
+		let exportedFunctionsActual = this.getFunctionsByName(
+			parsedExpectedFile,
+			this.getFirstExportAssignment(parsedExpectedFile)
+		);
+
+		return new FunctionsComparison(
+			exportedFunctionsExpected,
+			exportedFunctionsActual,
+			parsedExpectedFile,
+			parsedActualFile
+		).compare();
 	}
 
 	private compareTemplateModuleClass(parsedExpectedFile: DeclaredNamespace, parsedActualFile: DeclaredNamespace): Difference[] {
@@ -55,7 +75,6 @@ export default class Comparator {
 		let differences: Difference[] = [];
 		return differences.concat(
 			this.compareClassConstructorParameters(exportedClassExpected, exportedClassActual, parsedExpectedFile, parsedActualFile),
-			this.compareClassMethodsParameters(exportedClassExpected, exportedClassActual, parsedExpectedFile, parsedActualFile),
 			this.compareClassMethods(exportedClassExpected, exportedClassActual, parsedExpectedFile, parsedActualFile)
 		);
 	}
@@ -110,38 +129,12 @@ export default class Comparator {
 		parsedExpectedFile: DeclaredNamespace,
 		parsedActualFile: DeclaredNamespace
 	) : Difference[] {
-		return new MethodParametersComparison(
+		return new FunctionParametersComparison(
 			this.getConstructorFromClass(classExpected),
 			this.getConstructorFromClass(classActual),
 			parsedExpectedFile,
 			parsedActualFile
 		).compare();
-	}
-
-	private compareClassMethodsParameters(
-		classExpected: DeclaredClass,
-		classActual: DeclaredClass,
-		parsedExpectedFile: DeclaredNamespace,
-		parsedActualFile: DeclaredNamespace
-	) : Difference[] {
-		let differences : Difference[] = [];
-
-		classExpected.methods.forEach(methodExpected => {
-			classActual.methods.forEach(methodActual => {
-				if (methodExpected.name === methodActual.name) {
-					differences = differences.concat(
-						new MethodParametersComparison(
-							methodExpected,
-							methodActual,
-							parsedExpectedFile,
-							parsedActualFile
-						).compare()
-					)
-				}
-			});
-		});
-
-		return differences;
 	}
 
 	private compareClassMethods(

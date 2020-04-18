@@ -6,27 +6,27 @@ import { ParametersComparison } from "./parametersComparison";
 import ParameterMissingDifference from "../difference/ParameterMissingDifference";
 import ParameterExtraDifference from "../difference/ParameterExtraDifference";
 
-export class MethodParametersComparison implements Comparison {
-	private methodExpected: DeclaredFunction;
-	private methodActual: DeclaredFunction;
+export class FunctionParametersComparison implements Comparison {
+	private functionExpected: DeclaredFunction;
+	private functionActual: DeclaredFunction;
 	private parsedExpectedFile: DeclaredNamespace;
 	private parsedActualFile: DeclaredNamespace;
 
 	constructor(
-		methodExpected: DeclaredFunction,
-		methodActual: DeclaredFunction,
+		functionExpected: DeclaredFunction,
+		functionActual: DeclaredFunction,
 		parsedExpectedFile: DeclaredNamespace,
 		parsedActualFile: DeclaredNamespace
 	) {
-		this.methodExpected = methodExpected;
-		this.methodActual = methodActual;
+		this.functionExpected = functionExpected;
+		this.functionActual = functionActual;
 		this.parsedExpectedFile = parsedExpectedFile;
 		this.parsedActualFile = parsedActualFile;
 	}
 
 	compare() : Difference[] {
-		let parametersActual = this.methodActual.parameters;
-		let parametersExpected = this.methodExpected.parameters;
+		let parametersActual = this.functionActual.parameters;
+		let parametersExpected = this.functionExpected.parameters;
 
 		let differences: Difference[] = [];
 

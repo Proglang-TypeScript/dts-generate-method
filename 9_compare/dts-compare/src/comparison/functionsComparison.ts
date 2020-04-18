@@ -4,6 +4,7 @@ import { DeclaredNamespace } from "../parser/model/DeclaredNamespace";
 import { DeclaredFunction } from "../parser/model/DeclaredFunction";
 import FunctionMissingDifference from "../difference/FunctionMissingDifference";
 import FunctionExtraDifference from "../difference/FunctionExtraDifference";
+import { FunctionParametersComparison } from "./functionParametersComparison";
 
 export class FunctionsComparison implements Comparison {
 	private functionsExpected: DeclaredFunction[];
@@ -24,7 +25,7 @@ export class FunctionsComparison implements Comparison {
 	}
 
 	compare() : Difference[] {
-		const differences : Difference[] = [];
+		let differences : Difference[] = [];
 
 		const actualFunctionsSet = new Set<string>(this.functionsActual.map(f => f.name));
 		const expectedFunctionsSet = new Set<string>(this.functionsExpected.map(f => f.name));
@@ -39,6 +40,31 @@ export class FunctionsComparison implements Comparison {
 			if (!expectedFunctionsSet.has(functionActual.name)) {
 				differences.push(new FunctionExtraDifference(functionActual));
 			}
+		});
+
+		differences = differences.concat(
+			this.compareParameters()
+		);
+
+		return differences;
+	}
+
+	private compareParameters(): Difference[] {
+		let differences : Difference[] = [];
+
+		this.functionsExpected.forEach(functionExpected => {
+			this.functionsActual.forEach(functionActual => {
+				if (functionExpected.name === functionActual.name) {
+					differences = differences.concat(
+						new FunctionParametersComparison(
+							functionExpected,
+							functionActual,
+							this.parsedExpectedFile,
+							this.parsedActualFile
+						).compare()
+					)
+				}
+			});
 		});
 
 		return differences;
