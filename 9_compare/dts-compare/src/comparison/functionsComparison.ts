@@ -27,46 +27,77 @@ export class FunctionsComparison implements Comparison {
 	compare() : Difference[] {
 		let differences : Difference[] = [];
 
-		const actualFunctionsSet = new Set<string>(this.functionsActual.map(f => f.name));
-		const expectedFunctionsSet = new Set<string>(this.functionsExpected.map(f => f.name));
+		const actualFunctionsSet = new Set<string>(this.functionsActual.map(this.getFunctionIdentifier));
+		const expectedFunctionsSet = new Set<string>(this.functionsExpected.map(this.getFunctionIdentifier));
 
 		this.functionsExpected.forEach(functionExpected => {
-			if (!actualFunctionsSet.has(functionExpected.name)) {
+			if (!actualFunctionsSet.has(this.getFunctionIdentifier(functionExpected))) {
 				differences.push(new FunctionMissingDifference(functionExpected));
 			}
 		});
 
 		this.functionsActual.forEach(functionActual => {
-			if (!expectedFunctionsSet.has(functionActual.name)) {
+			if (!expectedFunctionsSet.has(this.getFunctionIdentifier(functionActual))) {
 				differences.push(new FunctionExtraDifference(functionActual));
 			}
 		});
 
 		differences = differences.concat(
-			this.compareParameters()
+			this.compareAllParameters()
 		);
 
 		return differences;
 	}
 
-	private compareParameters(): Difference[] {
+	private compareAllParameters(): Difference[] {
 		let differences : Difference[] = [];
+
+		const functionsWithNoDifferences = new WeakSet<DeclaredFunction>();
+		const functionsPerDifferences = new WeakMap<
+			Difference, {
+				functionExpected: DeclaredFunction,
+				functionActual: DeclaredFunction
+			}
+		>();
 
 		this.functionsExpected.forEach(functionExpected => {
 			this.functionsActual.forEach(functionActual => {
-				if (functionExpected.name === functionActual.name) {
-					differences = differences.concat(
-						new FunctionParametersComparison(
-							functionExpected,
-							functionActual,
-							this.parsedExpectedFile,
-							this.parsedActualFile
-						).compare()
-					)
+				if (this.getFunctionIdentifier(functionExpected) === this.getFunctionIdentifier(functionActual)) {
+					const functionDifferences = new FunctionParametersComparison(
+						functionExpected,
+						functionActual,
+						this.parsedExpectedFile,
+						this.parsedActualFile
+					).compare();
+
+					if (functionDifferences.length === 0) {
+						functionsWithNoDifferences
+							.add(functionExpected)
+							.add(functionActual);
+					}
+
+					functionDifferences.forEach(d => {
+						functionsPerDifferences.set(d, {functionExpected, functionActual});
+					});
+
+					differences = differences.concat(functionDifferences);
 				}
 			});
 		});
 
-		return differences;
+		return differences.filter(d => {
+			const functionsPerDifference = functionsPerDifferences.get(d);
+
+			if (functionsPerDifference === undefined) {
+				return true;
+			}
+
+			return !functionsWithNoDifferences.has(functionsPerDifference.functionExpected) &&
+				!functionsWithNoDifferences.has(functionsPerDifference.functionActual);
+		});
+	}
+
+	private getFunctionIdentifier(f: DeclaredFunction) {
+		return `${f.name}:${f.returnType}`;
 	}
 }

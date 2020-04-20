@@ -1,7 +1,7 @@
 export = MyFunction;
 
-declare function MyFunction(name: number): MyFunction.NamedReturnType;
-declare function MyFunction(length: number): MyFunction.LengthReturnType;
+declare function MyFunction(name: string): MyFunction.NamedReturnType;
+declare function MyFunction(length: boolean): MyFunction.LengthReturnType;
 
 declare namespace MyFunction {
 	export interface LengthReturnType {

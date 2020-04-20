@@ -3,6 +3,8 @@ export = MyFunction;
 declare function MyFunction(name: string): MyFunction.NamedReturnType;
 declare function MyFunction(length: number): MyFunction.LengthReturnType;
 
+
+
 declare namespace MyFunction {
 	export interface LengthReturnType {
 		width: number;
