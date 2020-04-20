@@ -1,7 +1,6 @@
 import Difference from "./difference/Difference";
 import { DeclaredClass } from "./parser/model/DeclaredClass";
 import { DeclaredFunction } from "./parser/model/DeclaredFunction";
-import { FunctionParametersComparison } from "./comparison/functionParametersComparison";
 import { DeclaredNamespace } from "./parser/model/DeclaredNamespace";
 import TemplateDifference from "./difference/TemplateDifference";
 import { FunctionsComparison } from "./comparison/functionsComparison";
@@ -49,8 +48,8 @@ export default class Comparator {
 		);
 
 		let exportedFunctionsActual = this.getFunctionsByName(
-			parsedExpectedFile,
-			this.getFirstExportAssignment(parsedExpectedFile)
+			parsedActualFile,
+			this.getFirstExportAssignment(parsedActualFile)
 		);
 
 		return new FunctionsComparison(
