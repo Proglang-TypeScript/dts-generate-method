@@ -226,7 +226,14 @@ export class ASTNodesHandler {
 					const typeReferenceNode = type as ts.TypeReferenceNode;
 
 					const tsSymbol = this.tsChecker.getSymbolAtLocation(typeReferenceNode.typeName);
+
 					if (tsSymbol !== undefined) {
+						if (tsSymbol.escapedName.toString() === "Array" && typeReferenceNode.typeArguments?.length === 1) {
+							return new DeclaredPropertyArrayType(
+								this.getDeclaredPropertyType(typeReferenceNode.typeArguments[0])
+							); 
+						}
+
 						let interfaceForSymbol = this.mapSymbolInterfaces.get(tsSymbol.escapedName.toString());
 						if (interfaceForSymbol === undefined) {
 							let interfaceDeclaration = tsSymbol.declarations?.filter(d => {
