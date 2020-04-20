@@ -31,7 +31,8 @@ export default class Comparator {
 	private compareTemplate(parsedExpectedFile: DeclaredNamespace, parsedActualFile: DeclaredNamespace, template: string): Difference[] {
 		const compareFunctions: { [k: string] : (a: DeclaredNamespace, b: DeclaredNamespace) => Difference[] } = {
 			'module-class': this.compareTemplateModuleClass.bind(this),
-			'module-function': this.compareTemplateModuleFunction.bind(this)
+			'module-function': this.compareTemplateModuleFunction.bind(this),
+			'module': this.compareTemplateModule.bind(this)
 		};
 
 		if (template in compareFunctions) {
@@ -39,6 +40,18 @@ export default class Comparator {
 		} else {
 			return [];
 		}
+	}
+
+	private compareTemplateModule(parsedExpectedFile: DeclaredNamespace, parsedActualFile: DeclaredNamespace): Difference[] {
+		const exportedFunctionsExpected = parsedExpectedFile.functions;
+		const exportedFunctionsActual = parsedActualFile.functions;
+
+		return new FunctionsComparison(
+			exportedFunctionsExpected,
+			exportedFunctionsActual,
+			parsedExpectedFile,
+			parsedActualFile
+		).compare();
 	}
 
 	private compareTemplateModuleFunction(parsedExpectedFile: DeclaredNamespace, parsedActualFile: DeclaredNamespace): Difference[] {
