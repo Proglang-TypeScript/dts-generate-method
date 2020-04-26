@@ -9,9 +9,10 @@ import FunctionMissingDifference from "../difference/FunctionMissingDifference";
 import FunctionExtraDifference from "../difference/FunctionExtraDifference";
 import FunctionOverloadingDifference from "../difference/FunctionOverloadingDifference";
 import ExportAssignmentDifference from "../difference/ExportAssignmentDifference";
+import TAGS from "../parser/tags/tags";
 
 export default class CSVFormatter implements Formatter {
-	format(comparedModule: string, r: ResultComparison) : string {
+	format(comparedModule: string, r: ResultComparison, tags: Set<string>) : string {
 		let line : string[] = [];
 
 		const differencesInCsv : { [k: string] : number } = {};
@@ -24,7 +25,7 @@ export default class CSVFormatter implements Formatter {
 		differencesInCsv[FunctionExtraDifference.CODE] = 0;
 		differencesInCsv[FunctionOverloadingDifference.CODE] = 0;
 		differencesInCsv[ExportAssignmentDifference.CODE] = 0;
-		
+
 		r.differences.forEach(d => {
 			if (d.code in differencesInCsv) {
 				differencesInCsv[d.code]++;
@@ -34,6 +35,8 @@ export default class CSVFormatter implements Formatter {
 		line.push(comparedModule);
 		line.push(r.template);
 		line = line.concat(Object.values(differencesInCsv).map(v => String(v)));
+
+		line.push(tags.has(TAGS.OPTIONAL) ? '1' : '0');
 
 		return line.join(',');
 	}

@@ -16,6 +16,8 @@ import { DeclaredPropertyArrayType } from './model/declared-property-types/Decla
 import { AddClass } from './AddClass';
 import { DeclaredClass } from './model/DeclaredClass';
 import { DeclaredPropertyTypeReferenceType } from './model/declared-property-types/DeclaredPropertyTypeReferenceType';
+import TAGS from './tags/tags';
+
 
 interface SimplifiedFunctionDeclaration {
 	name?: ts.Identifier | ts.StringLiteral | ts.NumericLiteral | ts.PropertyName | undefined;
@@ -37,13 +39,14 @@ interface SimplifiedPropertyDeclaration {
 
 export class ASTNodesHandler {
 	private mapSymbolInterfaces: Map<string, DeclaredInterface> = new Map();
-
 	private tsChecker: ts.TypeChecker;
 	private sourceFile: ts.SourceFile;
+	private tags: Set<string>;
 
-	constructor(tsChecker: ts.TypeChecker, sourceFile: ts.SourceFile) {
+	constructor(tsChecker: ts.TypeChecker, sourceFile: ts.SourceFile, tags: Set<string>) {
 		this.tsChecker = tsChecker;
 		this.sourceFile = sourceFile;
+		this.tags = tags;
 	}
 
 	addNamespace(node: ts.ModuleDeclaration, declarationMap: DeclaredNamespace): DeclaredNamespace {
@@ -169,10 +172,16 @@ export class ASTNodesHandler {
 	private getDeclaredProperty(p: SimplifiedPropertyDeclaration): DeclaredProperty {
 		let parameterName = (p.name ? p.name.getText() : "").trim().replace(/'|"/g, '');
 
+		const isOptional = (p.questionToken !== undefined);
+
+		if (isOptional === true) {
+			this.tags.add(TAGS.OPTIONAL);
+		}
+
 		return new DeclaredProperty(
 			parameterName,
 			this.getDeclaredPropertyType(p.type),
-			(p.questionToken !== undefined)
+			isOptional
 		);
 	}
 

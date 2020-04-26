@@ -29,7 +29,12 @@ try {
 		};
 	};
 
-	const content = JSON.stringify(declarationMap, getCircularReplacer(), 4);
+	const result = {
+		parsing: declarationMap,
+		tags: Array.from(parser.tags)
+	}
+
+	const content = JSON.stringify(result, getCircularReplacer(), 4);
 
 	if (options['output-file'] === '') {
 		console.log(content);

@@ -12,6 +12,7 @@ export default class DeclarationFileParser {
 	private program: ts.Program;
 	private checker: ts.TypeChecker;
 	private sourceFile: ts.SourceFile;
+	tags: Set<string>;
 
 	constructor(fileName: string) {
 		this.program = ts.createProgram([fileName], {});
@@ -22,7 +23,9 @@ export default class DeclarationFileParser {
 			return (s.fileName === fileName);
 		})[0];
 
-		this.astNodesHandler = new ASTNodesHandler(this.checker, this.sourceFile);
+		this.tags = new Set<string>();
+
+		this.astNodesHandler = new ASTNodesHandler(this.checker, this.sourceFile, this.tags);
 	}
 
 	parse(): DeclaredNamespace {
@@ -34,6 +37,8 @@ export default class DeclarationFileParser {
 
 		return declarationMap;
 	}
+
+	
 
 	private visit(declarationMap: DeclaredNamespace) {
 		let dis = this;

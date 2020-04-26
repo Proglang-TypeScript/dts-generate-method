@@ -26,14 +26,19 @@ formatters.set('json', new JsonFormatter());
 formatters.set('csv', new CSVFormatter());
 
 try {
+
+	let expectedFileParser = new DeclarationFileParser(options['expected-declaration-file']);
+	let actualFileParser = new DeclarationFileParser(options['actual-declaration-file']);
+
 	const resultComparison = comparator.compare(
-		new DeclarationFileParser(options['expected-declaration-file']).parse(),
-		new DeclarationFileParser(options['actual-declaration-file']).parse()
+		expectedFileParser.parse(),
+		actualFileParser.parse()
 	);
 
 	const content = formatters.get(options['output-format'])?.format(
 		options['module-name'] ? options['module-name'] : options['expected-declaration-file'],
-		resultComparison
+		resultComparison,
+		expectedFileParser.tags
 	);
 
 	if (options['output-file'] === '') {
