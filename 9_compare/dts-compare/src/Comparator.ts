@@ -3,6 +3,7 @@ import { DeclaredClass } from "./parser/model/DeclaredClass";
 import { DeclaredFunction } from "./parser/model/DeclaredFunction";
 import { DeclaredNamespace } from "./parser/model/DeclaredNamespace";
 import TemplateDifference from "./difference/TemplateDifference";
+import ExportAssignmentDifference from "./difference/ExportAssignmentDifference";
 import { FunctionsComparison } from "./comparison/functionsComparison";
 
 export default class Comparator {
@@ -55,22 +56,37 @@ export default class Comparator {
 	}
 
 	private compareTemplateModuleFunction(parsedExpectedFile: DeclaredNamespace, parsedActualFile: DeclaredNamespace): Difference[] {
+		const exportAssignmentExpected = this.getFirstExportAssignment(parsedExpectedFile);
 		let exportedFunctionsExpected = this.getFunctionsByName(
 			parsedExpectedFile,
-			this.getFirstExportAssignment(parsedExpectedFile)
+			exportAssignmentExpected
 		);
 
+		const exportAssignmentActual = this.getFirstExportAssignment(parsedActualFile);
 		let exportedFunctionsActual = this.getFunctionsByName(
 			parsedActualFile,
-			this.getFirstExportAssignment(parsedActualFile)
+			exportAssignmentActual
 		);
 
-		return new FunctionsComparison(
+		if (exportedFunctionsExpected.length > 0) {
+			exportedFunctionsActual.forEach(f => {
+				f.name = exportedFunctionsExpected[0]?.name;
+			});
+		}
+
+		let differences : Difference[] = [];
+		if (exportAssignmentExpected !== exportAssignmentActual) {
+			differences = differences.concat(new ExportAssignmentDifference(exportAssignmentExpected, exportAssignmentActual));
+		}
+
+		differences = differences.concat(new FunctionsComparison(
 			exportedFunctionsExpected,
 			exportedFunctionsActual,
 			parsedExpectedFile,
 			parsedActualFile
-		).compare();
+		).compare());
+
+		return differences;
 	}
 
 	private compareTemplateModuleClass(parsedExpectedFile: DeclaredNamespace, parsedActualFile: DeclaredNamespace): Difference[] {

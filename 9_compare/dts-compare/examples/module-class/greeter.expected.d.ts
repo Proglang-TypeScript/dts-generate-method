@@ -1,4 +1,4 @@
-export default Greeter;
+export = Greeter;
 
 declare function Greeter(a: string): number;
 

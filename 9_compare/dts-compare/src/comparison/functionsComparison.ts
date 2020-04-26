@@ -5,6 +5,7 @@ import { DeclaredFunction } from "../parser/model/DeclaredFunction";
 import FunctionMissingDifference from "../difference/FunctionMissingDifference";
 import FunctionExtraDifference from "../difference/FunctionExtraDifference";
 import { FunctionParametersComparison } from "./functionParametersComparison";
+import FunctionOverloadingDifference from "../difference/FunctionOverloadingDifference";
 
 export class FunctionsComparison implements Comparison {
 	private functionsExpected: DeclaredFunction[];
@@ -27,20 +28,30 @@ export class FunctionsComparison implements Comparison {
 	compare() : Difference[] {
 		let differences : Difference[] = [];
 
-		const actualFunctionsSet = new Set<string>(this.functionsActual.map(this.getFunctionIdentifier));
-		const expectedFunctionsSet = new Set<string>(this.functionsExpected.map(this.getFunctionIdentifier));
+		const expectedFunctionsMap = this.createMapOfFunctions(this.functionsExpected);
+		const actualFunctionsMap = this.createMapOfFunctions(this.functionsActual);
 
 		this.functionsExpected.forEach(functionExpected => {
-			if (!actualFunctionsSet.has(this.getFunctionIdentifier(functionExpected))) {
+			if (!actualFunctionsMap.has(this.getFunctionIdentifier(functionExpected))) {
 				differences.push(new FunctionMissingDifference(functionExpected));
 			}
 		});
 
 		this.functionsActual.forEach(functionActual => {
-			if (!expectedFunctionsSet.has(this.getFunctionIdentifier(functionActual))) {
+			if (!expectedFunctionsMap.has(this.getFunctionIdentifier(functionActual))) {
 				differences.push(new FunctionExtraDifference(functionActual));
 			}
 		});
+
+		for (const key of expectedFunctionsMap.keys()) {
+			if (actualFunctionsMap.has(key) && (actualFunctionsMap.get(key) !== expectedFunctionsMap.get(key))) {
+				differences.push(new FunctionOverloadingDifference(
+					key,
+					expectedFunctionsMap.get(key) || 0,
+					actualFunctionsMap.get(key) || 0
+				));
+			}
+		}
 
 		differences = differences.concat(
 			this.compareAllParameters()
@@ -98,6 +109,17 @@ export class FunctionsComparison implements Comparison {
 	}
 
 	private getFunctionIdentifier(f: DeclaredFunction) {
-		return `${f.name}:${f.returnType}`;
+		return `${f.name}`;
+	}
+
+	private createMapOfFunctions(functions: DeclaredFunction[]) : Map<string, number> {
+		const functionsMap = new Map<string, number>();
+	
+		functions.forEach(f => {
+			const amount = functionsMap.get(this.getFunctionIdentifier(f)) || 0;
+			functionsMap.set(this.getFunctionIdentifier(f), amount + 1);
+		});
+
+		return functionsMap;
 	}
 }

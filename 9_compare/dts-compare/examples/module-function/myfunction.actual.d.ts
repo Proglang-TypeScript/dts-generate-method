@@ -1,14 +1,14 @@
-export = MyFunction;
+export = MyFunctionWithOtherName;
 
-declare function MyFunction(name: string): MyFunction.NamedReturnType;
-declare function MyFunction(length: boolean): MyFunction.LengthReturnType;
+declare function MyFunctionWithOtherName(name: string): MyFunctionWithOtherName.NamedReturnTypeWithOtherName;
+declare function MyFunctionWithOtherName(length: boolean): MyFunctionWithOtherName.LengthReturnTypeWithOtherName;
 
-declare namespace MyFunction {
-	export interface LengthReturnType {
+declare namespace MyFunctionWithOtherName {
+	export interface LengthReturnTypeWithOtherName {
 		width: number;
 		height: number;
 	}
-	export interface NamedReturnType {
+	export interface NamedReturnTypeWithOtherName {
 		firstName: string;
 		lastName: string;
 	}

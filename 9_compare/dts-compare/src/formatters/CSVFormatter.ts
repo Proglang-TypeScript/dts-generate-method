@@ -7,6 +7,8 @@ import ParameterMissingDifference from "../difference/ParameterMissingDifference
 import TemplateDifference from "../difference/TemplateDifference";
 import FunctionMissingDifference from "../difference/FunctionMissingDifference";
 import FunctionExtraDifference from "../difference/FunctionExtraDifference";
+import FunctionOverloadingDifference from "../difference/FunctionOverloadingDifference";
+import ExportAssignmentDifference from "../difference/ExportAssignmentDifference";
 
 export default class CSVFormatter implements Formatter {
 	format(comparedModule: string, r: ResultComparison) : string {
@@ -20,6 +22,8 @@ export default class CSVFormatter implements Formatter {
 		differencesInCsv[ParameterMissingDifference.CODE] = 0;
 		differencesInCsv[FunctionMissingDifference.CODE] = 0;
 		differencesInCsv[FunctionExtraDifference.CODE] = 0;
+		differencesInCsv[FunctionOverloadingDifference.CODE] = 0;
+		differencesInCsv[ExportAssignmentDifference.CODE] = 0;
 		
 		r.differences.forEach(d => {
 			if (d.code in differencesInCsv) {
