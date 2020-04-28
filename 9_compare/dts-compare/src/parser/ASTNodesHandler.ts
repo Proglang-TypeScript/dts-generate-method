@@ -211,6 +211,7 @@ export class ASTNodesHandler {
 				case ts.SyntaxKind.LiteralType:
 					const literalTypeNode = type as ts.LiteralTypeNode;
 
+					this.tags.add(TAGS.LITERALS);
 					return new DeclaredPropertyTypeLiterals(literalTypeNode.getText());
 
 				case ts.SyntaxKind.UnionType:
