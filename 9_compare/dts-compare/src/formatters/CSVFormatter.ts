@@ -36,7 +36,9 @@ export default class CSVFormatter implements Formatter {
 		line.push(r.template);
 		line = line.concat(Object.values(differencesInCsv).map(v => String(v)));
 
-		line.push(tags.has(TAGS.OPTIONAL) ? '1' : '0');
+		[TAGS.OPTIONAL, TAGS.ANY, TAGS.ALIAS].forEach(t => {
+			line.push(tags.has(t) ? '1' : '0');
+		});
 
 		return line.join(',');
 	}

@@ -17,6 +17,7 @@ import { AddClass } from './AddClass';
 import { DeclaredClass } from './model/DeclaredClass';
 import { DeclaredPropertyTypeReferenceType } from './model/declared-property-types/DeclaredPropertyTypeReferenceType';
 import TAGS from './tags/tags';
+import { DeclaredPropertyTypeAnyKeyword } from './model/declared-property-types/DeclaredPropertyTypeAnyKeyword';
 
 
 interface SimplifiedFunctionDeclaration {
@@ -233,30 +234,23 @@ export class ASTNodesHandler {
 
 				case ts.SyntaxKind.TypeReference:
 					const typeReferenceNode = type as ts.TypeReferenceNode;
-
 					const tsSymbol = this.tsChecker.getSymbolAtLocation(typeReferenceNode.typeName);
 
 					if (tsSymbol !== undefined) {
 						if (tsSymbol.escapedName.toString() === "Array" && typeReferenceNode.typeArguments?.length === 1) {
 							return new DeclaredPropertyArrayType(
 								this.getDeclaredPropertyType(typeReferenceNode.typeArguments[0])
-							); 
+							);
 						}
 
-						let interfaceForSymbol = this.mapSymbolInterfaces.get(tsSymbol.escapedName.toString());
-						if (interfaceForSymbol === undefined) {
-							let interfaceDeclaration = tsSymbol.declarations?.filter(d => {
-								return (
-									(d.kind === ts.SyntaxKind.InterfaceDeclaration) &&
-									(d.getSourceFile().fileName === this.sourceFile.fileName)
-								);
-							})[0] as ts.InterfaceDeclaration;
+						const typeAliasDeclaration = this.getTypeAliasDeclarationForSymbol(tsSymbol);
+						if (typeAliasDeclaration !== null) {
+							this.tags.add(TAGS.ALIAS);
+							return this.getDeclaredPropertyType(typeAliasDeclaration.type);
+						}
 
-							if (interfaceDeclaration) {
-								const declaredInterface = this.getDeclaredInterface(interfaceDeclaration as SimplifiedInterfaceDeclaration);
-								return new DeclaredPropertyTypeInterface(declaredInterface);
-							}
-						} else {
+						const interfaceForSymbol = this.getInterfaceForSymbol(tsSymbol);
+						if (interfaceForSymbol !== null) {
 							return new DeclaredPropertyTypeInterface(interfaceForSymbol);
 						}
 					}
@@ -264,10 +258,52 @@ export class ASTNodesHandler {
 					return new DeclaredPropertyTypeReferenceType(typeReferenceNode.getText());
 
 					break;
+
+				case ts.SyntaxKind.AnyKeyword:
+					this.tags.add(TAGS.ANY);
+
+					return new DeclaredPropertyTypeAnyKeyword();
 			}
 		}
 
 		let parameterType = type ? type.getText() : "";
+
 		return new DeclaredPropertyTypePrimitiveKeyword(parameterType)
 	}
+
+	private getInterfaceForSymbol(tsSymbol: ts.Symbol) : DeclaredInterface | null {
+		let interfaceForSymbol = this.mapSymbolInterfaces.get(tsSymbol.escapedName.toString());
+
+		if (interfaceForSymbol !== undefined) {
+			return interfaceForSymbol;
+		}
+
+		const interfaceDeclarations = tsSymbol.declarations.filter(d => {
+			return (
+				(d.kind === ts.SyntaxKind.InterfaceDeclaration) &&
+				(d.getSourceFile().fileName === this.sourceFile.fileName)
+			);
+		}) as ts.InterfaceDeclaration[];
+
+		if (interfaceDeclarations.length === 0) {
+			return null;
+		}
+
+		return this.getDeclaredInterface(interfaceDeclarations[0] as SimplifiedInterfaceDeclaration);
+	}
+
+	private getTypeAliasDeclarationForSymbol(tsSymbol: ts.Symbol) : ts.TypeAliasDeclaration | null {
+		const typeAliasDeclarations = tsSymbol.declarations.filter(d => {
+			return (
+				(d.kind === ts.SyntaxKind.TypeAliasDeclaration) &&
+				(d.getSourceFile().fileName === this.sourceFile.fileName)
+			);
+		}) as ts.TypeAliasDeclaration[];
+
+		if (typeAliasDeclarations.length === 0) {
+			return null;
+		}
+
+		return typeAliasDeclarations[0];
+	} 
 }
