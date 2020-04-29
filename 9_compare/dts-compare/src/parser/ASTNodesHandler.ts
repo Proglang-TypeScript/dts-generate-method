@@ -228,9 +228,7 @@ export class ASTNodesHandler {
 				case ts.SyntaxKind.ArrayType:
 					const arrayTypeNode = type as ts.ArrayTypeNode;
 
-					return new DeclaredPropertyArrayType(
-						this.getDeclaredPropertyType(arrayTypeNode.elementType)
-					);
+					return this.getDeclaredPropertyArrayType(arrayTypeNode.elementType);
 					break;
 
 				case ts.SyntaxKind.TypeReference:
@@ -239,9 +237,7 @@ export class ASTNodesHandler {
 
 					if (tsSymbol !== undefined) {
 						if (tsSymbol.escapedName.toString() === "Array" && typeReferenceNode.typeArguments?.length === 1) {
-							return new DeclaredPropertyArrayType(
-								this.getDeclaredPropertyType(typeReferenceNode.typeArguments[0])
-							);
+							return this.getDeclaredPropertyArrayType(typeReferenceNode.typeArguments[0]);
 						}
 
 						const typeAliasDeclaration = this.getTypeAliasDeclarationForSymbol(tsSymbol);
@@ -306,5 +302,12 @@ export class ASTNodesHandler {
 		}
 
 		return typeAliasDeclarations[0];
-	} 
+	}
+
+	private getDeclaredPropertyArrayType(node: ts.TypeNode): DeclaredPropertyArrayType {
+		this.tags.add(TAGS.ARRAY);
+		return new DeclaredPropertyArrayType(
+			this.getDeclaredPropertyType(node)
+		);
+	}
 }

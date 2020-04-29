@@ -2,7 +2,8 @@ enum TAGS {
 	OPTIONAL = "optional-parameter",
 	ANY = "type-any",
 	ALIAS = "alias-type",
-	LITERALS = "literals"
+	LITERALS = "literals",
+	ARRAY = "type-array",
 }
 
 export default TAGS;
