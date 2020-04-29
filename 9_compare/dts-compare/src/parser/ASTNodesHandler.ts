@@ -197,6 +197,7 @@ export class ASTNodesHandler {
 				case ts.SyntaxKind.FunctionType:
 					const functionType = type as ts.FunctionTypeNode;
 
+					this.tags.add(TAGS.FUNCTION);
 					return new DeclaredPropertyTypeFunctionType(this.getDeclaredFunction(functionType));
 					break;
 
