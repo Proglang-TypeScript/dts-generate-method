@@ -13,6 +13,7 @@ import FunctionExtraDifference from '../src/difference/FunctionExtraDifference';
 import { DeclaredPropertyTypeUnionType } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeUnionType';
 import { DeclaredPropertyTypeLiterals } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeLiterals';
 import { DeclaredFunction } from '../src/parser/model/DeclaredFunction';
+import { DeclaredPropertyTypeAnyKeyword } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeAnyKeyword';
 
 describe('Comparator', () => {
 	describe('templates', () => {
@@ -170,7 +171,7 @@ describe('Comparator', () => {
 					.toContainEqual(new ParameterTypeNonEmptyIntersectionDifference(
 						new DeclaredProperty(
 							"b",
-							new DeclaredPropertyTypePrimitiveKeyword("any"),
+							new DeclaredPropertyTypeAnyKeyword(),
 							false
 						),
 						new DeclaredProperty(
