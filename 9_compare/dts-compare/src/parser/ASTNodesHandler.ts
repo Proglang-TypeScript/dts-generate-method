@@ -18,6 +18,7 @@ import { DeclaredClass } from './model/DeclaredClass';
 import { DeclaredPropertyTypeReferenceType } from './model/declared-property-types/DeclaredPropertyTypeReferenceType';
 import TAGS from './tags/tags';
 import { DeclaredPropertyTypeAnyKeyword } from './model/declared-property-types/DeclaredPropertyTypeAnyKeyword';
+import { DeclaredPropertyTypeTupleType } from './model/declared-property-types/DeclaredPropertyTypeTupleType';
 
 
 interface SimplifiedFunctionDeclaration {
@@ -255,6 +256,18 @@ export class ASTNodesHandler {
 
 					return new DeclaredPropertyTypeReferenceType(typeReferenceNode.getText());
 
+					break;
+
+				case ts.SyntaxKind.TupleType:
+					const tupleTypeNode = type as ts.TupleTypeNode;
+
+					let tupleDeclaredProperties: DeclaredPropertyType[] = [];
+					tupleTypeNode.elementTypes.forEach(t => {
+						tupleDeclaredProperties.push(this.getDeclaredPropertyType(t));
+					});
+
+					this.tags.add(TAGS.TUPLE);
+					return new DeclaredPropertyTypeTupleType(tupleDeclaredProperties);
 					break;
 
 				case ts.SyntaxKind.AnyKeyword:
