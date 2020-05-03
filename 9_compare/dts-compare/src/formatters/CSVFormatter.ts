@@ -44,6 +44,14 @@ export default class CSVFormatter implements Formatter {
 	}
 
 	private getTags() : TAGS[] {
-		return [TAGS.OPTIONAL, TAGS.ANY, TAGS.ALIAS, TAGS.LITERALS, TAGS.ARRAY, TAGS.FUNCTION];
+		return [
+			TAGS.OPTIONAL,
+			TAGS.ANY,
+			TAGS.ALIAS,
+			TAGS.LITERALS,
+			TAGS.ARRAY,
+			TAGS.FUNCTION,
+			TAGS.INDEX_SIGNATURE
+		];
 	}
 }

@@ -1,6 +1,7 @@
 import { DeclaredFunction } from './DeclaredFunction';
 import { DeclaredProperty } from './DeclaredProperty';
 import { DeclaredClass } from './DeclaredClass';
+import { DeclaredIndexSignature } from './DeclaredIndexSignature';
 
 export class DeclaredInterface {
 	name: string;
@@ -8,6 +9,7 @@ export class DeclaredInterface {
 	methods: DeclaredFunction[];
 	classes: DeclaredClass[];
 	callSignatures: DeclaredFunction[];
+	indexSignatures: DeclaredIndexSignature[];
 
 	constructor(name: string) {
 		this.name = name;
@@ -15,6 +17,7 @@ export class DeclaredInterface {
 		this.methods = [];
 		this.classes = [];
 		this.callSignatures = [];
+		this.indexSignatures = [];
 	}
 
 	addProperty(p: DeclaredProperty) {
@@ -31,5 +34,9 @@ export class DeclaredInterface {
 
 	addClass(c: DeclaredClass) {
 		this.classes.push(c);
+	}
+
+	addIndexSignature(i: DeclaredIndexSignature) {
+		this.indexSignatures.push(i);
 	}
 }

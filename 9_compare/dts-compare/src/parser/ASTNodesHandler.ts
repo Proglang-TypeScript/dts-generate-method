@@ -19,6 +19,7 @@ import { DeclaredPropertyTypeReferenceType } from './model/declared-property-typ
 import TAGS from './tags/tags';
 import { DeclaredPropertyTypeAnyKeyword } from './model/declared-property-types/DeclaredPropertyTypeAnyKeyword';
 import { DeclaredPropertyTypeTupleType } from './model/declared-property-types/DeclaredPropertyTypeTupleType';
+import { DeclaredIndexSignature } from './model/DeclaredIndexSignature';
 
 
 interface SimplifiedFunctionDeclaration {
@@ -130,12 +131,23 @@ export class ASTNodesHandler {
 				case ts.SyntaxKind.CallSignature:
 					declaredInterface.addCallSignature(this.getDeclaredFunction(m as ts.CallSignatureDeclaration));
 
+				case ts.SyntaxKind.IndexSignature:
+					this.tags.add(TAGS.INDEX_SIGNATURE);
+					declaredInterface.addIndexSignature(this.getDeclaredIndexSignature(m as ts.IndexSignatureDeclaration));
+
 				default:
 					break;
 			}
 		});
 
 		return declaredInterface;
+	}
+
+	private getDeclaredIndexSignature(node: ts.IndexSignatureDeclaration) : DeclaredIndexSignature {
+		const parameter = this.getDeclaredProperty(node.parameters[0]);
+		const type = this.getDeclaredPropertyType(node.type);
+
+		return new DeclaredIndexSignature(parameter, type);
 	}
 
 	private getDeclaredClass(classDeclaration: ts.ClassDeclaration) : DeclaredClass {

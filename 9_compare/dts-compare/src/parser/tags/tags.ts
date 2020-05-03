@@ -5,7 +5,8 @@ enum TAGS {
 	LITERALS = "literals",
 	ARRAY = "type-array",
 	FUNCTION = "type-function",
-	TUPLE = "type-tuple"
+	TUPLE = "type-tuple",
+	INDEX_SIGNATURE = "index-signature"
 }
 
 export default TAGS;
