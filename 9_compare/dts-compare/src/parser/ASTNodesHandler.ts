@@ -98,7 +98,6 @@ export class ASTNodesHandler {
 		});
 
 		if (node.typeParameters) {
-			this.tags.add(TAGS.GENERICS);
 			node.typeParameters.forEach(typeParameter => {
 				declaredFunction.typeParameters.push(this.getPropertyTypeGeneric(typeParameter));
 			});
@@ -114,6 +113,8 @@ export class ASTNodesHandler {
 	}
 
 	private getPropertyTypeGeneric(node: ts.TypeParameterDeclaration) : DeclaredPropertyTypeGenericKeyword {
+		this.tags.add(TAGS.GENERICS);
+
 		const symbol = this.tsChecker.getSymbolAtLocation(node.name as ts.Node);
 		const type = new DeclaredPropertyTypeGenericKeyword(node.name.getText());
 
