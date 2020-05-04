@@ -20,13 +20,15 @@ import TAGS from './tags/tags';
 import { DeclaredPropertyTypeAnyKeyword } from './model/declared-property-types/DeclaredPropertyTypeAnyKeyword';
 import { DeclaredPropertyTypeTupleType } from './model/declared-property-types/DeclaredPropertyTypeTupleType';
 import { DeclaredIndexSignature } from './model/DeclaredIndexSignature';
+import { DeclaredPropertyTypeGenericKeyword } from './model/declared-property-types/DeclaredPropertyTypeGenericKeyword';
 
 
 interface SimplifiedFunctionDeclaration {
 	name?: ts.Identifier | ts.StringLiteral | ts.NumericLiteral | ts.PropertyName | undefined;
 	type?: ts.TypeNode | undefined;
 	parameters: ts.NodeArray<ts.ParameterDeclaration>;
-	modifiers?: ts.NodeArray<ts.Modifier> | undefined
+	modifiers?: ts.NodeArray<ts.Modifier> | undefined;
+	typeParameters?: ts.NodeArray<ts.TypeParameterDeclaration>;
 }
 
 interface SimplifiedInterfaceDeclaration {
@@ -91,9 +93,15 @@ export class ASTNodesHandler {
 		);
 
 		node.parameters.forEach(p => {
-			const parameterNode = p as ts.ParameterDeclaration;
-			declaredFunction.addParameter(this.getDeclaredProperty(parameterNode));
+			declaredFunction.addParameter(this.getDeclaredProperty(p));
 		});
+
+		if (node.typeParameters) {
+			this.tags.add(TAGS.GENERICS);
+			node.typeParameters.forEach(typeParameter => {
+				declaredFunction.typeParameters.push(new DeclaredPropertyTypeGenericKeyword(typeParameter.name.getText()));
+			});
+		}
 
 		if (node.modifiers) {
 			node.modifiers.forEach(m => {
@@ -125,6 +133,9 @@ export class ASTNodesHandler {
 					break;
 
 				case ts.SyntaxKind.MethodSignature:
+					let a = m as ts.MethodSignature;
+
+					a.typeParameters
 					declaredInterface.addMethod(this.getDeclaredFunction(m as ts.MethodSignature));
 					break;
 

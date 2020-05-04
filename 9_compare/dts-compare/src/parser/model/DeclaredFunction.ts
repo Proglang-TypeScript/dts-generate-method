@@ -1,10 +1,12 @@
 import { DeclaredProperty } from './DeclaredProperty';
+import { DeclaredPropertyTypeGenericKeyword } from './declared-property-types/DeclaredPropertyTypeGenericKeyword';
 
 export class DeclaredFunction {
 	name: string;
 	parameters: DeclaredProperty[];
 	returnType: string;
 	modifiers: string[];
+	typeParameters: DeclaredPropertyTypeGenericKeyword[];
 	private _isConstructor: boolean;
 
 	constructor(name: string, returnType: string) {
@@ -12,6 +14,7 @@ export class DeclaredFunction {
 		this.returnType = returnType;
 		this.parameters = [];
 		this.modifiers = [];
+		this.typeParameters = [];
 		this._isConstructor = false;
 	}
 
