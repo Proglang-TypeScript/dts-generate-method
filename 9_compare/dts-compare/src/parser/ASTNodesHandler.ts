@@ -44,6 +44,7 @@ interface SimplifiedPropertyDeclaration {
 
 export class ASTNodesHandler {
 	private mapSymbolInterfaces: Map<string, DeclaredInterface> = new Map();
+	private mapGenericTypes: WeakMap<ts.Symbol, DeclaredPropertyTypeGenericKeyword> = new Map();
 	private tsChecker: ts.TypeChecker;
 	private sourceFile: ts.SourceFile;
 	private tags: Set<string>;
@@ -99,7 +100,7 @@ export class ASTNodesHandler {
 		if (node.typeParameters) {
 			this.tags.add(TAGS.GENERICS);
 			node.typeParameters.forEach(typeParameter => {
-				declaredFunction.typeParameters.push(new DeclaredPropertyTypeGenericKeyword(typeParameter.name.getText()));
+				declaredFunction.typeParameters.push(this.getPropertyTypeGeneric(typeParameter));
 			});
 		}
 
@@ -110,6 +111,25 @@ export class ASTNodesHandler {
 		}
 
 		return declaredFunction;
+	}
+
+	private getPropertyTypeGeneric(node: ts.TypeParameterDeclaration) : DeclaredPropertyTypeGenericKeyword {
+		const symbol = this.tsChecker.getSymbolAtLocation(node.name as ts.Node);
+		const type = new DeclaredPropertyTypeGenericKeyword(node.name.getText());
+
+		if (symbol === undefined) {
+			return type;
+		}
+
+		if (!this.mapGenericTypes.has(symbol)) {
+			symbol.declarations.forEach(d => {
+				if (d.kind === ts.SyntaxKind.TypeParameter) {
+					this.mapGenericTypes.set(symbol, type);
+				}
+			});
+		}
+
+		return this.mapGenericTypes.get(symbol) || type;
 	}
 
 	private getDeclaredInterface(node: SimplifiedInterfaceDeclaration) : DeclaredInterface {
@@ -275,6 +295,11 @@ export class ASTNodesHandler {
 						if (interfaceForSymbol !== null) {
 							return new DeclaredPropertyTypeInterface(interfaceForSymbol);
 						}
+
+						const typeParameter = this.getTypeParameterForSymbol(tsSymbol);
+						if (typeParameter !== null) {
+							return this.getPropertyTypeGeneric(typeParameter);
+						}
 					}
 
 					return new DeclaredPropertyTypeReferenceType(typeReferenceNode.getText());
@@ -339,6 +364,21 @@ export class ASTNodesHandler {
 		}
 
 		return typeAliasDeclarations[0];
+	}
+
+	private getTypeParameterForSymbol(tsSymbol: ts.Symbol): ts.TypeParameterDeclaration | null {
+		const typeParameters = tsSymbol.declarations.filter(d => {
+			return (
+				(d.kind === ts.SyntaxKind.TypeParameter) &&
+				(d.getSourceFile().fileName === this.sourceFile.fileName)
+			);
+		}) as ts.TypeParameterDeclaration[];
+
+		if (typeParameters.length === 0) {
+			return null;
+		}
+
+		return typeParameters[0];
 	}
 
 	private getDeclaredPropertyArrayType(node: ts.TypeNode): DeclaredPropertyArrayType {
