@@ -2,6 +2,7 @@ import { DeclaredFunction } from './DeclaredFunction';
 import { DeclaredProperty } from './DeclaredProperty';
 import { DeclaredClass } from './DeclaredClass';
 import { DeclaredIndexSignature } from './DeclaredIndexSignature';
+import { DeclaredPropertyTypeGenericKeyword } from './declared-property-types/DeclaredPropertyTypeGenericKeyword';
 
 export class DeclaredInterface {
 	name: string;
@@ -10,6 +11,7 @@ export class DeclaredInterface {
 	classes: DeclaredClass[];
 	callSignatures: DeclaredFunction[];
 	indexSignatures: DeclaredIndexSignature[];
+	typeParameters: DeclaredPropertyTypeGenericKeyword[];
 
 	constructor(name: string) {
 		this.name = name;
@@ -18,6 +20,7 @@ export class DeclaredInterface {
 		this.classes = [];
 		this.callSignatures = [];
 		this.indexSignatures = [];
+		this.typeParameters = [];
 	}
 
 	addProperty(p: DeclaredProperty) {

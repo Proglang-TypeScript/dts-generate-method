@@ -34,6 +34,7 @@ interface SimplifiedFunctionDeclaration {
 interface SimplifiedInterfaceDeclaration {
 	name?: ts.Identifier;
 	members: ts.NodeArray<ts.TypeElement>
+	typeParameters?: ts.NodeArray<ts.TypeParameterDeclaration>;
 }
 
 interface SimplifiedPropertyDeclaration {
@@ -113,10 +114,12 @@ export class ASTNodesHandler {
 	}
 
 	private getPropertyTypeGeneric(node: ts.TypeParameterDeclaration) : DeclaredPropertyTypeGenericKeyword {
-		this.tags.add(TAGS.GENERICS);
-
 		const symbol = this.tsChecker.getSymbolAtLocation(node.name as ts.Node);
-		const type = new DeclaredPropertyTypeGenericKeyword(node.name.getText());
+		const type = new DeclaredPropertyTypeGenericKeyword(
+			node.name.getText(),
+			node.constraint ? this.getDeclaredPropertyType(node.constraint) : undefined,
+			node.default ? this.getDeclaredPropertyType(node.default) : undefined
+		);
 
 		if (symbol === undefined) {
 			return type;
@@ -172,6 +175,13 @@ export class ASTNodesHandler {
 			}
 		});
 
+		if (node.typeParameters) {
+			this.tags.add(TAGS.GENERICS_INTERFACE);
+			node.typeParameters.forEach(typeParameter => {
+				declaredInterface.typeParameters.push(this.getPropertyTypeGeneric(typeParameter));
+			});
+		}
+
 		return declaredInterface;
 	}
 
@@ -211,6 +221,13 @@ export class ASTNodesHandler {
 					break;
 			}
 		});
+
+		if (classDeclaration.typeParameters) {
+			this.tags.add(TAGS.GENERICS_CLASS);
+			classDeclaration.typeParameters.forEach(typeParameter => {
+				declaredClass.typeParameters.push(this.getPropertyTypeGeneric(typeParameter));
+			});
+		}
 
 		return declaredClass;
 	}
@@ -299,6 +316,7 @@ export class ASTNodesHandler {
 
 						const typeParameter = this.getTypeParameterForSymbol(tsSymbol);
 						if (typeParameter !== null) {
+							this.tags.add(TAGS.GENERICS_FUNCTION);
 							return this.getPropertyTypeGeneric(typeParameter);
 						}
 					}

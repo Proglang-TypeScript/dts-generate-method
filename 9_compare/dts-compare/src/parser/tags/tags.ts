@@ -7,7 +7,9 @@ enum TAGS {
 	FUNCTION = "type-function",
 	TUPLE = "type-tuple",
 	INDEX_SIGNATURE = "index-signature",
-	GENERICS = "generics"
+	GENERICS_FUNCTION = "generics-function",
+	GENERICS_CLASS = "generics-class",
+	GENERICS_INTERFACE = "generics-interface"
 }
 
 export default TAGS;
