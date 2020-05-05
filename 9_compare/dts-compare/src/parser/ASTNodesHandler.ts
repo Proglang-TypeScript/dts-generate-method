@@ -87,11 +87,10 @@ export class ASTNodesHandler {
 
 	private getDeclaredFunction(node: SimplifiedFunctionDeclaration): DeclaredFunction {
 		let functionName = node.name ? node.name.getText() : "";
-		let functionReturnType = node.type ? node.type.getText() : "";
 
 		let declaredFunction = new DeclaredFunction(
 			functionName,
-			functionReturnType
+			this.getDeclaredPropertyType(node.type)
 		);
 
 		node.parameters.forEach(p => {
@@ -137,16 +136,7 @@ export class ASTNodesHandler {
 	}
 
 	private getDeclaredInterface(node: SimplifiedInterfaceDeclaration) : DeclaredInterface {
-		let declaredInterface = new DeclaredInterface(node.name ? node.name.getText() : "");
-
-		const symbol = this.tsChecker.getSymbolAtLocation(node.name as ts.Node);
-		if (symbol !== undefined) {
-			symbol.declarations.forEach(d => {
-				if (d.kind === ts.SyntaxKind.InterfaceDeclaration) {
-					this.mapSymbolInterfaces.set(symbol.escapedName.toString(), declaredInterface);
-				}
-			});
-		}
+		const declaredInterface = new DeclaredInterface(node.name ? node.name.getText() : "");
 
 		node.members.forEach(m => {
 			switch (m.kind) {
@@ -182,7 +172,20 @@ export class ASTNodesHandler {
 			});
 		}
 
-		return declaredInterface;
+		const symbol = this.tsChecker.getSymbolAtLocation(node.name as ts.Node);
+		if (symbol === undefined) {
+			return declaredInterface;
+		}
+
+		if (!this.mapSymbolInterfaces.has(symbol.escapedName.toString())) {
+			symbol.declarations.forEach(d => {
+				if (d.kind === ts.SyntaxKind.InterfaceDeclaration) {
+					this.mapSymbolInterfaces.set(symbol.escapedName.toString(), declaredInterface);
+				}
+			});
+		}
+
+		return this.mapSymbolInterfaces.get(symbol.escapedName.toString()) || declaredInterface;
 	}
 
 	private getDeclaredIndexSignature(node: ts.IndexSignatureDeclaration) : DeclaredIndexSignature {
@@ -350,12 +353,6 @@ export class ASTNodesHandler {
 	}
 
 	private getInterfaceForSymbol(tsSymbol: ts.Symbol) : DeclaredInterface | null {
-		let interfaceForSymbol = this.mapSymbolInterfaces.get(tsSymbol.escapedName.toString());
-
-		if (interfaceForSymbol !== undefined) {
-			return interfaceForSymbol;
-		}
-
 		const interfaceDeclarations = tsSymbol.declarations.filter(d => {
 			return (
 				(d.kind === ts.SyntaxKind.InterfaceDeclaration) &&

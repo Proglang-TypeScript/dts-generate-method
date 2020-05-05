@@ -283,7 +283,7 @@ describe('Comparator', () => {
 			const comparator = new Comparator();
 			const differences = comparator.compare(parsedClassExpected, parsedClassActual).differences;
 
-			const missingFunction = new DeclaredFunction("myMethod", "void")
+			const missingFunction = new DeclaredFunction("myMethod", new DeclaredPropertyTypePrimitiveKeyword("void"))
 				.addParameter(new DeclaredProperty("a", new DeclaredPropertyTypePrimitiveKeyword("number"), false));
 
 			expect(differences).toContainEqual(new FunctionMissingDifference(missingFunction));
@@ -296,7 +296,7 @@ describe('Comparator', () => {
 			const comparator = new Comparator();
 			const differences = comparator.compare(parsedClassExpected, parsedClassActual).differences;
 
-			const extraFunction = new DeclaredFunction("myExtraMethod", "void");
+			const extraFunction = new DeclaredFunction("myExtraMethod", new DeclaredPropertyTypePrimitiveKeyword("void"));
 
 			expect(differences).toContainEqual(
 				new FunctionExtraDifference(extraFunction)

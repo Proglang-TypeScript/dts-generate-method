@@ -60,6 +60,10 @@ describe('Parser', () => {
 			expect(parsedFile.classes[0].constructors[0].parameters[0].type).toEqual(
 				new DeclaredPropertyTypeInterface(expectedInterface)
 			);
+
+			expect(parsedFile.classes[0].constructors[0].parameters[0].type.value).toBe(
+				parsedFile.namespaces.Greeter.interfaces[0]
+			)
 		});
 	});
 });
