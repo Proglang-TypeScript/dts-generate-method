@@ -14,6 +14,7 @@ import { DeclaredPropertyTypeUnionType } from '../src/parser/model/declared-prop
 import { DeclaredPropertyTypeLiterals } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeLiterals';
 import { DeclaredFunction } from '../src/parser/model/DeclaredFunction';
 import { DeclaredPropertyTypeAnyKeyword } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeAnyKeyword';
+import { DeclaredPropertyTypeUndefinedKeyword } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeUndefinedKeyword';
 
 describe('Comparator', () => {
 	describe('templates', () => {
@@ -162,7 +163,7 @@ describe('Comparator', () => {
 						),
 						new DeclaredProperty(
 							"a",
-							new DeclaredPropertyTypePrimitiveKeyword("undefined"),
+							new DeclaredPropertyTypeUndefinedKeyword(),
 							false
 						),
 					));
