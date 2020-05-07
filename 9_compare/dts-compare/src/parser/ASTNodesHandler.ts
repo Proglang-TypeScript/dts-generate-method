@@ -21,6 +21,7 @@ import { DeclaredPropertyTypeAnyKeyword } from './model/declared-property-types/
 import { DeclaredPropertyTypeTupleType } from './model/declared-property-types/DeclaredPropertyTypeTupleType';
 import { DeclaredIndexSignature } from './model/DeclaredIndexSignature';
 import { DeclaredPropertyTypeGenericKeyword } from './model/declared-property-types/DeclaredPropertyTypeGenericKeyword';
+import { DeclaredPropertyTypeUndefinedKeyword } from './model/declared-property-types/DeclaredPropertyTypeUndefinedKeyword';
 
 
 interface SimplifiedFunctionDeclaration {
@@ -344,6 +345,11 @@ export class ASTNodesHandler {
 					this.tags.add(TAGS.ANY);
 
 					return new DeclaredPropertyTypeAnyKeyword();
+
+				case ts.SyntaxKind.UndefinedKeyword:
+					this.tags.add(TAGS.UNDEFINED);
+
+					return new DeclaredPropertyTypeUndefinedKeyword();
 			}
 		}
 

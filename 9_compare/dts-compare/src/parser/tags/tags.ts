@@ -9,7 +9,8 @@ enum TAGS {
 	INDEX_SIGNATURE = "index-signature",
 	GENERICS_FUNCTION = "generics-function",
 	GENERICS_CLASS = "generics-class",
-	GENERICS_INTERFACE = "generics-interface"
+	GENERICS_INTERFACE = "generics-interface",
+	UNDEFINED = "undefined"
 }
 
 export default TAGS;
