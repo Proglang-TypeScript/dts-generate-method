@@ -137,7 +137,22 @@ export class ASTNodesHandler {
 	}
 
 	private getDeclaredInterface(node: SimplifiedInterfaceDeclaration) : DeclaredInterface {
+		const symbol = this.tsChecker.getSymbolAtLocation(node.name as ts.Node);
+		const interfaceForSymbol = this.mapSymbolInterfaces.get(String(symbol?.escapedName.toString()));
+
+		if (interfaceForSymbol !== undefined) {
+			return interfaceForSymbol;
+		}
+
 		const declaredInterface = new DeclaredInterface(node.name ? node.name.getText() : "");
+
+		if (symbol !== undefined) {
+			symbol.declarations.forEach(d => {
+				if (d.kind === ts.SyntaxKind.InterfaceDeclaration) {
+					this.mapSymbolInterfaces.set(symbol.escapedName.toString(), declaredInterface);
+				}
+			});
+		}
 
 		node.members.forEach(m => {
 			switch (m.kind) {
@@ -173,20 +188,7 @@ export class ASTNodesHandler {
 			});
 		}
 
-		const symbol = this.tsChecker.getSymbolAtLocation(node.name as ts.Node);
-		if (symbol === undefined) {
-			return declaredInterface;
-		}
-
-		if (!this.mapSymbolInterfaces.has(symbol.escapedName.toString())) {
-			symbol.declarations.forEach(d => {
-				if (d.kind === ts.SyntaxKind.InterfaceDeclaration) {
-					this.mapSymbolInterfaces.set(symbol.escapedName.toString(), declaredInterface);
-				}
-			});
-		}
-
-		return this.mapSymbolInterfaces.get(symbol.escapedName.toString()) || declaredInterface;
+		return declaredInterface;
 	}
 
 	private getDeclaredIndexSignature(node: ts.IndexSignatureDeclaration) : DeclaredIndexSignature {
