@@ -45,7 +45,7 @@ interface SimplifiedPropertyDeclaration {
 }
 
 export class ASTNodesHandler {
-	private mapSymbolInterfaces: Map<string, DeclaredInterface> = new Map();
+	private mapSymbolInterfaces: WeakMap<ts.Symbol, DeclaredInterface> = new Map();
 	private mapGenericTypes: WeakMap<ts.Symbol, DeclaredPropertyTypeGenericKeyword> = new Map();
 	private tsChecker: ts.TypeChecker;
 	private sourceFile: ts.SourceFile;
@@ -138,10 +138,12 @@ export class ASTNodesHandler {
 
 	private getDeclaredInterface(node: SimplifiedInterfaceDeclaration) : DeclaredInterface {
 		const symbol = this.tsChecker.getSymbolAtLocation(node.name as ts.Node);
-		const interfaceForSymbol = this.mapSymbolInterfaces.get(String(symbol?.escapedName.toString()));
 
-		if (interfaceForSymbol !== undefined) {
-			return interfaceForSymbol;
+		if (symbol !== undefined) {
+			const interfaceForSymbol = this.mapSymbolInterfaces.get(symbol);
+			if (interfaceForSymbol !== undefined) {
+				return interfaceForSymbol;
+			}
 		}
 
 		const declaredInterface = new DeclaredInterface(node.name ? node.name.getText() : "");
@@ -149,7 +151,7 @@ export class ASTNodesHandler {
 		if (symbol !== undefined) {
 			symbol.declarations.forEach(d => {
 				if (d.kind === ts.SyntaxKind.InterfaceDeclaration) {
-					this.mapSymbolInterfaces.set(symbol.escapedName.toString(), declaredInterface);
+					this.mapSymbolInterfaces.set(symbol, declaredInterface);
 				}
 			});
 		}
