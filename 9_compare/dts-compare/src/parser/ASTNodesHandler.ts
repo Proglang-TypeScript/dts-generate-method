@@ -22,6 +22,7 @@ import { DeclaredPropertyTypeTupleType } from './model/declared-property-types/D
 import { DeclaredIndexSignature } from './model/DeclaredIndexSignature';
 import { DeclaredPropertyTypeGenericKeyword } from './model/declared-property-types/DeclaredPropertyTypeGenericKeyword';
 import { DeclaredPropertyTypeUndefinedKeyword } from './model/declared-property-types/DeclaredPropertyTypeUndefinedKeyword';
+import DATA_MODIFIERS from './model/data-modifiers';
 
 
 interface SimplifiedFunctionDeclaration {
@@ -42,6 +43,7 @@ interface SimplifiedPropertyDeclaration {
 	name?: ts.PropertyName | ts.BindingName;
 	type?: ts.TypeNode | undefined;
 	questionToken?: ts.Token<ts.SyntaxKind.QuestionToken> | undefined;
+	modifiers?: ts.ModifiersArray | undefined
 }
 
 export class ASTNodesHandler {
@@ -249,11 +251,21 @@ export class ASTNodesHandler {
 			this.tags.add(TAGS.OPTIONAL);
 		}
 
-		return new DeclaredProperty(
+		const property = new DeclaredProperty(
 			parameterName,
 			this.getDeclaredPropertyType(p.type),
 			isOptional
 		);
+
+		p.modifiers?.forEach(m => {
+			switch (m.kind) {
+				case ts.SyntaxKind.PrivateKeyword:
+					this.tags.add(TAGS.PRIVATE);
+					property.addModifier(DATA_MODIFIERS.PRIVATE);
+			}
+		});
+
+		return property;
 	}
 
 	private getDeclaredPropertyType(type: ts.TypeNode | undefined) : DeclaredPropertyType {

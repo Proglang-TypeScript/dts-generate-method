@@ -15,6 +15,7 @@ import { DeclaredPropertyTypeLiterals } from '../src/parser/model/declared-prope
 import { DeclaredFunction } from '../src/parser/model/DeclaredFunction';
 import { DeclaredPropertyTypeAnyKeyword } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeAnyKeyword';
 import { DeclaredPropertyTypeUndefinedKeyword } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeUndefinedKeyword';
+import { DeclaredPropertyArrayType } from '../src/parser/model/declared-property-types/DeclaredPropertyArrayType';
 
 describe('Comparator', () => {
 	describe('templates', () => {
@@ -54,22 +55,16 @@ describe('Comparator', () => {
 				const comparator = new Comparator();
 				expect(comparator.compare(parsedClassExpected, parsedClassActual).differences)
 					.toContainEqual(new ParameterTypeEmptyIntersectionDifference(
-						{
-							name: "a",
-							type: {
-								kind: "primitive_keyword",
-								value: "number"
-							},
-							optional: false
-						},
-						{
-							name: "a1",
-							type: {
-								kind: "primitive_keyword",
-								value: "string"
-							},
-							optional: false
-						}
+						new DeclaredProperty(
+							"a",
+							new DeclaredPropertyTypePrimitiveKeyword("number"),
+							false
+						),
+						new DeclaredProperty(
+							"a1",
+							new DeclaredPropertyTypePrimitiveKeyword("string"),
+							false
+						),
 					));
 			});
 
@@ -80,22 +75,16 @@ describe('Comparator', () => {
 				const comparator = new Comparator();
 				expect(comparator.compare(parsedClassExpected, parsedClassActual).differences)
 					.toContainEqual(new ParameterTypeEmptyIntersectionDifference(
-						{
-							name: "a",
-							type: {
-								kind: "primitive_keyword",
-								value: "string"
-							},
-							optional: false
-						},
-						{
-							name: "a",
-							type: {
-								kind: "primitive_keyword",
-								value: "number"
-							},
-							optional: false
-						}
+						new DeclaredProperty(
+							"a",
+							new DeclaredPropertyTypePrimitiveKeyword("string"),
+							false
+						),
+						new DeclaredProperty(
+							"a",
+							new DeclaredPropertyTypePrimitiveKeyword("number"),
+							false
+						)
 					));
 			});
 
@@ -246,14 +235,11 @@ describe('Comparator', () => {
 				const result = comparator.compare(parsedClassExpected, parsedClassActual).differences;
 				expect(result)
 					.toContainEqual(new ParameterMissingDifference(
-						{
-							name: "a",
-							type: {
-								kind: "primitive_keyword",
-								value: "string"
-							},
-							optional: false
-						}
+						new DeclaredProperty(
+							"a",
+							new DeclaredPropertyTypePrimitiveKeyword("string"),
+							false
+						)
 					));
 			});
 
@@ -265,14 +251,11 @@ describe('Comparator', () => {
 				const result = comparator.compare(parsedClassExpected, parsedClassActual).differences;
 				expect(result)
 					.toContainEqual(new ParameterExtraDifference(
-						{
-							name: "b",
-							type: {
-								kind: "primitive_keyword",
-								value: "string"
-							},
-							optional: false
-						}
+						new DeclaredProperty(
+							"b",
+							new DeclaredPropertyTypePrimitiveKeyword("string"),
+							false
+						)
 					));
 			});
 		});
@@ -314,48 +297,30 @@ describe('Comparator', () => {
 			let result = comparator.compare(parsedClassExpected, parsedClassActual).differences;
 			expect(result)
 				.toContainEqual(new ParameterTypeEmptyIntersectionDifference(
-					{
-						name: "a",
-						type: {
-							kind: "primitive_keyword",
-							value: "string"
-						},
-						optional: false
-					},
-					{
-						name: "a",
-						type: {
-							kind: "primitive_keyword",
-							value: "number"
-						},
-						optional: false
-					}
+					new DeclaredProperty(
+						"a",
+						new DeclaredPropertyTypePrimitiveKeyword("string"),
+						false
+					),
+					new DeclaredProperty(
+						"a",
+						new DeclaredPropertyTypePrimitiveKeyword("number"),
+						false
+					)
 				));
 			
 			expect(result)
 				.toContainEqual(new ParameterTypeEmptyIntersectionDifference(
-					{
-						name: "c",
-						type: {
-							kind: "array_type",
-							value: {
-								kind: "primitive_keyword",
-								value: "string"
-							}
-						},
-						optional: false
-					},
-					{
-						name: "c",
-						type: {
-							kind: "array_type",
-							value: {
-								kind: "primitive_keyword",
-								value: "number"
-							}
-						},
-						optional: false
-					}
+					new DeclaredProperty(
+						"c",
+						new DeclaredPropertyArrayType(new DeclaredPropertyTypePrimitiveKeyword("string")),
+						false
+					),
+					new DeclaredProperty(
+						"c",
+						new DeclaredPropertyArrayType(new DeclaredPropertyTypePrimitiveKeyword("number")),
+						false
+					)
 				));
 		});
 
@@ -367,29 +332,20 @@ describe('Comparator', () => {
 			const result = comparator.compare(parsedClassExpected, parsedClassActual).differences;
 			expect(result)
 				.toContainEqual(new ParameterMissingDifference(
-					{
-						name: "b",
-						type: {
-							kind: "primitive_keyword",
-							value: "number"
-						},
-						optional: false
-					}
+					new DeclaredProperty(
+						"b",
+						new DeclaredPropertyTypePrimitiveKeyword("number"),
+						false
+					)
 				));
 
 			expect(result)
 				.toContainEqual(new ParameterMissingDifference(
-					{
-						name: "c",
-						type: {
-							kind: "array_type",
-							value: {
-								kind: "primitive_keyword",
-								value: "string"
-							}
-						},
-						optional: false
-					}
+					new DeclaredProperty(
+						"c",
+						new DeclaredPropertyArrayType(new DeclaredPropertyTypePrimitiveKeyword("string")),
+						false
+					)
 				));
 		});
 
@@ -401,29 +357,20 @@ describe('Comparator', () => {
 			const result = comparator.compare(parsedClassExpected, parsedClassActual).differences;
 			expect(result)
 				.toContainEqual(new ParameterExtraDifference(
-					{
-						name: "something",
-						type: {
-							kind: "primitive_keyword",
-							value: "number"
-						},
-						optional: false
-					}
+					new DeclaredProperty(
+						"something",
+						new DeclaredPropertyTypePrimitiveKeyword("number"),
+						false
+					)
 				));
 
 			expect(result)
 				.toContainEqual(new ParameterExtraDifference(
-					{
-						name: "anotherThing",
-						type: {
-							kind: "array_type",
-							value: {
-								kind: "primitive_keyword",
-								value: "string"
-							}
-						},
-						optional: false
-					}
+					new DeclaredProperty(
+						"anotherThing",
+						new DeclaredPropertyArrayType(new DeclaredPropertyTypePrimitiveKeyword("string")),
+						false
+					)
 				));
 		});
 

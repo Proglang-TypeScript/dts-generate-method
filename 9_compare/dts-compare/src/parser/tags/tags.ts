@@ -10,7 +10,8 @@ enum TAGS {
 	GENERICS_FUNCTION = "generics-function",
 	GENERICS_CLASS = "generics-class",
 	GENERICS_INTERFACE = "generics-interface",
-	UNDEFINED = "undefined"
+	UNDEFINED = "undefined",
+	PRIVATE = "private",
 }
 
 export default TAGS;

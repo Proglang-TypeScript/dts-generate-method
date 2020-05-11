@@ -3,6 +3,8 @@ import { DeclaredPropertyTypeInterface } from '../src/parser/model/declared-prop
 import { DeclaredInterface } from '../src/parser/model/DeclaredInterface';
 import { DeclaredProperty } from '../src/parser/model/DeclaredProperty';
 import { DeclaredPropertyTypePrimitiveKeyword } from '../src/parser/model/declared-property-types/DeclaredPropertyTypePrimitiveKeyword';
+import DATA_MODIFIERS from '../src/parser/model/data-modifiers';
+import TAGS from '../src/parser/tags/tags';
 
 describe('Parser', () => {
 	describe('interfaces', () => {
@@ -64,6 +66,21 @@ describe('Parser', () => {
 			expect(parsedFile.classes[0].constructors[0].parameters[0].type.value).toBe(
 				parsedFile.namespaces.Greeter.interfaces[0]
 			)
+		});
+
+		it('should detect data modifiers', () => {
+			const parser = new DeclarationFileParser("tests/files/parser/interfaces/data-modifiers.d.ts")
+			const parsedFile = parser.parse();
+
+			expect(parsedFile.classes[0].properties).toContainEqual(
+				new DeclaredProperty(
+					"thisIsPrivate",
+					new DeclaredPropertyTypePrimitiveKeyword("string"),
+					false
+				).addModifier(DATA_MODIFIERS.PRIVATE)
+			);
+
+			expect(parser.tags).toContainEqual(TAGS.PRIVATE);
 		});
 	});
 });
