@@ -38,6 +38,7 @@ Extracts runtime information for the working modules.
 Generates declaration files for the working modules.
 
 ### 8_parse-dts
+* **DEPRECATED** See 9_compare
 * Parses declaration files.
 * Extracts the type of the declaration file (module.d.ts, module-function.d.ts, module-class.d.ts).
 * Compares the generated declaration file with the declaration file in the Definitely Typed repo.
