@@ -273,6 +273,11 @@ export class ASTNodesHandler {
 					this.tags.add(TAGS.STATIC);
 					property.addModifier(DATA_MODIFIERS.STATIC);
 					break;
+
+				case ts.SyntaxKind.ReadonlyKeyword:
+					this.tags.add(TAGS.READONLY);
+					property.addModifier(DATA_MODIFIERS.READONLY);
+					break;
 			}
 		});
 

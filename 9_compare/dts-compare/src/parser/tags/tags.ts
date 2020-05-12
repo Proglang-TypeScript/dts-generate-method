@@ -13,7 +13,8 @@ enum TAGS {
 	UNDEFINED = "undefined",
 	PRIVATE = "private",
 	PROTECTED = "protected",
-	STATIC = "static"
+	STATIC = "static",
+	READONLY = "readonly"
 }
 
 export default TAGS;

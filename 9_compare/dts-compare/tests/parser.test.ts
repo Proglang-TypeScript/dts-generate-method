@@ -102,6 +102,16 @@ describe('Parser', () => {
 			);
 
 			expect(parser.tags).toContainEqual(TAGS.STATIC);
+
+			expect(parsedFile.classes[0].properties).toContainEqual(
+				new DeclaredProperty(
+					"thisIsReadOnly",
+					new DeclaredPropertyTypePrimitiveKeyword("boolean"),
+					false
+				).addModifier(DATA_MODIFIERS.READONLY)
+			);
+
+			expect(parser.tags).toContainEqual(TAGS.READONLY);
 		});
 	});
 });
