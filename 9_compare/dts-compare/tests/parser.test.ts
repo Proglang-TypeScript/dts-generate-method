@@ -6,6 +6,7 @@ import { DeclaredPropertyTypePrimitiveKeyword } from '../src/parser/model/declar
 import DATA_MODIFIERS from '../src/parser/model/data-modifiers';
 import TAGS from '../src/parser/tags/tags';
 import { DeclaredPropertyArrayType } from '../src/parser/model/declared-property-types/DeclaredPropertyArrayType';
+import { DeclaredPropertyTypeIntersectionType } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeIntersectionType';
 
 describe('Parser', () => {
 	describe('interfaces', () => {
@@ -137,6 +138,20 @@ describe('Parser', () => {
 			);
 
 			expect(parser.tags).toContainEqual(TAGS.DOT_DOT_DOT_TOKEN);
+		});
+
+		it('should detect the intersection type', () => {
+			const parser = new DeclarationFileParser("tests/files/parser/interfaces/intersection-type.d.ts")
+			const parsedFile = parser.parse();
+
+			expect(parsedFile.functions[0].returnType).toEqual(
+				new DeclaredPropertyTypeIntersectionType([
+					new DeclaredPropertyTypePrimitiveKeyword("string"),
+					new DeclaredPropertyTypePrimitiveKeyword("number")
+				])
+			);
+
+			expect(parser.tags).toContainEqual(TAGS.INTERSECTION);
 		});
 	});
 });

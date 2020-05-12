@@ -23,6 +23,7 @@ import { DeclaredIndexSignature } from './model/DeclaredIndexSignature';
 import { DeclaredPropertyTypeGenericKeyword } from './model/declared-property-types/DeclaredPropertyTypeGenericKeyword';
 import { DeclaredPropertyTypeUndefinedKeyword } from './model/declared-property-types/DeclaredPropertyTypeUndefinedKeyword';
 import DATA_MODIFIERS from './model/data-modifiers';
+import { DeclaredPropertyTypeIntersectionType } from './model/declared-property-types/DeclaredPropertyTypeIntersectionType';
 
 
 interface SimplifiedFunctionDeclaration {
@@ -337,6 +338,18 @@ export class ASTNodesHandler {
 					});
 
 					return new DeclaredPropertyTypeUnionType(unionDeclaredProperties);
+					break;
+
+				case ts.SyntaxKind.IntersectionType:
+					const intersectionTypeNode = type as ts.IntersectionTypeNode;
+
+					let intersectionDeclaredProperties: DeclaredPropertyType[] = [];
+					intersectionTypeNode.types.forEach(t => {
+						intersectionDeclaredProperties.push(this.getDeclaredPropertyType(t));
+					});
+
+					this.tags.add(TAGS.INTERSECTION);
+					return new DeclaredPropertyTypeIntersectionType(intersectionDeclaredProperties);
 					break;
 
 				case ts.SyntaxKind.ArrayType:
