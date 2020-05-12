@@ -4,6 +4,8 @@ RUN apk update
 
 WORKDIR /usr/local/app
 COPY package*.json ./
+
+RUN npm audit
 RUN npm install
 
 COPY . .
