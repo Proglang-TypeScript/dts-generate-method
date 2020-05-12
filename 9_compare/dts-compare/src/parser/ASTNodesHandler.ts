@@ -278,6 +278,11 @@ export class ASTNodesHandler {
 					this.tags.add(TAGS.READONLY);
 					property.addModifier(DATA_MODIFIERS.READONLY);
 					break;
+
+				case ts.SyntaxKind.PublicKeyword:
+					this.tags.add(TAGS.PUBLIC);
+					property.addModifier(DATA_MODIFIERS.PUBLIC);
+					break;
 			}
 		});
 

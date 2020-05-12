@@ -112,6 +112,16 @@ describe('Parser', () => {
 			);
 
 			expect(parser.tags).toContainEqual(TAGS.READONLY);
+
+			expect(parsedFile.classes[0].properties).toContainEqual(
+				new DeclaredProperty(
+					"thisIsPublic",
+					new DeclaredPropertyTypePrimitiveKeyword("string"),
+					false
+				).addModifier(DATA_MODIFIERS.PUBLIC)
+			);
+
+			expect(parser.tags).toContainEqual(TAGS.PUBLIC);
 		});
 	});
 });

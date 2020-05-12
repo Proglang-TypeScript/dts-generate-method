@@ -14,7 +14,8 @@ enum TAGS {
 	PRIVATE = "private",
 	PROTECTED = "protected",
 	STATIC = "static",
-	READONLY = "readonly"
+	READONLY = "readonly",
+	PUBLIC = "public"
 }
 
 export default TAGS;
