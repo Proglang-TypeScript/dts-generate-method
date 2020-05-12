@@ -23,6 +23,7 @@ WORKDIR /usr/local/app
 COPY --from=builder /usr/local/app/node_modules ./node_modules
 COPY --from=builder /usr/local/app/dist ./dist
 COPY --from=builder /usr/local/app/package.json ./package.json
+COPY --from=builder /usr/local/app/package-lock.json ./package-lock.json
 
 RUN npm link
 
