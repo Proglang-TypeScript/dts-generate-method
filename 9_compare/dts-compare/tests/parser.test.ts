@@ -81,6 +81,16 @@ describe('Parser', () => {
 			);
 
 			expect(parser.tags).toContainEqual(TAGS.PRIVATE);
+
+			expect(parsedFile.classes[0].properties).toContainEqual(
+				new DeclaredProperty(
+					"thisIsProtected",
+					new DeclaredPropertyTypePrimitiveKeyword("number"),
+					false
+				).addModifier(DATA_MODIFIERS.PROTECTED)
+			);
+
+			expect(parser.tags).toContainEqual(TAGS.PROTECTED);
 		});
 	});
 });

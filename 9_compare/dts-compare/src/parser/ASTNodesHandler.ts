@@ -262,6 +262,12 @@ export class ASTNodesHandler {
 				case ts.SyntaxKind.PrivateKeyword:
 					this.tags.add(TAGS.PRIVATE);
 					property.addModifier(DATA_MODIFIERS.PRIVATE);
+					break;
+
+				case ts.SyntaxKind.ProtectedKeyword:
+					this.tags.add(TAGS.PROTECTED);
+					property.addModifier(DATA_MODIFIERS.PROTECTED);
+					break;
 			}
 		});
 

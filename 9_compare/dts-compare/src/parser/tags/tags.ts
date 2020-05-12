@@ -12,6 +12,7 @@ enum TAGS {
 	GENERICS_INTERFACE = "generics-interface",
 	UNDEFINED = "undefined",
 	PRIVATE = "private",
+	PROTECTED = "protected"
 }
 
 export default TAGS;
