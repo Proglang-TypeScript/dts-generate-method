@@ -15,7 +15,8 @@ enum TAGS {
 	PROTECTED = "protected",
 	STATIC = "static",
 	READONLY = "readonly",
-	PUBLIC = "public"
+	PUBLIC = "public",
+	DOT_DOT_DOT_TOKEN = "dot-dot-dot-token"
 }
 
 export default TAGS;

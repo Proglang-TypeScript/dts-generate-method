@@ -43,7 +43,8 @@ interface SimplifiedPropertyDeclaration {
 	name?: ts.PropertyName | ts.BindingName;
 	type?: ts.TypeNode | undefined;
 	questionToken?: ts.Token<ts.SyntaxKind.QuestionToken> | undefined;
-	modifiers?: ts.ModifiersArray | undefined
+	modifiers?: ts.ModifiersArray | undefined;
+	dotDotDotToken?: ts.DotDotDotToken | undefined;
 }
 
 export class ASTNodesHandler {
@@ -257,6 +258,17 @@ export class ASTNodesHandler {
 			isOptional
 		);
 
+		this.addModifiersToProperty(property, p);
+
+		if (p.dotDotDotToken !== undefined) {
+			this.tags.add(TAGS.DOT_DOT_DOT_TOKEN);
+			property.setDotDotDotToken(true);
+		}
+
+		return property;
+	}
+
+	private addModifiersToProperty(property: DeclaredProperty, p: SimplifiedPropertyDeclaration) {
 		p.modifiers?.forEach(m => {
 			switch (m.kind) {
 				case ts.SyntaxKind.PrivateKeyword:
@@ -285,8 +297,6 @@ export class ASTNodesHandler {
 					break;
 			}
 		});
-
-		return property;
 	}
 
 	private getDeclaredPropertyType(type: ts.TypeNode | undefined) : DeclaredPropertyType {

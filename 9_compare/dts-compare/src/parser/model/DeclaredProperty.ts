@@ -7,16 +7,23 @@ export class DeclaredProperty {
 	type: DeclaredPropertyType;
 	optional: boolean;
 	modifiers: DATA_MODIFIERS[];
+	dotDotDotToken: boolean;
 
 	constructor(name: string, type: DeclaredPropertyType, optional: boolean) {
 		this.name = name;
 		this.type = type;
 		this.optional = optional;
 		this.modifiers = [];
+		this.dotDotDotToken = false;
 	}
 
 	addModifier(modifier: DATA_MODIFIERS) {
 		this.modifiers.push(modifier);
+		return this;
+	}
+
+	setDotDotDotToken(dotDotDotToken: boolean) {
+		this.dotDotDotToken = dotDotDotToken;
 		return this;
 	}
 }

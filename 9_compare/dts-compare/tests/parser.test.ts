@@ -123,5 +123,20 @@ describe('Parser', () => {
 
 			expect(parser.tags).toContainEqual(TAGS.PUBLIC);
 		});
+
+		it('should detect dot-dot-dot token', () => {
+			const parser = new DeclarationFileParser("tests/files/parser/interfaces/dot-dot-dot-token.d.ts")
+			const parsedFile = parser.parse();
+
+			expect(parsedFile.functions[0].parameters).toContainEqual(
+				new DeclaredProperty(
+					"restOfName",
+					new DeclaredPropertyArrayType(new DeclaredPropertyTypePrimitiveKeyword("string")),
+					false
+				).setDotDotDotToken(true)
+			);
+
+			expect(parser.tags).toContainEqual(TAGS.DOT_DOT_DOT_TOKEN);
+		});
 	});
 });
