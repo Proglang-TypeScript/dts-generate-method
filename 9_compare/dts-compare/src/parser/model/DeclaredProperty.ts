@@ -9,10 +9,10 @@ export class DeclaredProperty {
 	modifiers: DATA_MODIFIERS[];
 	dotDotDotToken: boolean;
 
-	constructor(name: string, type: DeclaredPropertyType, optional: boolean) {
+	constructor(name: string, type: DeclaredPropertyType, optional?: boolean) {
 		this.name = name;
 		this.type = type;
-		this.optional = optional;
+		this.optional = optional || false;
 		this.modifiers = [];
 		this.dotDotDotToken = false;
 	}

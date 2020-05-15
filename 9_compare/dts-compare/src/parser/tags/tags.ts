@@ -17,7 +17,8 @@ enum TAGS {
 	READONLY = "readonly",
 	PUBLIC = "public",
 	DOT_DOT_DOT_TOKEN = "dot-dot-dot-token",
-	INTERSECTION = "type-intersection"
+	INTERSECTION = "type-intersection",
+	CALL_SIGNATURE = "call-signature"
 }
 
 export default TAGS;

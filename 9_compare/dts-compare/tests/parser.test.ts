@@ -7,6 +7,7 @@ import DATA_MODIFIERS from '../src/parser/model/data-modifiers';
 import TAGS from '../src/parser/tags/tags';
 import { DeclaredPropertyArrayType } from '../src/parser/model/declared-property-types/DeclaredPropertyArrayType';
 import { DeclaredPropertyTypeIntersectionType } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeIntersectionType';
+import { DeclaredFunction } from '../src/parser/model/DeclaredFunction';
 
 describe('Parser', () => {
 	describe('interfaces', () => {
@@ -152,6 +153,18 @@ describe('Parser', () => {
 			);
 
 			expect(parser.tags).toContainEqual(TAGS.INTERSECTION);
+		});
+
+		it('should detect call signatures', () => {
+			const parser = new DeclarationFileParser("tests/files/parser/interfaces/call-signature.d.ts")
+			const parsedFile = parser.parse();
+
+			expect(parsedFile.interfaces[0].callSignatures[0]).toEqual(
+				new DeclaredFunction("", new DeclaredPropertyTypePrimitiveKeyword("number"))
+					.addParameter(new DeclaredProperty("a", new DeclaredPropertyTypePrimitiveKeyword("string")))
+			);
+
+			expect(parser.tags).toContainEqual(TAGS.CALL_SIGNATURE);
 		});
 	});
 });

@@ -176,11 +176,14 @@ export class ASTNodesHandler {
 					break;
 
 				case ts.SyntaxKind.CallSignature:
+					this.tags.add(TAGS.CALL_SIGNATURE);
 					declaredInterface.addCallSignature(this.getDeclaredFunction(m as ts.CallSignatureDeclaration));
+					break;
 
 				case ts.SyntaxKind.IndexSignature:
 					this.tags.add(TAGS.INDEX_SIGNATURE);
 					declaredInterface.addIndexSignature(this.getDeclaredIndexSignature(m as ts.IndexSignatureDeclaration));
+					break;
 
 				default:
 					break;
@@ -419,48 +422,48 @@ export class ASTNodesHandler {
 	}
 
 	private getInterfaceForSymbol(tsSymbol: ts.Symbol) : DeclaredInterface | null {
-		const interfaceDeclarations = tsSymbol.declarations.filter(d => {
+		const interfaceDeclarations = tsSymbol.getDeclarations()?.filter(d => {
 			return (
 				(d.kind === ts.SyntaxKind.InterfaceDeclaration) &&
 				(d.getSourceFile().fileName === this.sourceFile.fileName)
 			);
-		}) as ts.InterfaceDeclaration[];
+		});
 
-		if (interfaceDeclarations.length === 0) {
+		if (interfaceDeclarations === undefined || interfaceDeclarations.length === 0) {
 			return null;
 		}
 
-		return this.getDeclaredInterface(interfaceDeclarations[0] as SimplifiedInterfaceDeclaration);
+		return this.getDeclaredInterface((interfaceDeclarations[0] as ts.InterfaceDeclaration) as SimplifiedInterfaceDeclaration);
 	}
 
 	private getTypeAliasDeclarationForSymbol(tsSymbol: ts.Symbol) : ts.TypeAliasDeclaration | null {
-		const typeAliasDeclarations = tsSymbol.declarations.filter(d => {
+		const typeAliasDeclarations = tsSymbol.getDeclarations()?.filter(d => {
 			return (
 				(d.kind === ts.SyntaxKind.TypeAliasDeclaration) &&
 				(d.getSourceFile().fileName === this.sourceFile.fileName)
 			);
-		}) as ts.TypeAliasDeclaration[];
+		});
 
-		if (typeAliasDeclarations.length === 0) {
+		if (typeAliasDeclarations === undefined || typeAliasDeclarations.length === 0) {
 			return null;
 		}
 
-		return typeAliasDeclarations[0];
+		return typeAliasDeclarations[0] as ts.TypeAliasDeclaration;
 	}
 
 	private getTypeParameterForSymbol(tsSymbol: ts.Symbol): ts.TypeParameterDeclaration | null {
-		const typeParameters = tsSymbol.declarations.filter(d => {
+		const typeParameters = tsSymbol.getDeclarations()?.filter(d => {
 			return (
 				(d.kind === ts.SyntaxKind.TypeParameter) &&
 				(d.getSourceFile().fileName === this.sourceFile.fileName)
 			);
-		}) as ts.TypeParameterDeclaration[];
+		});
 
-		if (typeParameters.length === 0) {
+		if (typeParameters === undefined || typeParameters.length === 0) {
 			return null;
 		}
 
-		return typeParameters[0];
+		return typeParameters[0] as ts.TypeParameterDeclaration;
 	}
 
 	private getDeclaredPropertyArrayType(node: ts.TypeNode): DeclaredPropertyArrayType {

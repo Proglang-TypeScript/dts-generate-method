@@ -4,7 +4,7 @@ import { DeclaredClass } from './DeclaredClass';
 
 export class DeclaredNamespace {
 	name: string;
-	interfaces: any[];
+	interfaces: DeclaredInterface[];
 	functions: DeclaredFunction[];
 	classes: DeclaredClass[];
 	exportAssignments: string[];
