@@ -8,6 +8,9 @@ import TAGS from '../src/parser/tags/tags';
 import { DeclaredPropertyArrayType } from '../src/parser/model/declared-property-types/DeclaredPropertyArrayType';
 import { DeclaredPropertyTypeIntersectionType } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeIntersectionType';
 import { DeclaredFunction } from '../src/parser/model/DeclaredFunction';
+import { DeclaredPropertyTypeUnionType } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeUnionType';
+import { DeclaredPropertyTypeFunctionType } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeFunctionType';
+import DeclaredPropertyType from '../src/parser/model/declared-property-types/DeclaredPropertyType';
 
 describe('Parser', () => {
 	describe('interfaces', () => {
@@ -165,6 +168,30 @@ describe('Parser', () => {
 			);
 
 			expect(parser.tags).toContainEqual(TAGS.CALL_SIGNATURE);
+		});
+
+		it('should detect type aliases', () => {
+			const parser = new DeclarationFileParser("tests/files/parser/interfaces/type-alias.d.ts")
+			const parsedFile = parser.parse();
+
+			expect(parsedFile.functions[0].parameters[0]).toEqual(
+				new DeclaredProperty("a",
+					new DeclaredPropertyTypeUnionType(
+						[new DeclaredPropertyTypePrimitiveKeyword("string"), new DeclaredPropertyTypePrimitiveKeyword("number")]
+					)
+				)
+			);
+
+			let circularType = {} as DeclaredPropertyType;
+			const anotherType = new DeclaredPropertyTypeFunctionType(new DeclaredFunction("", circularType));
+
+			Object.assign(circularType, new DeclaredPropertyTypeUnionType(
+				[new DeclaredPropertyTypePrimitiveKeyword("string"), anotherType]
+			));
+
+			expect(parsedFile.functions[0].parameters[1].type).toEqual(circularType);
+
+			expect(parser.tags).toContainEqual(TAGS.ALIAS);
 		});
 	});
 });

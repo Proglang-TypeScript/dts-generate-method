@@ -49,8 +49,10 @@ interface SimplifiedPropertyDeclaration {
 }
 
 export class ASTNodesHandler {
-	private mapSymbolInterfaces: WeakMap<ts.Symbol, DeclaredInterface> = new Map();
-	private mapGenericTypes: WeakMap<ts.Symbol, DeclaredPropertyTypeGenericKeyword> = new Map();
+	private mapSymbolInterfaces: WeakMap<ts.Symbol, DeclaredInterface> = new WeakMap();
+	private mapGenericTypes: WeakMap<ts.Symbol, DeclaredPropertyTypeGenericKeyword> = new WeakMap();
+	private mapSymbolTypeAliases: WeakMap<ts.Symbol, DeclaredPropertyType> = new WeakMap();
+
 	private tsChecker: ts.TypeChecker;
 	private sourceFile: ts.SourceFile;
 	private tags: Set<string>;
@@ -363,6 +365,7 @@ export class ASTNodesHandler {
 
 				case ts.SyntaxKind.TypeReference:
 					const typeReferenceNode = type as ts.TypeReferenceNode;
+
 					const tsSymbol = this.tsChecker.getSymbolAtLocation(typeReferenceNode.typeName);
 
 					if (tsSymbol !== undefined) {
@@ -370,10 +373,10 @@ export class ASTNodesHandler {
 							return this.getDeclaredPropertyArrayType(typeReferenceNode.typeArguments[0]);
 						}
 
-						const typeAliasDeclaration = this.getTypeAliasDeclarationForSymbol(tsSymbol);
-						if (typeAliasDeclaration !== null) {
+						const typeAliasDeclaredPropertyType = this.getTypeAliasDeclaredPropertyTypeForSymbol(tsSymbol);
+						if (typeAliasDeclaredPropertyType !== null) {
 							this.tags.add(TAGS.ALIAS);
-							return this.getDeclaredPropertyType(typeAliasDeclaration.type);
+							return typeAliasDeclaredPropertyType;
 						}
 
 						const interfaceForSymbol = this.getInterfaceForSymbol(tsSymbol);
@@ -436,7 +439,12 @@ export class ASTNodesHandler {
 		return this.getDeclaredInterface((interfaceDeclarations[0] as ts.InterfaceDeclaration) as SimplifiedInterfaceDeclaration);
 	}
 
-	private getTypeAliasDeclarationForSymbol(tsSymbol: ts.Symbol) : ts.TypeAliasDeclaration | null {
+	private getTypeAliasDeclaredPropertyTypeForSymbol(tsSymbol: ts.Symbol): DeclaredPropertyType | null {
+		const typeAliasDeclarationForSymbol = this.mapSymbolTypeAliases.get(tsSymbol);
+		if (typeAliasDeclarationForSymbol !== undefined) {
+			return typeAliasDeclarationForSymbol;
+		}
+
 		const typeAliasDeclarations = tsSymbol.getDeclarations()?.filter(d => {
 			return (
 				(d.kind === ts.SyntaxKind.TypeAliasDeclaration) &&
@@ -448,7 +456,13 @@ export class ASTNodesHandler {
 			return null;
 		}
 
-		return typeAliasDeclarations[0] as ts.TypeAliasDeclaration;
+		const typeAliasDeclaration = typeAliasDeclarations[0] as ts.TypeAliasDeclaration;
+
+		let typeAliasDeclaredPropertyType = {} as DeclaredPropertyType;
+		this.mapSymbolTypeAliases.set(tsSymbol, typeAliasDeclaredPropertyType);
+		typeAliasDeclaredPropertyType = Object.assign(typeAliasDeclaredPropertyType, this.getDeclaredPropertyType(typeAliasDeclaration.type));
+
+		return typeAliasDeclaredPropertyType;
 	}
 
 	private getTypeParameterForSymbol(tsSymbol: ts.Symbol): ts.TypeParameterDeclaration | null {
