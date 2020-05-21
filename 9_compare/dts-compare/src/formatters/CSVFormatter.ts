@@ -51,6 +51,7 @@ export default class CSVFormatter implements Formatter {
 			TAGS.LITERALS,
 			TAGS.ARRAY,
 			TAGS.FUNCTION,
+			TAGS.TUPLE,
 			TAGS.INDEX_SIGNATURE,
 			TAGS.GENERICS_FUNCTION,
 			TAGS.GENERICS_CLASS,
