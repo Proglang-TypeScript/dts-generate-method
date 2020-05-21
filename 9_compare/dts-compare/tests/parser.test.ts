@@ -85,6 +85,15 @@ describe('Parser', () => {
 
 			expect(parser.tags).toContainEqual(TAGS.CALL_SIGNATURE);
 		});
+
+		it('should handle circular references', () => {
+			const parser = new DeclarationFileParser("tests/files/parser/interfaces/circular-reference.d.ts")
+			const parsedFile = parser.parse();
+
+			expect(parsedFile.namespaces.Greeter.interfaces[0].properties[0].type.value).toBe(
+				parsedFile.namespaces.Greeter.interfaces[0]
+			);
+		})
 	});
 	
 	describe('data modifiers', () => {
