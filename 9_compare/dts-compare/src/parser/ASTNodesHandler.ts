@@ -52,6 +52,8 @@ export class ASTNodesHandler {
 	private mapSymbolInterfaces: WeakMap<ts.Symbol, DeclaredInterface> = new WeakMap();
 	private mapGenericTypes: WeakMap<ts.Symbol, DeclaredPropertyTypeGenericKeyword> = new WeakMap();
 	private mapSymbolTypeAliases: WeakMap<ts.Symbol, DeclaredPropertyType> = new WeakMap();
+	private mapCircularReferences: WeakMap<{}, DeclaredPropertyType> = new WeakMap();
+	private declaredFunctions: DeclaredFunction[] = [];
 
 	private tsChecker: ts.TypeChecker;
 	private sourceFile: ts.SourceFile;
@@ -92,6 +94,14 @@ export class ASTNodesHandler {
 		parentDeclarationObject.addClass(declaredClass);
 	}
 
+	public fixCircularReferences() {
+		this.declaredFunctions.forEach(declaredFunction => {
+			if (this.mapCircularReferences.has(declaredFunction.returnType)) {
+				declaredFunction.returnType = this.mapCircularReferences.get(declaredFunction.returnType) as DeclaredPropertyType;
+			}
+		});
+	}
+
 	private getDeclaredFunction(node: SimplifiedFunctionDeclaration): DeclaredFunction {
 		let functionName = node.name ? node.name.getText() : "";
 
@@ -99,6 +109,8 @@ export class ASTNodesHandler {
 			functionName,
 			this.getDeclaredPropertyType(node.type)
 		);
+
+		this.declaredFunctions.push(declaredFunction);
 
 		node.parameters.forEach(p => {
 			declaredFunction.addParameter(this.getDeclaredProperty(p));
@@ -458,11 +470,14 @@ export class ASTNodesHandler {
 
 		const typeAliasDeclaration = typeAliasDeclarations[0] as ts.TypeAliasDeclaration;
 
-		let typeAliasDeclaredPropertyType = {} as DeclaredPropertyType;
-		this.mapSymbolTypeAliases.set(tsSymbol, typeAliasDeclaredPropertyType);
-		typeAliasDeclaredPropertyType = Object.assign(typeAliasDeclaredPropertyType, this.getDeclaredPropertyType(typeAliasDeclaration.type));
+		const dummyTypeSafeguardForCircularReferences = {};
+		this.mapSymbolTypeAliases.set(tsSymbol, dummyTypeSafeguardForCircularReferences as DeclaredPropertyType);
+		const declaredPropertyType = this.getDeclaredPropertyType(typeAliasDeclaration.type);
 
-		return typeAliasDeclaredPropertyType;
+		this.mapSymbolTypeAliases.set(tsSymbol, declaredPropertyType);
+		this.mapCircularReferences.set(dummyTypeSafeguardForCircularReferences, declaredPropertyType);
+
+		return declaredPropertyType;
 	}
 
 	private getTypeParameterForSymbol(tsSymbol: ts.Symbol): ts.TypeParameterDeclaration | null {

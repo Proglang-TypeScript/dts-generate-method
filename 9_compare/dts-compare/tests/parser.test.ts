@@ -74,10 +74,24 @@ describe('Parser', () => {
 			)
 		});
 
+		it('should detect call signatures', () => {
+			const parser = new DeclarationFileParser("tests/files/parser/interfaces/call-signature.d.ts")
+			const parsedFile = parser.parse();
+
+			expect(parsedFile.interfaces[0].callSignatures[0]).toEqual(
+				new DeclaredFunction("", new DeclaredPropertyTypePrimitiveKeyword("number"))
+					.addParameter(new DeclaredProperty("a", new DeclaredPropertyTypePrimitiveKeyword("string")))
+			);
+
+			expect(parser.tags).toContainEqual(TAGS.CALL_SIGNATURE);
+		});
+	});
+	
+	describe('data modifiers', () => {
 		it('should detect data modifiers', () => {
 			const parser = new DeclarationFileParser("tests/files/parser/interfaces/data-modifiers.d.ts")
 			const parsedFile = parser.parse();
-
+	
 			expect(parsedFile.classes[0].properties).toContainEqual(
 				new DeclaredProperty(
 					"thisIsPrivate",
@@ -85,9 +99,9 @@ describe('Parser', () => {
 					false
 				).addModifier(DATA_MODIFIERS.PRIVATE)
 			);
-
+	
 			expect(parser.tags).toContainEqual(TAGS.PRIVATE);
-
+	
 			expect(parsedFile.classes[0].properties).toContainEqual(
 				new DeclaredProperty(
 					"thisIsProtected",
@@ -95,9 +109,9 @@ describe('Parser', () => {
 					false
 				).addModifier(DATA_MODIFIERS.PROTECTED)
 			);
-
+	
 			expect(parser.tags).toContainEqual(TAGS.PROTECTED);
-
+	
 			expect(parsedFile.classes[0].properties).toContainEqual(
 				new DeclaredProperty(
 					"THIS_IS_STATIC",
@@ -105,9 +119,9 @@ describe('Parser', () => {
 					false
 				).addModifier(DATA_MODIFIERS.STATIC)
 			);
-
+	
 			expect(parser.tags).toContainEqual(TAGS.STATIC);
-
+	
 			expect(parsedFile.classes[0].properties).toContainEqual(
 				new DeclaredProperty(
 					"thisIsReadOnly",
@@ -115,9 +129,9 @@ describe('Parser', () => {
 					false
 				).addModifier(DATA_MODIFIERS.READONLY)
 			);
-
+	
 			expect(parser.tags).toContainEqual(TAGS.READONLY);
-
+	
 			expect(parsedFile.classes[0].properties).toContainEqual(
 				new DeclaredProperty(
 					"thisIsPublic",
@@ -125,14 +139,16 @@ describe('Parser', () => {
 					false
 				).addModifier(DATA_MODIFIERS.PUBLIC)
 			);
-
+	
 			expect(parser.tags).toContainEqual(TAGS.PUBLIC);
 		});
+	});
 
+	describe('dot-dot-dot token', () => {
 		it('should detect dot-dot-dot token', () => {
 			const parser = new DeclarationFileParser("tests/files/parser/interfaces/dot-dot-dot-token.d.ts")
 			const parsedFile = parser.parse();
-
+	
 			expect(parsedFile.functions[0].parameters).toContainEqual(
 				new DeclaredProperty(
 					"restOfName",
@@ -140,10 +156,12 @@ describe('Parser', () => {
 					false
 				).setDotDotDotToken(true)
 			);
-
+	
 			expect(parser.tags).toContainEqual(TAGS.DOT_DOT_DOT_TOKEN);
 		});
+	});
 
+	describe('typescript types', () => {
 		it('should detect the intersection type', () => {
 			const parser = new DeclarationFileParser("tests/files/parser/interfaces/intersection-type.d.ts")
 			const parsedFile = parser.parse();
@@ -158,22 +176,10 @@ describe('Parser', () => {
 			expect(parser.tags).toContainEqual(TAGS.INTERSECTION);
 		});
 
-		it('should detect call signatures', () => {
-			const parser = new DeclarationFileParser("tests/files/parser/interfaces/call-signature.d.ts")
-			const parsedFile = parser.parse();
-
-			expect(parsedFile.interfaces[0].callSignatures[0]).toEqual(
-				new DeclaredFunction("", new DeclaredPropertyTypePrimitiveKeyword("number"))
-					.addParameter(new DeclaredProperty("a", new DeclaredPropertyTypePrimitiveKeyword("string")))
-			);
-
-			expect(parser.tags).toContainEqual(TAGS.CALL_SIGNATURE);
-		});
-
 		it('should detect type aliases', () => {
 			const parser = new DeclarationFileParser("tests/files/parser/interfaces/type-alias.d.ts")
 			const parsedFile = parser.parse();
-
+	
 			expect(parsedFile.functions[0].parameters[0]).toEqual(
 				new DeclaredProperty("a",
 					new DeclaredPropertyTypeUnionType(
@@ -182,16 +188,11 @@ describe('Parser', () => {
 				)
 			);
 
-			let circularType = {} as DeclaredPropertyType;
-			const anotherType = new DeclaredPropertyTypeFunctionType(new DeclaredFunction("", circularType));
-
-			Object.assign(circularType, new DeclaredPropertyTypeUnionType(
-				[new DeclaredPropertyTypePrimitiveKeyword("string"), anotherType]
-			));
-
-			expect(parsedFile.functions[0].parameters[1].type).toEqual(circularType);
-
+			expect(parsedFile.functions[0].parameters[1].type).toBe(
+				parsedFile.functions[0].parameters[1].type.value[1].value.returnType
+			);
+	
 			expect(parser.tags).toContainEqual(TAGS.ALIAS);
 		});
-	});
+	})
 });

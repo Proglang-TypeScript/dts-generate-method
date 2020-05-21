@@ -35,10 +35,10 @@ export default class DeclarationFileParser {
 
 		ts.forEachChild(this.sourceFile, this.visit(declarationMap));
 
+		this.astNodesHandler.fixCircularReferences();
+
 		return declarationMap;
 	}
-
-	
 
 	private visit(declarationMap: DeclaredNamespace) {
 		let dis = this;
