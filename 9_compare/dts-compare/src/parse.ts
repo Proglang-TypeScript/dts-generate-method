@@ -32,11 +32,11 @@ try {
 
 	const result = {
 		parsing: declarationMap,
-		tags: {} as { [t: string]: boolean},
+		tags: {} as { [t: string]: number},
 	}
 
 	getAllTags().forEach(t => {
-		result.tags[t] = parser.tags.has(t);
+		result.tags[t] = Number(parser.tags.has(t));
 	});
 
 	const content = JSON.stringify(result, getCircularReplacer(), 4);
