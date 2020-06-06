@@ -3,10 +3,11 @@
 import  DeclarationFileParser from './parser/DeclarationFileParser';
 import commandLineArgs from 'command-line-args';
 import fs from 'fs';
+import { getAllTags } from './parser/tags/tags';
 
 const optionDefinitions = [
     { name: 'input-declaration-file', alias: 'i', type: String, defaultValue: null },
-    { name: 'output-file', alias: 'o', type: String, defaultValue: ''}
+	{ name: 'output-file', alias: 'o', type: String, defaultValue: ''}
 ];
 
 let options = commandLineArgs(optionDefinitions);
@@ -31,8 +32,12 @@ try {
 
 	const result = {
 		parsing: declarationMap,
-		tags: Array.from(parser.tags)
+		tags: {} as { [t: string]: boolean},
 	}
+
+	getAllTags().forEach(t => {
+		result.tags[t] = parser.tags.has(t);
+	});
 
 	const content = JSON.stringify(result, getCircularReplacer(), 4);
 
