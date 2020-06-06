@@ -21,4 +21,11 @@ enum TAGS {
 	CALL_SIGNATURE = "call-signature"
 }
 
+export function getAllTags(): string[] {
+	return Object.keys(TAGS).map(key => {
+		const tagKey = key as keyof typeof TAGS;
+		return TAGS[tagKey];
+	});
+}
+
 export default TAGS;
