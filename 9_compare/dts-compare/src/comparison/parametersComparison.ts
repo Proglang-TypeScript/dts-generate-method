@@ -1,8 +1,8 @@
 import Difference from "../difference/Difference";
 import { Comparison } from "./comparison";
 import { DeclaredNamespace } from "../parser/model/DeclaredNamespace";
-import ParameterTypeEmptyIntersectionDifference from "../difference/ParameterTypeEmptyIntersectionDifference";
-import ParameterTypeNonEmptyIntersectionDifference from "../difference/ParameterTypeNonEmptyIntersectionDifference";
+import ParameterTypeUnsolvableDifference from "../difference/ParameterTypeUnsolvableDifference";
+import ParameterTypeSolvableDifference from "../difference/ParameterTypeSolvableDifference";
 import { DeclaredProperty } from "../parser/model/DeclaredProperty";
 import { DeclaredInterface } from "../parser/model/DeclaredInterface";
 import { InterfaceComparison } from "./interfaceComparison";
@@ -100,7 +100,7 @@ export class ParametersComparison implements Comparison {
 			}).length > 0;
 
 			if (expectedContainsActualType === true) {
-				return new ParameterTypeNonEmptyIntersectionDifference(
+				return new ParameterTypeSolvableDifference(
 					this.parameterExpected,
 					this.parameterActual
 				);
@@ -111,7 +111,7 @@ export class ParametersComparison implements Comparison {
 			if (this.typesAreEqual(this.parameterExpected.type, this.parameterActual.type) ||
 				this.parameterActual.type.value === "undefined"
 			) {
-				return new ParameterTypeNonEmptyIntersectionDifference(
+				return new ParameterTypeSolvableDifference(
 					this.parameterExpected,
 					this.parameterActual
 				);
@@ -119,7 +119,7 @@ export class ParametersComparison implements Comparison {
 		}
 
 		if (this.parameterExpected.type.value === "any") {
-			return new ParameterTypeNonEmptyIntersectionDifference(
+			return new ParameterTypeSolvableDifference(
 				this.parameterExpected,
 				this.parameterActual
 			);
@@ -128,11 +128,11 @@ export class ParametersComparison implements Comparison {
 		if (this.parameterExpected.type instanceof DeclaredPropertyTypeLiterals) {
 			const equivalentType = this.getEquivalentTypeForLiteral(this.parameterExpected.type);
 			if (this.typesAreEqual(equivalentType, this.parameterActual.type)) {
-				return new ParameterTypeNonEmptyIntersectionDifference(this.parameterExpected, this.parameterActual);
+				return new ParameterTypeSolvableDifference(this.parameterExpected, this.parameterActual);
 			}
 		}
 
-		return new ParameterTypeEmptyIntersectionDifference(
+		return new ParameterTypeUnsolvableDifference(
 			this.parameterExpected,
 			this.parameterActual
 		);

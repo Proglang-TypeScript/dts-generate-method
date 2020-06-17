@@ -1,7 +1,7 @@
 import { ResultComparison } from "../Comparator";
 import Formatter from "./Formatter";
-import ParameterTypeNonEmptyIntersectionDifference from "../difference/ParameterTypeNonEmptyIntersectionDifference";
-import ParameterTypeEmptyIntersectionDifference from "../difference/ParameterTypeEmptyIntersectionDifference";
+import ParameterTypeSolvableDifference from "../difference/ParameterTypeSolvableDifference";
+import ParameterTypeUnsolvableDifference from "../difference/ParameterTypeUnsolvableDifference";
 import ParameterExtraDifference from "../difference/ParameterExtraDifference";
 import ParameterMissingDifference from "../difference/ParameterMissingDifference";
 import TemplateDifference from "../difference/TemplateDifference";
@@ -17,8 +17,8 @@ export default class CSVFormatter implements Formatter {
 
 		const differencesInCsv : { [k: string] : number } = {};
 		differencesInCsv[TemplateDifference.CODE] =  0;
-		differencesInCsv[ParameterTypeNonEmptyIntersectionDifference.CODE] =  0;
-		differencesInCsv[ParameterTypeEmptyIntersectionDifference.CODE] =  0;
+		differencesInCsv[ParameterTypeSolvableDifference.CODE] =  0;
+		differencesInCsv[ParameterTypeUnsolvableDifference.CODE] =  0;
 		differencesInCsv[ParameterExtraDifference.CODE] =  0;
 		differencesInCsv[ParameterMissingDifference.CODE] = 0;
 		differencesInCsv[FunctionMissingDifference.CODE] = 0;
