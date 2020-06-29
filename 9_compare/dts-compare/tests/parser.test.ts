@@ -12,6 +12,7 @@ import { DeclaredPropertyTypeUnionType } from '../src/parser/model/declared-prop
 import { DeclaredPropertyTypeFunctionType } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeFunctionType';
 import DeclaredPropertyType from '../src/parser/model/declared-property-types/DeclaredPropertyType';
 import { DeclaredPropertyTypeObjectKeyword } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeObjectKeyword';
+import { DeclaredPropertyTypeVoidKeyword } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeVoidKeyword';
 
 describe('Parser', () => {
 	describe('interfaces', () => {
@@ -228,6 +229,17 @@ describe('Parser', () => {
 			);
 
 			expect(parser.tags).toContainEqual(TAGS.OBJECT);
+		});
+
+		it('should detect the void keyword', () => {
+			const parser = new DeclarationFileParser("tests/files/parser/interfaces/void-keyword.d.ts")
+			const parsedFile = parser.parse();
+
+			expect(parsedFile.functions[0].returnType).toEqual(
+				new DeclaredPropertyTypeVoidKeyword()
+			);
+
+			expect(parser.tags).toContainEqual(TAGS.VOID);
 		});
 	})
 });

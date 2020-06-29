@@ -20,7 +20,8 @@ enum TAGS {
 	INTERSECTION = "type-intersection",
 	CALL_SIGNATURE = "call-signature",
 	UNION = "type-union",
-	OBJECT = "object"
+	OBJECT = "object",
+	VOID = "void"
 }
 
 export function getAllTags(): string[] {

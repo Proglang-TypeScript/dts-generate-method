@@ -25,6 +25,7 @@ import { DeclaredPropertyTypeUndefinedKeyword } from './model/declared-property-
 import DATA_MODIFIERS from './model/data-modifiers';
 import { DeclaredPropertyTypeIntersectionType } from './model/declared-property-types/DeclaredPropertyTypeIntersectionType';
 import { DeclaredPropertyTypeObjectKeyword } from './model/declared-property-types/DeclaredPropertyTypeObjectKeyword';
+import { DeclaredPropertyTypeVoidKeyword } from './model/declared-property-types/DeclaredPropertyTypeVoidKeyword';
 
 
 interface SimplifiedFunctionDeclaration {
@@ -435,6 +436,11 @@ export class ASTNodesHandler {
 					this.tags.add(TAGS.OBJECT);
 
 					return new DeclaredPropertyTypeObjectKeyword();
+
+				case ts.SyntaxKind.VoidKeyword:
+					this.tags.add(TAGS.VOID);
+
+					return new DeclaredPropertyTypeVoidKeyword();
 			}
 		}
 
