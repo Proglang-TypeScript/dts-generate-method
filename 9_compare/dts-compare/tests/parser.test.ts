@@ -11,6 +11,7 @@ import { DeclaredFunction } from '../src/parser/model/DeclaredFunction';
 import { DeclaredPropertyTypeUnionType } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeUnionType';
 import { DeclaredPropertyTypeFunctionType } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeFunctionType';
 import DeclaredPropertyType from '../src/parser/model/declared-property-types/DeclaredPropertyType';
+import { DeclaredPropertyTypeObjectKeyword } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeObjectKeyword';
 
 describe('Parser', () => {
 	describe('interfaces', () => {
@@ -216,6 +217,17 @@ describe('Parser', () => {
 			);
 
 			expect(parser.tags).toContainEqual(TAGS.UNION);
+		});
+
+		it('should detect the object keyword', () => {
+			const parser = new DeclarationFileParser("tests/files/parser/interfaces/object-keyword.d.ts")
+			const parsedFile = parser.parse();
+
+			expect(parsedFile.functions[0].parameters[0].type).toEqual(
+				new DeclaredPropertyTypeObjectKeyword()
+			);
+
+			expect(parser.tags).toContainEqual(TAGS.OBJECT);
 		});
 	})
 });
