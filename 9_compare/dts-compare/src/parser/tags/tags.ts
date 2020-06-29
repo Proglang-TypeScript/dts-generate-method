@@ -18,7 +18,8 @@ enum TAGS {
 	PUBLIC = "public",
 	DOT_DOT_DOT_TOKEN = "dot-dot-dot-token",
 	INTERSECTION = "type-intersection",
-	CALL_SIGNATURE = "call-signature"
+	CALL_SIGNATURE = "call-signature",
+	UNION = "type-union"
 }
 
 export function getAllTags(): string[] {

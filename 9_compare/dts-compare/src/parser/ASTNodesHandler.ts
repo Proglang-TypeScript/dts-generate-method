@@ -354,6 +354,7 @@ export class ASTNodesHandler {
 						unionDeclaredProperties.push(this.getDeclaredPropertyType(t));
 					});
 
+					this.tags.add(TAGS.UNION);
 					return new DeclaredPropertyTypeUnionType(unionDeclaredProperties);
 					break;
 

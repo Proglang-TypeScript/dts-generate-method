@@ -203,5 +203,19 @@ describe('Parser', () => {
 	
 			expect(parser.tags).toContainEqual(TAGS.ALIAS);
 		});
+
+		it('should detect the union type', () => {
+			const parser = new DeclarationFileParser("tests/files/parser/interfaces/union-type.d.ts")
+			const parsedFile = parser.parse();
+
+			expect(parsedFile.functions[0].parameters[0].type).toEqual(
+				new DeclaredPropertyTypeUnionType([
+					new DeclaredPropertyTypePrimitiveKeyword("string"),
+					new DeclaredPropertyTypePrimitiveKeyword("number")
+				])
+			);
+
+			expect(parser.tags).toContainEqual(TAGS.UNION);
+		});
 	})
 });
