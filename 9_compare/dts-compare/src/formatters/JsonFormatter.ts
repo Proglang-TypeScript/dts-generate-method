@@ -9,6 +9,20 @@ export default class JsonFormatter implements Formatter {
 			...{tags: Array.from(tags.values())}
 		};
 
-		return JSON.stringify(output, null, 4);
+		const getCircularReplacer = () => {
+			const seen = new WeakSet();
+			return (key: string, value: any) => {
+				if (typeof value === "object" && value !== null) {
+					if (seen.has(value)) {
+						return { name: value.name, circular: true };
+					}
+					seen.add(value);
+				}
+				return value;
+			};
+		};
+
+		return JSON.stringify(output, getCircularReplacer(), 4);
 	}
+
 }
