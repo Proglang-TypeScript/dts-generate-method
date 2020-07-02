@@ -250,5 +250,16 @@ describe('Parser', () => {
 
 			expect(parser.tags).toContainEqual(TAGS.STRING);
 		});
+
+		it('should detect the number keyword', () => {
+			const parser = new DeclarationFileParser("tests/files/parser/interfaces/number-keyword.d.ts")
+			const parsedFile = parser.parse();
+
+			expect(parsedFile.functions[0].parameters[0].type).toEqual(
+				new DeclaredPropertyTypePrimitiveKeyword("number")
+			);
+
+			expect(parser.tags).toContainEqual(TAGS.NUMBER);
+		});
 	})
 });

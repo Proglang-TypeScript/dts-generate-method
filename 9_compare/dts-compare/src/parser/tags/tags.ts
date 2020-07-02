@@ -22,7 +22,8 @@ enum TAGS {
 	UNION = "type-union",
 	OBJECT = "object",
 	VOID = "void",
-	STRING = "string"
+	STRING = "string",
+	NUMBER = "number",
 }
 
 export function getAllTags(): string[] {

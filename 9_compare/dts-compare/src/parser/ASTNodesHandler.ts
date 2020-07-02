@@ -445,6 +445,11 @@ export class ASTNodesHandler {
 					this.tags.add(TAGS.STRING);
 
 					return new DeclaredPropertyTypePrimitiveKeyword("string");
+
+				case ts.SyntaxKind.NumberKeyword:
+					this.tags.add(TAGS.NUMBER);
+
+					return new DeclaredPropertyTypePrimitiveKeyword("number");
 			}
 		}
 
