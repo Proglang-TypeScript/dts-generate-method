@@ -9,8 +9,6 @@ import { DeclaredPropertyArrayType } from '../src/parser/model/declared-property
 import { DeclaredPropertyTypeIntersectionType } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeIntersectionType';
 import { DeclaredFunction } from '../src/parser/model/DeclaredFunction';
 import { DeclaredPropertyTypeUnionType } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeUnionType';
-import { DeclaredPropertyTypeFunctionType } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeFunctionType';
-import DeclaredPropertyType from '../src/parser/model/declared-property-types/DeclaredPropertyType';
 import { DeclaredPropertyTypeObjectKeyword } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeObjectKeyword';
 import { DeclaredPropertyTypeVoidKeyword } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeVoidKeyword';
 
@@ -240,6 +238,17 @@ describe('Parser', () => {
 			);
 
 			expect(parser.tags).toContainEqual(TAGS.VOID);
+		});
+
+		it('should detect the string keyword', () => {
+			const parser = new DeclarationFileParser("tests/files/parser/interfaces/string-keyword.d.ts")
+			const parsedFile = parser.parse();
+
+			expect(parsedFile.functions[0].parameters[0].type).toEqual(
+				new DeclaredPropertyTypePrimitiveKeyword("string")
+			);
+
+			expect(parser.tags).toContainEqual(TAGS.STRING);
 		});
 	})
 });

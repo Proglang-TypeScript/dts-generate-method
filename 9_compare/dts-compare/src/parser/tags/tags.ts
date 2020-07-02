@@ -21,7 +21,8 @@ enum TAGS {
 	CALL_SIGNATURE = "call-signature",
 	UNION = "type-union",
 	OBJECT = "object",
-	VOID = "void"
+	VOID = "void",
+	STRING = "string"
 }
 
 export function getAllTags(): string[] {

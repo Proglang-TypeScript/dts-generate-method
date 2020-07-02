@@ -27,7 +27,6 @@ import { DeclaredPropertyTypeIntersectionType } from './model/declared-property-
 import { DeclaredPropertyTypeObjectKeyword } from './model/declared-property-types/DeclaredPropertyTypeObjectKeyword';
 import { DeclaredPropertyTypeVoidKeyword } from './model/declared-property-types/DeclaredPropertyTypeVoidKeyword';
 
-
 interface SimplifiedFunctionDeclaration {
 	name?: ts.Identifier | ts.StringLiteral | ts.NumericLiteral | ts.PropertyName | undefined;
 	type?: ts.TypeNode | undefined;
@@ -441,6 +440,11 @@ export class ASTNodesHandler {
 					this.tags.add(TAGS.VOID);
 
 					return new DeclaredPropertyTypeVoidKeyword();
+
+				case ts.SyntaxKind.StringKeyword:
+					this.tags.add(TAGS.STRING);
+
+					return new DeclaredPropertyTypePrimitiveKeyword("string");
 			}
 		}
 
