@@ -6,7 +6,7 @@ DECLARATION_FILES_DIRECTORY=$1
 TMP_EMPTY_FILE=/tmp/empty-file.d.ts
 
 touch $TMP_EMPTY_FILE
-HEADER="\"module-name\"",`dts-parse -i $TMP_EMPTY_FILE | jq -r '.tags | keys as $cols | $cols | @csv'`
+HEADER="\"module-name\"",`dts-parse -i $TMP_EMPTY_FILE | jq -r '.tags | keys_unsorted as $cols | $cols | @csv'`
 rm -f $TMP_EMPTY_FILE
 
 echo $HEADER
