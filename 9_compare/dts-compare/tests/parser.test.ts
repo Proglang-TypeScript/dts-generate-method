@@ -261,5 +261,16 @@ describe('Parser', () => {
 
 			expect(parser.tags).toContainEqual(TAGS.NUMBER);
 		});
+
+		it('should detect the boolean keyword', () => {
+			const parser = new DeclarationFileParser("tests/files/parser/interfaces/boolean-keyword.d.ts")
+			const parsedFile = parser.parse();
+
+			expect(parsedFile.functions[0].parameters[0].type).toEqual(
+				new DeclaredPropertyTypePrimitiveKeyword("boolean")
+			);
+
+			expect(parser.tags).toContainEqual(TAGS.BOOLEAN);
+		});
 	})
 });

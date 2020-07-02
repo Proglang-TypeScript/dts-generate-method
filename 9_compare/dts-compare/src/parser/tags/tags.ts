@@ -24,6 +24,7 @@ enum TAGS {
 	VOID = "void",
 	STRING = "string",
 	NUMBER = "number",
+	BOOLEAN = "boolean"
 }
 
 export function getAllTags(): string[] {

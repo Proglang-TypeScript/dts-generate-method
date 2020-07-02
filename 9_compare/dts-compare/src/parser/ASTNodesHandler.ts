@@ -450,6 +450,11 @@ export class ASTNodesHandler {
 					this.tags.add(TAGS.NUMBER);
 
 					return new DeclaredPropertyTypePrimitiveKeyword("number");
+
+				case ts.SyntaxKind.BooleanKeyword:
+					this.tags.add(TAGS.BOOLEAN);
+
+					return new DeclaredPropertyTypePrimitiveKeyword("boolean");
 			}
 		}
 
