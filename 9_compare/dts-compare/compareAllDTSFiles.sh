@@ -15,7 +15,7 @@ mkdir -p $DIFFERENCES_DIRECTORY
 find $DECLARATION_FILES_DIRECTORY -name 'index.d.ts' -print0 | 
     while IFS= read -r -d '' GENERATED_FILE; do 
 		MODULE_NAME=$(basename "$(dirname "$GENERATED_FILE")")
-		DEFINITELY_TYPED_FILE=$2/types/$MODULE_NAME/index.d.ts
+		DEFINITELY_TYPED_FILE=$DEFINITELY_TYPED_DIRECTORY/types/$MODULE_NAME/index.d.ts
 
 		if [ -f "$DEFINITELY_TYPED_FILE" ]; then
 			echo "Comparing DTS for $MODULE_NAME ..."
