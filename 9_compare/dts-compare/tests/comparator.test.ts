@@ -1,12 +1,12 @@
 import Comparator from '../src/Comparator';
-import ParameterTypeEmptyIntersectionDifference from '../src/difference/ParameterTypeEmptyIntersectionDifference';
+import ParameterTypeUnsolvableDifference from '../src/difference/ParameterTypeUnsolvableDifference';
 import ParameterMissingDifference from '../src/difference/ParameterMissingDifference';
 import ParameterExtraDifference from '../src/difference/ParameterExtraDifference';
 
 import DeclarationFileParser from '../src/parser/DeclarationFileParser';
 import { DeclaredProperty } from '../src/parser/model/DeclaredProperty';
 import { DeclaredPropertyTypePrimitiveKeyword } from '../src/parser/model/declared-property-types/DeclaredPropertyTypePrimitiveKeyword';
-import ParameterTypeNonEmptyIntersectionDifference from '../src/difference/ParameterTypeNonEmptyIntersectionDifference';
+import ParameterTypeSolvableDifference from '../src/difference/ParameterTypeSolvableDifference';
 import TemplateDifference from '../src/difference/TemplateDifference';
 import FunctionMissingDifference from '../src/difference/FunctionMissingDifference';
 import FunctionExtraDifference from '../src/difference/FunctionExtraDifference';
@@ -16,6 +16,7 @@ import { DeclaredFunction } from '../src/parser/model/DeclaredFunction';
 import { DeclaredPropertyTypeAnyKeyword } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeAnyKeyword';
 import { DeclaredPropertyTypeUndefinedKeyword } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeUndefinedKeyword';
 import { DeclaredPropertyArrayType } from '../src/parser/model/declared-property-types/DeclaredPropertyArrayType';
+import { DeclaredPropertyTypeVoidKeyword } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeVoidKeyword';
 
 describe('Comparator', () => {
 	describe('templates', () => {
@@ -54,7 +55,7 @@ describe('Comparator', () => {
 
 				const comparator = new Comparator();
 				expect(comparator.compare(parsedClassExpected, parsedClassActual).differences)
-					.toContainEqual(new ParameterTypeEmptyIntersectionDifference(
+					.toContainEqual(new ParameterTypeUnsolvableDifference(
 						new DeclaredProperty(
 							"a",
 							new DeclaredPropertyTypePrimitiveKeyword("number"),
@@ -74,7 +75,7 @@ describe('Comparator', () => {
 
 				const comparator = new Comparator();
 				expect(comparator.compare(parsedClassExpected, parsedClassActual).differences)
-					.toContainEqual(new ParameterTypeEmptyIntersectionDifference(
+					.toContainEqual(new ParameterTypeUnsolvableDifference(
 						new DeclaredProperty(
 							"a",
 							new DeclaredPropertyTypePrimitiveKeyword("string"),
@@ -94,7 +95,7 @@ describe('Comparator', () => {
 				
 				const comparator = new Comparator();
 				expect(comparator.compare(parsedClassExpected, parsedClassActual).differences)
-					.toContainEqual(new ParameterTypeEmptyIntersectionDifference(
+					.toContainEqual(new ParameterTypeUnsolvableDifference(
 						new DeclaredProperty(
 							"a",
 							new DeclaredPropertyTypeUnionType([
@@ -113,7 +114,7 @@ describe('Comparator', () => {
 				const comparator = new Comparator();
 				const differences = comparator.compare(parsedClassExpected, parsedClassActual).differences;
 				expect(differences)
-					.toContainEqual(new ParameterTypeNonEmptyIntersectionDifference(
+					.toContainEqual(new ParameterTypeSolvableDifference(
 						new DeclaredProperty(
 							"a",
 							new DeclaredPropertyTypeUnionType([
@@ -125,7 +126,7 @@ describe('Comparator', () => {
 					));
 
 				expect(differences)
-					.toContainEqual(new ParameterTypeNonEmptyIntersectionDifference(
+					.toContainEqual(new ParameterTypeSolvableDifference(
 						new DeclaredProperty(
 							"a",
 							new DeclaredPropertyTypeUnionType([
@@ -144,7 +145,7 @@ describe('Comparator', () => {
 					));
 
 				expect(differences)
-					.toContainEqual(new ParameterTypeNonEmptyIntersectionDifference(
+					.toContainEqual(new ParameterTypeSolvableDifference(
 						new DeclaredProperty(
 							"a",
 							new DeclaredPropertyTypePrimitiveKeyword("string"),
@@ -158,7 +159,7 @@ describe('Comparator', () => {
 					));
 
 				expect(differences)
-					.toContainEqual(new ParameterTypeNonEmptyIntersectionDifference(
+					.toContainEqual(new ParameterTypeSolvableDifference(
 						new DeclaredProperty(
 							"b",
 							new DeclaredPropertyTypeAnyKeyword(),
@@ -172,7 +173,7 @@ describe('Comparator', () => {
 					));
 
 				expect(differences)
-					.toContainEqual(new ParameterTypeNonEmptyIntersectionDifference(
+					.toContainEqual(new ParameterTypeSolvableDifference(
 						new DeclaredProperty(
 							"c",
 							new DeclaredPropertyTypeLiterals('"hello"'),
@@ -186,7 +187,7 @@ describe('Comparator', () => {
 					));
 
 				expect(differences)
-					.toContainEqual(new ParameterTypeNonEmptyIntersectionDifference(
+					.toContainEqual(new ParameterTypeSolvableDifference(
 						new DeclaredProperty(
 							"d",
 							new DeclaredPropertyTypeUnionType([
@@ -213,7 +214,7 @@ describe('Comparator', () => {
 				const comparator = new Comparator();
 				const differences = comparator.compare(parsedClassExpected, parsedClassActual).differences;
 				expect(differences)
-					.toContainEqual(new ParameterTypeNonEmptyIntersectionDifference(
+					.toContainEqual(new ParameterTypeSolvableDifference(
 						new DeclaredProperty("a", new DeclaredPropertyTypePrimitiveKeyword("string"), true),
 						new DeclaredProperty("a", new DeclaredPropertyTypePrimitiveKeyword("string"), false)
 					));
@@ -267,7 +268,7 @@ describe('Comparator', () => {
 			const comparator = new Comparator();
 			const differences = comparator.compare(parsedClassExpected, parsedClassActual).differences;
 
-			const missingFunction = new DeclaredFunction("myMethod", new DeclaredPropertyTypePrimitiveKeyword("void"))
+			const missingFunction = new DeclaredFunction("myMethod", new DeclaredPropertyTypeVoidKeyword())
 				.addParameter(new DeclaredProperty("a", new DeclaredPropertyTypePrimitiveKeyword("number"), false));
 
 			expect(differences).toContainEqual(new FunctionMissingDifference(missingFunction));
@@ -280,7 +281,7 @@ describe('Comparator', () => {
 			const comparator = new Comparator();
 			const differences = comparator.compare(parsedClassExpected, parsedClassActual).differences;
 
-			const extraFunction = new DeclaredFunction("myExtraMethod", new DeclaredPropertyTypePrimitiveKeyword("void"));
+			const extraFunction = new DeclaredFunction("myExtraMethod", new DeclaredPropertyTypeVoidKeyword());
 
 			expect(differences).toContainEqual(
 				new FunctionExtraDifference(extraFunction)
@@ -296,7 +297,7 @@ describe('Comparator', () => {
 			const comparator = new Comparator();
 			let result = comparator.compare(parsedClassExpected, parsedClassActual).differences;
 			expect(result)
-				.toContainEqual(new ParameterTypeEmptyIntersectionDifference(
+				.toContainEqual(new ParameterTypeUnsolvableDifference(
 					new DeclaredProperty(
 						"a",
 						new DeclaredPropertyTypePrimitiveKeyword("string"),
@@ -310,7 +311,7 @@ describe('Comparator', () => {
 				));
 			
 			expect(result)
-				.toContainEqual(new ParameterTypeEmptyIntersectionDifference(
+				.toContainEqual(new ParameterTypeUnsolvableDifference(
 					new DeclaredProperty(
 						"c",
 						new DeclaredPropertyArrayType(new DeclaredPropertyTypePrimitiveKeyword("string")),
@@ -381,7 +382,7 @@ describe('Comparator', () => {
 			const comparator = new Comparator();
 			const result = comparator.compare(parsedClassExpected, parsedClassActual).differences;
 			expect(result)
-				.toContainEqual(new ParameterTypeEmptyIntersectionDifference(
+				.toContainEqual(new ParameterTypeUnsolvableDifference(
 					new DeclaredProperty(
 						"b",
 						new DeclaredPropertyTypePrimitiveKeyword("number"),
