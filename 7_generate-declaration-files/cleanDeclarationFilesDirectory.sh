@@ -12,11 +12,11 @@ for MODULE_DIRECTORY in $DECLARATION_FILES_DIRECTORY/*; do
 
 		echo $f
 
-		if [ -f "$FILE" ]; then
+		if [ -s "$FILE" ]; then
 			echo "Deleting node modules for $f"
 			rm -rf $f/node_modules
 		else
-			echo "Removing $f"
+			echo "File is empty. Removing ..."
 			rm -r $f
 		fi
 	done
