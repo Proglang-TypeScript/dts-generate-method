@@ -34,9 +34,11 @@ do
 
 	if [ -z "$OUTPUT_RUNTIME" ]
 	then
-		echo "${JS_FILE} - OK" >> ${SCRIPT_PATH}/runtime-info.log
+		echo "${JS_FILE},OK" >> ${SCRIPT_PATH}/runtime-info.log
 	else
-		echo "${JS_FILE} - NOK" >> ${SCRIPT_PATH}/runtime-info.log
+		echo "${JS_FILE},NOK" >> ${SCRIPT_PATH}/runtime-info.log
 	fi
+
+	rm -rf $SCRIPT_PATH/runtime-info/$MODULE_NAME/$JS_FILE_NAME/node_modules
 
 done < "$JS_FILES"
