@@ -1,6 +1,7 @@
 #!/bin/bash
 
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
+ROOT_PATH=$SCRIPT_PATH/..
 
 JS_FILES=$1
 JS_CODE_DIRECTORY=$2
@@ -27,7 +28,7 @@ do
 
 	mkdir $SCRIPT_PATH/modules/$MODULE_NAME/$JS_FILE_NAME/typescript
 
-	$SCRIPT_PATH/../../lib/bin/run.sh \
+	$ROOT_PATH/lib/bin/run.sh \
 		$SCRIPT_PATH/modules/$MODULE_NAME/$JS_FILE_NAME/index.js \
 		$MODULE_NAME \
 		$SCRIPT_PATH/modules/$MODULE_NAME/$JS_FILE_NAME/typescript
@@ -36,4 +37,4 @@ done < "$JS_FILES"
 
 echo "Cleaning output directory ..."
 
-$SCRIPT_PATH/cleanDeclarationFilesDirectory.sh modules
+$SCRIPT_PATH/cleanDeclarationFilesDirectory.sh $SCRIPT_PATH/modules
