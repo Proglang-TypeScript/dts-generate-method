@@ -10,11 +10,10 @@ HEADER="\"module-name\"",`dts-parse -i $TMP_EMPTY_FILE | jq -r '.tags | keys_uns
 rm -f $TMP_EMPTY_FILE
 
 echo $HEADER
-
-find $DECLARATION_FILES_DIRECTORY -name 'index.d.ts' -print0 | 
-    while IFS= read -r -d '' DECLARATION_FILE; do 
-		MODULE_NAME=$(basename "$(dirname "$DECLARATION_FILE")")
-
+for MODULE_PATH in $DECLARATION_FILES_DIRECTORY/* ; do
+		DECLARATION_FILE=$MODULE_PATH/index.d.ts
 		VALUES=`dts-parse -i $DECLARATION_FILE | jq -r '.tags | map (.) as $rows | $rows | @csv'`
-		echo $MODULE_NAME,$VALUES
+
+		MODULE_ONLY_NAME=`basename "$MODULE_PATH"`
+		echo $MODULE_ONLY_NAME,$VALUES
     done
