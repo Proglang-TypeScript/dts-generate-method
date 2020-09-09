@@ -283,6 +283,7 @@ describe('Parser', () => {
 			);
 
 			expect(parser.tags).toContainEqual(TAGS.TYPE_REFERENCE_FUNCTION);
+			expect(parser.tags).toContainEqual(TAGS.FUNCTION);
 		});
 
 		it('should detect "Readonly" arrays', () => {

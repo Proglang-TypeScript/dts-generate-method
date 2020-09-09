@@ -394,6 +394,7 @@ export class ASTNodesHandler {
 
 						if (tsSymbol.escapedName.toString() === "Function") {
 							this.tags.add(TAGS.TYPE_REFERENCE_FUNCTION);
+							this.tags.add(TAGS.FUNCTION);
 							return new DeclaredPropertyTypeReferenceType(tsSymbol.escapedName.toString())
 						}
 
