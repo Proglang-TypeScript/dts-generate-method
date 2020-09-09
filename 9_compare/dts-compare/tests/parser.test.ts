@@ -284,5 +284,17 @@ describe('Parser', () => {
 
 			expect(parser.tags).toContainEqual(TAGS.TYPE_REFERENCE_FUNCTION);
 		});
+
+		it('should detect "Readonly" arrays', () => {
+			const parser = new DeclarationFileParser("tests/files/parser/interfaces/readonly-array.d.ts")
+			const parsedFile = parser.parse();
+
+			expect(parsedFile.functions[0].parameters[0].type).toEqual(
+				new DeclaredPropertyArrayType(new DeclaredPropertyTypePrimitiveKeyword("string"))
+			);
+
+			expect(parser.tags).toContainEqual(TAGS.ARRAY);
+			expect(parser.tags).toContainEqual(TAGS.READONLY_ARRAY);
+		});
 	})
 });

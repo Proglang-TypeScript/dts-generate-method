@@ -387,6 +387,11 @@ export class ASTNodesHandler {
 							return this.getDeclaredPropertyArrayType(typeReferenceNode.typeArguments[0]);
 						}
 
+						if (tsSymbol.escapedName.toString() === "ReadonlyArray" && typeReferenceNode.typeArguments?.length === 1) {
+							this.tags.add(TAGS.READONLY_ARRAY);
+							return this.getDeclaredPropertyArrayType(typeReferenceNode.typeArguments[0]);
+						}
+
 						if (tsSymbol.escapedName.toString() === "Function") {
 							this.tags.add(TAGS.TYPE_REFERENCE_FUNCTION);
 							return new DeclaredPropertyTypeReferenceType(tsSymbol.escapedName.toString())

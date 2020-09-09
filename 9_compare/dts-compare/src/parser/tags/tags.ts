@@ -26,6 +26,7 @@ enum TAGS {
 	NUMBER = "number",
 	BOOLEAN = "boolean",
 	TYPE_REFERENCE_FUNCTION = "type-reference-function",
+	READONLY_ARRAY = "readonly-array",
 }
 
 export function getAllTags(): string[] {
