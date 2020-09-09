@@ -387,6 +387,11 @@ export class ASTNodesHandler {
 							return this.getDeclaredPropertyArrayType(typeReferenceNode.typeArguments[0]);
 						}
 
+						if (tsSymbol.escapedName.toString() === "Function") {
+							this.tags.add(TAGS.TYPE_REFERENCE_FUNCTION);
+							return new DeclaredPropertyTypeReferenceType(tsSymbol.escapedName.toString())
+						}
+
 						const typeAliasDeclaredPropertyType = this.getTypeAliasDeclaredPropertyTypeForSymbol(tsSymbol);
 						if (typeAliasDeclaredPropertyType !== null) {
 							this.tags.add(TAGS.ALIAS);

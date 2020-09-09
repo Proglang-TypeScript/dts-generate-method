@@ -11,6 +11,7 @@ import { DeclaredFunction } from '../src/parser/model/DeclaredFunction';
 import { DeclaredPropertyTypeUnionType } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeUnionType';
 import { DeclaredPropertyTypeObjectKeyword } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeObjectKeyword';
 import { DeclaredPropertyTypeVoidKeyword } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeVoidKeyword';
+import { DeclaredPropertyTypeReferenceType } from '../src/parser/model/declared-property-types/DeclaredPropertyTypeReferenceType';
 
 describe('Parser', () => {
 	describe('interfaces', () => {
@@ -271,6 +272,17 @@ describe('Parser', () => {
 			);
 
 			expect(parser.tags).toContainEqual(TAGS.BOOLEAN);
+		});
+
+		it('should detect the "Function" keyword', () => {
+			const parser = new DeclarationFileParser("tests/files/parser/interfaces/function-keyword.d.ts")
+			const parsedFile = parser.parse();
+
+			expect(parsedFile.functions[0].parameters[0].type).toEqual(
+				new DeclaredPropertyTypeReferenceType("Function")
+			);
+
+			expect(parser.tags).toContainEqual(TAGS.TYPE_REFERENCE_FUNCTION);
 		});
 	})
 });
