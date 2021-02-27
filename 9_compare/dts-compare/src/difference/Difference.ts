@@ -1,3 +1,3 @@
 export default interface Difference {
-	code: string;
+  code: string;
 }

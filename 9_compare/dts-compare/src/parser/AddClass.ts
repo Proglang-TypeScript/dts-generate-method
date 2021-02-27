@@ -1,5 +1,5 @@
-import { DeclaredClass } from './model/DeclaredClass';
+import { DeclaredClass } from "./model/DeclaredClass";
 
 export interface AddClass {
-	addClass(c: DeclaredClass) : void;
+  addClass(c: DeclaredClass): void;
 }

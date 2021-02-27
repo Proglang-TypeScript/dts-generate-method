@@ -7,181 +7,239 @@ import ExportAssignmentDifference from "./difference/ExportAssignmentDifference"
 import { FunctionsComparison } from "./comparison/functionsComparison";
 
 export default class Comparator {
-	compare(parsedExpectedFile: DeclaredNamespace, parsedActualFile: DeclaredNamespace): ResultComparison {
-		let moduleTemplateExpectedFile = this.getModuleTemplate(parsedExpectedFile);
-		let moduleTemplateActualFile = this.getModuleTemplate(parsedActualFile);
-	
-		let differences: Difference[] = [];
+  compare(
+    parsedExpectedFile: DeclaredNamespace,
+    parsedActualFile: DeclaredNamespace
+  ): ResultComparison {
+    let moduleTemplateExpectedFile = this.getModuleTemplate(parsedExpectedFile);
+    let moduleTemplateActualFile = this.getModuleTemplate(parsedActualFile);
 
-		if (moduleTemplateExpectedFile !== moduleTemplateActualFile) {
-			differences = differences.concat(new TemplateDifference(moduleTemplateExpectedFile, moduleTemplateActualFile));
-		} else {
-			differences = differences.concat(this.compareTemplate(
-				parsedExpectedFile,
-				parsedActualFile,
-				moduleTemplateExpectedFile
-			));
-		}
+    let differences: Difference[] = [];
 
-		return {
-			template: moduleTemplateExpectedFile,
-			differences
-		};
-	}
+    if (moduleTemplateExpectedFile !== moduleTemplateActualFile) {
+      differences = differences.concat(
+        new TemplateDifference(
+          moduleTemplateExpectedFile,
+          moduleTemplateActualFile
+        )
+      );
+    } else {
+      differences = differences.concat(
+        this.compareTemplate(
+          parsedExpectedFile,
+          parsedActualFile,
+          moduleTemplateExpectedFile
+        )
+      );
+    }
 
-	private compareTemplate(parsedExpectedFile: DeclaredNamespace, parsedActualFile: DeclaredNamespace, template: string): Difference[] {
-		const compareFunctions: { [k: string] : (a: DeclaredNamespace, b: DeclaredNamespace) => Difference[] } = {
-			'module-class': this.compareTemplateModuleClass.bind(this),
-			'module-function': this.compareTemplateModuleFunction.bind(this),
-			'module': this.compareTemplateModule.bind(this)
-		};
+    return {
+      template: moduleTemplateExpectedFile,
+      differences,
+    };
+  }
 
-		if (template in compareFunctions) {
-			return compareFunctions[template](parsedExpectedFile, parsedActualFile);
-		} else {
-			return [];
-		}
-	}
+  private compareTemplate(
+    parsedExpectedFile: DeclaredNamespace,
+    parsedActualFile: DeclaredNamespace,
+    template: string
+  ): Difference[] {
+    const compareFunctions: {
+      [k: string]: (a: DeclaredNamespace, b: DeclaredNamespace) => Difference[];
+    } = {
+      "module-class": this.compareTemplateModuleClass.bind(this),
+      "module-function": this.compareTemplateModuleFunction.bind(this),
+      module: this.compareTemplateModule.bind(this),
+    };
 
-	private compareTemplateModule(parsedExpectedFile: DeclaredNamespace, parsedActualFile: DeclaredNamespace): Difference[] {
-		const exportedFunctionsExpected = parsedExpectedFile.functions;
-		const exportedFunctionsActual = parsedActualFile.functions;
+    if (template in compareFunctions) {
+      return compareFunctions[template](parsedExpectedFile, parsedActualFile);
+    } else {
+      return [];
+    }
+  }
 
-		return new FunctionsComparison(
-			exportedFunctionsExpected,
-			exportedFunctionsActual,
-			parsedExpectedFile,
-			parsedActualFile
-		).compare();
-	}
+  private compareTemplateModule(
+    parsedExpectedFile: DeclaredNamespace,
+    parsedActualFile: DeclaredNamespace
+  ): Difference[] {
+    const exportedFunctionsExpected = parsedExpectedFile.functions;
+    const exportedFunctionsActual = parsedActualFile.functions;
 
-	private compareTemplateModuleFunction(parsedExpectedFile: DeclaredNamespace, parsedActualFile: DeclaredNamespace): Difference[] {
-		const exportAssignmentExpected = this.getFirstExportAssignment(parsedExpectedFile);
-		let exportedFunctionsExpected = this.getFunctionsByName(
-			parsedExpectedFile,
-			exportAssignmentExpected
-		);
+    return new FunctionsComparison(
+      exportedFunctionsExpected,
+      exportedFunctionsActual,
+      parsedExpectedFile,
+      parsedActualFile
+    ).compare();
+  }
 
-		const exportAssignmentActual = this.getFirstExportAssignment(parsedActualFile);
-		let exportedFunctionsActual = this.getFunctionsByName(
-			parsedActualFile,
-			exportAssignmentActual
-		);
+  private compareTemplateModuleFunction(
+    parsedExpectedFile: DeclaredNamespace,
+    parsedActualFile: DeclaredNamespace
+  ): Difference[] {
+    const exportAssignmentExpected = this.getFirstExportAssignment(
+      parsedExpectedFile
+    );
+    let exportedFunctionsExpected = this.getFunctionsByName(
+      parsedExpectedFile,
+      exportAssignmentExpected
+    );
 
-		if (exportedFunctionsExpected.length > 0) {
-			exportedFunctionsActual.forEach(f => {
-				f.name = exportedFunctionsExpected[0]?.name;
-			});
-		}
+    const exportAssignmentActual = this.getFirstExportAssignment(
+      parsedActualFile
+    );
+    let exportedFunctionsActual = this.getFunctionsByName(
+      parsedActualFile,
+      exportAssignmentActual
+    );
 
-		let differences : Difference[] = [];
-		if (exportAssignmentExpected !== exportAssignmentActual) {
-			differences = differences.concat(new ExportAssignmentDifference(exportAssignmentExpected, exportAssignmentActual));
-		}
+    if (exportedFunctionsExpected.length > 0) {
+      exportedFunctionsActual.forEach((f) => {
+        f.name = exportedFunctionsExpected[0]?.name;
+      });
+    }
 
-		differences = differences.concat(new FunctionsComparison(
-			exportedFunctionsExpected,
-			exportedFunctionsActual,
-			parsedExpectedFile,
-			parsedActualFile
-		).compare());
+    let differences: Difference[] = [];
+    if (exportAssignmentExpected !== exportAssignmentActual) {
+      differences = differences.concat(
+        new ExportAssignmentDifference(
+          exportAssignmentExpected,
+          exportAssignmentActual
+        )
+      );
+    }
 
-		return differences;
-	}
+    differences = differences.concat(
+      new FunctionsComparison(
+        exportedFunctionsExpected,
+        exportedFunctionsActual,
+        parsedExpectedFile,
+        parsedActualFile
+      ).compare()
+    );
 
-	private compareTemplateModuleClass(parsedExpectedFile: DeclaredNamespace, parsedActualFile: DeclaredNamespace): Difference[] {
-		let exportedClassExpected = this.getClassByName(
-			parsedExpectedFile,
-			this.getFirstExportAssignment(parsedExpectedFile)
-		);
+    return differences;
+  }
 
-		let exportedClassActual = this.getClassByName(
-			parsedActualFile,
-			this.getFirstExportAssignment(parsedActualFile)
-		);
+  private compareTemplateModuleClass(
+    parsedExpectedFile: DeclaredNamespace,
+    parsedActualFile: DeclaredNamespace
+  ): Difference[] {
+    let exportedClassExpected = this.getClassByName(
+      parsedExpectedFile,
+      this.getFirstExportAssignment(parsedExpectedFile)
+    );
 
-		let differences: Difference[] = [];
-		return differences.concat(
-			this.compareClassConstructorParameters(exportedClassExpected, exportedClassActual, parsedExpectedFile, parsedActualFile),
-			this.compareClassMethods(exportedClassExpected, exportedClassActual, parsedExpectedFile, parsedActualFile)
-		);
-	}
+    let exportedClassActual = this.getClassByName(
+      parsedActualFile,
+      this.getFirstExportAssignment(parsedActualFile)
+    );
 
-	private getModuleTemplate(parsedDeclarationFile: DeclaredNamespace) {
-		try {
-			const c = this.getClassByName(
-				parsedDeclarationFile,
-				this.getFirstExportAssignment(parsedDeclarationFile)
-			);
+    let differences: Difference[] = [];
+    return differences.concat(
+      this.compareClassConstructorParameters(
+        exportedClassExpected,
+        exportedClassActual,
+        parsedExpectedFile,
+        parsedActualFile
+      ),
+      this.compareClassMethods(
+        exportedClassExpected,
+        exportedClassActual,
+        parsedExpectedFile,
+        parsedActualFile
+      )
+    );
+  }
 
-			if (c) {
-				return "module-class";
-			}
-		} catch (error) {}
+  private getModuleTemplate(parsedDeclarationFile: DeclaredNamespace) {
+    try {
+      const c = this.getClassByName(
+        parsedDeclarationFile,
+        this.getFirstExportAssignment(parsedDeclarationFile)
+      );
 
-		if (this.getFunctionsByName(parsedDeclarationFile, this.getFirstExportAssignment(parsedDeclarationFile)).length > 0) {
-			return "module-function";
-		}
+      if (c) {
+        return "module-class";
+      }
+    } catch (error) {}
 
-		return "module";
-	}
+    if (
+      this.getFunctionsByName(
+        parsedDeclarationFile,
+        this.getFirstExportAssignment(parsedDeclarationFile)
+      ).length > 0
+    ) {
+      return "module-function";
+    }
 
-	private getFirstExportAssignment(parsedDeclarationFile: DeclaredNamespace): string {
-		if (parsedDeclarationFile.exportAssignments.length === 0) {
-			return "";
-		}
+    return "module";
+  }
 
-		return parsedDeclarationFile.exportAssignments[0];
-	}
+  private getFirstExportAssignment(
+    parsedDeclarationFile: DeclaredNamespace
+  ): string {
+    if (parsedDeclarationFile.exportAssignments.length === 0) {
+      return "";
+    }
 
-	private getFunctionsByName(parsedDeclarationFile: DeclaredNamespace, name: string) : DeclaredFunction[] {
-		return parsedDeclarationFile.functions.filter(f => (f.name === name));
-	}
+    return parsedDeclarationFile.exportAssignments[0];
+  }
 
-	private getClassByName(parsedDeclarationFile: DeclaredNamespace, name: string): DeclaredClass {
-		let classes = parsedDeclarationFile.classes;
-		let classesWithName = classes.filter((c => {
-			return (c.name === name);
-		}));
+  private getFunctionsByName(
+    parsedDeclarationFile: DeclaredNamespace,
+    name: string
+  ): DeclaredFunction[] {
+    return parsedDeclarationFile.functions.filter((f) => f.name === name);
+  }
 
-		if (classesWithName.length === 0) {
-			throw "No class with name '" + name + "'";
-		}
+  private getClassByName(
+    parsedDeclarationFile: DeclaredNamespace,
+    name: string
+  ): DeclaredClass {
+    let classes = parsedDeclarationFile.classes;
+    let classesWithName = classes.filter((c) => {
+      return c.name === name;
+    });
 
-		return classesWithName[0];
-	}
+    if (classesWithName.length === 0) {
+      throw "No class with name '" + name + "'";
+    }
 
-	private compareClassConstructorParameters(
-		classExpected: DeclaredClass,
-		classActual: DeclaredClass,
-		parsedExpectedFile: DeclaredNamespace,
-		parsedActualFile: DeclaredNamespace
-	) : Difference[] {
-		return new FunctionsComparison(
-			classExpected.constructors,
-			classActual.constructors,
-			parsedExpectedFile,
-			parsedActualFile
-		).compare();
-	}
+    return classesWithName[0];
+  }
 
-	private compareClassMethods(
-		classExpected: DeclaredClass,
-		classActual: DeclaredClass,
-		parsedExpectedFile: DeclaredNamespace,
-		parsedActualFile: DeclaredNamespace
-	) : Difference[] {
-		
-		return new FunctionsComparison(
-			classExpected.methods,
-			classActual.methods,
-			parsedExpectedFile,
-			parsedActualFile
-		).compare();
-	}
+  private compareClassConstructorParameters(
+    classExpected: DeclaredClass,
+    classActual: DeclaredClass,
+    parsedExpectedFile: DeclaredNamespace,
+    parsedActualFile: DeclaredNamespace
+  ): Difference[] {
+    return new FunctionsComparison(
+      classExpected.constructors,
+      classActual.constructors,
+      parsedExpectedFile,
+      parsedActualFile
+    ).compare();
+  }
+
+  private compareClassMethods(
+    classExpected: DeclaredClass,
+    classActual: DeclaredClass,
+    parsedExpectedFile: DeclaredNamespace,
+    parsedActualFile: DeclaredNamespace
+  ): Difference[] {
+    return new FunctionsComparison(
+      classExpected.methods,
+      classActual.methods,
+      parsedExpectedFile,
+      parsedActualFile
+    ).compare();
+  }
 }
 
 export interface ResultComparison {
-	template: string;
-	differences: Difference[]
+  template: string;
+  differences: Difference[];
 }

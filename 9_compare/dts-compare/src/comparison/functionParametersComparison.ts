@@ -7,57 +7,65 @@ import ParameterMissingDifference from "../difference/ParameterMissingDifference
 import ParameterExtraDifference from "../difference/ParameterExtraDifference";
 
 export class FunctionParametersComparison implements Comparison {
-	private functionExpected: DeclaredFunction;
-	private functionActual: DeclaredFunction;
-	private parsedExpectedFile: DeclaredNamespace;
-	private parsedActualFile: DeclaredNamespace;
+  private functionExpected: DeclaredFunction;
+  private functionActual: DeclaredFunction;
+  private parsedExpectedFile: DeclaredNamespace;
+  private parsedActualFile: DeclaredNamespace;
 
-	constructor(
-		functionExpected: DeclaredFunction,
-		functionActual: DeclaredFunction,
-		parsedExpectedFile: DeclaredNamespace,
-		parsedActualFile: DeclaredNamespace
-	) {
-		this.functionExpected = functionExpected;
-		this.functionActual = functionActual;
-		this.parsedExpectedFile = parsedExpectedFile;
-		this.parsedActualFile = parsedActualFile;
-	}
+  constructor(
+    functionExpected: DeclaredFunction,
+    functionActual: DeclaredFunction,
+    parsedExpectedFile: DeclaredNamespace,
+    parsedActualFile: DeclaredNamespace
+  ) {
+    this.functionExpected = functionExpected;
+    this.functionActual = functionActual;
+    this.parsedExpectedFile = parsedExpectedFile;
+    this.parsedActualFile = parsedActualFile;
+  }
 
-	compare() : Difference[] {
-		let parametersActual = this.functionActual.parameters;
-		let parametersExpected = this.functionExpected.parameters;
+  compare(): Difference[] {
+    let parametersActual = this.functionActual.parameters;
+    let parametersExpected = this.functionExpected.parameters;
 
-		let differences: Difference[] = [];
+    let differences: Difference[] = [];
 
-		for (let i = 0; i < Math.max(parametersExpected.length, parametersActual.length); i++) {
-			const parameterExpected = parametersExpected[i];
-			const parameterActual = parametersActual[i];
+    for (
+      let i = 0;
+      i < Math.max(parametersExpected.length, parametersActual.length);
+      i++
+    ) {
+      const parameterExpected = parametersExpected[i];
+      const parameterActual = parametersActual[i];
 
-			if (parameterExpected && parameterActual) {
-				differences = differences.concat(
-					new ParametersComparison(
-						parameterExpected,
-						parameterActual,
-						this.parsedExpectedFile,
-						this.parsedActualFile
-					).compare()
-				);
+      if (parameterExpected && parameterActual) {
+        differences = differences.concat(
+          new ParametersComparison(
+            parameterExpected,
+            parameterActual,
+            this.parsedExpectedFile,
+            this.parsedActualFile
+          ).compare()
+        );
 
-				continue;
-			}
+        continue;
+      }
 
-			if (parameterExpected && !parameterActual) {
-				differences = differences.concat(new ParameterMissingDifference(parameterExpected));
-				continue;
-			}
+      if (parameterExpected && !parameterActual) {
+        differences = differences.concat(
+          new ParameterMissingDifference(parameterExpected)
+        );
+        continue;
+      }
 
-			if (!parameterExpected && parameterActual) {
-				differences = differences.concat(new ParameterExtraDifference(parameterActual));
-				continue;
-			}
-		}
+      if (!parameterExpected && parameterActual) {
+        differences = differences.concat(
+          new ParameterExtraDifference(parameterActual)
+        );
+        continue;
+      }
+    }
 
-		return differences;
-	}
+    return differences;
+  }
 }

@@ -11,30 +11,34 @@ import FunctionOverloadingDifference from "../difference/FunctionOverloadingDiff
 import ExportAssignmentDifference from "../difference/ExportAssignmentDifference";
 
 export default class CSVFormatter implements Formatter {
-	format(comparedModule: string, r: ResultComparison, tags: Set<string>) : string {
-		let line : string[] = [];
+  format(
+    comparedModule: string,
+    r: ResultComparison,
+    tags: Set<string>
+  ): string {
+    let line: string[] = [];
 
-		const differencesInCsv : { [k: string] : number } = {};
-		differencesInCsv[TemplateDifference.CODE] =  0;
-		differencesInCsv[ParameterTypeSolvableDifference.CODE] =  0;
-		differencesInCsv[ParameterTypeUnsolvableDifference.CODE] =  0;
-		differencesInCsv[ParameterExtraDifference.CODE] =  0;
-		differencesInCsv[ParameterMissingDifference.CODE] = 0;
-		differencesInCsv[FunctionMissingDifference.CODE] = 0;
-		differencesInCsv[FunctionExtraDifference.CODE] = 0;
-		differencesInCsv[FunctionOverloadingDifference.CODE] = 0;
-		differencesInCsv[ExportAssignmentDifference.CODE] = 0;
+    const differencesInCsv: { [k: string]: number } = {};
+    differencesInCsv[TemplateDifference.CODE] = 0;
+    differencesInCsv[ParameterTypeSolvableDifference.CODE] = 0;
+    differencesInCsv[ParameterTypeUnsolvableDifference.CODE] = 0;
+    differencesInCsv[ParameterExtraDifference.CODE] = 0;
+    differencesInCsv[ParameterMissingDifference.CODE] = 0;
+    differencesInCsv[FunctionMissingDifference.CODE] = 0;
+    differencesInCsv[FunctionExtraDifference.CODE] = 0;
+    differencesInCsv[FunctionOverloadingDifference.CODE] = 0;
+    differencesInCsv[ExportAssignmentDifference.CODE] = 0;
 
-		r.differences.forEach(d => {
-			if (d.code in differencesInCsv) {
-				differencesInCsv[d.code]++;
-			}
-		});
+    r.differences.forEach((d) => {
+      if (d.code in differencesInCsv) {
+        differencesInCsv[d.code]++;
+      }
+    });
 
-		line.push(comparedModule);
-		line.push(r.template);
-		line = line.concat(Object.values(differencesInCsv).map(v => String(v)));
+    line.push(comparedModule);
+    line.push(r.template);
+    line = line.concat(Object.values(differencesInCsv).map((v) => String(v)));
 
-		return line.join(',');
-	}
+    return line.join(",");
+  }
 }

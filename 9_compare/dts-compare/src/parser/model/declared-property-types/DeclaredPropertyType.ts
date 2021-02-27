@@ -1,4 +1,4 @@
 export default interface DeclaredPropertyType {
-	kind: string;
-	value: any;
+  kind: string;
+  value: any;
 }

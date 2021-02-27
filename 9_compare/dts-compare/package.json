@@ -12,7 +12,15 @@
     "prebuild": "rm -rf dist",
     "build": "npx tsc",
     "postbuild": "npm link",
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint --max-warnings 0 'src/**/*.ts'",
+    "prettier": "prettier --write 'src/**/*.ts'"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged",
+      "pre-push": "npm run lint"
+    }
   },
   "author": "f-cristiani",
   "license": "MIT",
@@ -29,6 +37,14 @@
     "@types/jest": "^25.1.4",
     "@types/node": "^13.7.0",
     "jest": "^25.2.3",
-    "ts-jest": "^25.5.1"
+    "ts-jest": "^25.5.1",
+    "@typescript-eslint/eslint-plugin": "^4.3.0",
+    "@typescript-eslint/parser": "^4.3.0",
+    "eslint": "^7.10.0",
+    "eslint-config-prettier": "^6.12.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "husky": "^4.3.0",
+    "prettier": "^2.1.2",
+    "pretty-quick": "^3.0.2"
   }
 }

@@ -2,13 +2,13 @@ import Difference from "./Difference";
 import { DeclaredProperty } from "../parser/model/DeclaredProperty";
 
 export default class ParameterExtraDifference implements Difference {
-	private parameterExtra: DeclaredProperty;
+  private parameterExtra: DeclaredProperty;
 
-	static CODE = "extra-parameter";
+  static CODE = "extra-parameter";
 
-	code = ParameterExtraDifference.CODE;
+  code = ParameterExtraDifference.CODE;
 
-	constructor(parameterExtra: DeclaredProperty) {
-		this.parameterExtra = parameterExtra;
-	}
+  constructor(parameterExtra: DeclaredProperty) {
+    this.parameterExtra = parameterExtra;
+  }
 }
