@@ -25,8 +25,8 @@ export class FunctionParametersComparison implements Comparison {
   }
 
   compare(): Difference[] {
-    let parametersActual = this.functionActual.parameters;
-    let parametersExpected = this.functionExpected.parameters;
+    const parametersActual = this.functionActual.parameters;
+    const parametersExpected = this.functionExpected.parameters;
 
     let differences: Difference[] = [];
 

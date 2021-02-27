@@ -27,12 +27,12 @@ export class InterfaceComparison implements Comparison {
   compare(): Difference[] {
     let differences: Difference[] = [];
 
-    let propertiesExpected = new Map();
+    const propertiesExpected = new Map();
     this.interfaceExpected.properties.forEach((propertyExpected) => {
       propertiesExpected.set(propertyExpected.name, propertyExpected);
     });
 
-    let propertiesActual = new Map();
+    const propertiesActual = new Map();
     this.interfaceActual.properties.forEach((propertyActual) => {
       propertiesActual.set(propertyActual.name, propertyActual);
     });

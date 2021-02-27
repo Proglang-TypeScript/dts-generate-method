@@ -37,11 +37,11 @@ export class ParametersComparison implements Comparison {
       differences = differences.concat(this.getDifference());
     }
 
-    let interfaceParameterExpected = this.getInterface(
+    const interfaceParameterExpected = this.getInterface(
       this.parameterExpected,
       this.parsedExpectedFile,
     );
-    let interfaceParameterActual = this.getInterface(this.parameterActual, this.parsedActualFile);
+    const interfaceParameterActual = this.getInterface(this.parameterActual, this.parsedActualFile);
 
     differences = differences.concat(
       new InterfaceComparison(
@@ -55,10 +55,7 @@ export class ParametersComparison implements Comparison {
     return differences;
   }
 
-  private getInterface(
-    parameter: DeclaredProperty,
-    parsedFile: DeclaredNamespace,
-  ): DeclaredInterface {
+  private getInterface(parameter: DeclaredProperty): DeclaredInterface {
     if (!(parameter.type instanceof DeclaredPropertyTypeInterface)) {
       return new DeclaredInterface('');
     }
@@ -78,7 +75,7 @@ export class ParametersComparison implements Comparison {
   }
 
   private serialize(parameter: DeclaredProperty) {
-    let p = JSON.parse(JSON.stringify(parameter));
+    const p = JSON.parse(JSON.stringify(parameter));
     p.name = '';
 
     return JSON.stringify(p);
@@ -142,7 +139,7 @@ export class ParametersComparison implements Comparison {
   private getEquivalentTypeForLiteral(
     declaredPropertyTypeLiterals: DeclaredPropertyTypeLiterals,
   ): DeclaredPropertyType {
-    const literalValue: any = Function(`return ${declaredPropertyTypeLiterals.value};`)();
+    const literalValue = Function(`return ${declaredPropertyTypeLiterals.value};`)();
     const typeOfLiteralValue = typeof literalValue;
 
     const consideredValues = ['string', 'number', 'boolean'];

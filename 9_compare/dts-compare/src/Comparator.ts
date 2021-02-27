@@ -11,8 +11,8 @@ export default class Comparator {
     parsedExpectedFile: DeclaredNamespace,
     parsedActualFile: DeclaredNamespace,
   ): ResultComparison {
-    let moduleTemplateExpectedFile = this.getModuleTemplate(parsedExpectedFile);
-    let moduleTemplateActualFile = this.getModuleTemplate(parsedActualFile);
+    const moduleTemplateExpectedFile = this.getModuleTemplate(parsedExpectedFile);
+    const moduleTemplateActualFile = this.getModuleTemplate(parsedActualFile);
 
     let differences: Difference[] = [];
 
@@ -72,13 +72,16 @@ export default class Comparator {
     parsedActualFile: DeclaredNamespace,
   ): Difference[] {
     const exportAssignmentExpected = this.getFirstExportAssignment(parsedExpectedFile);
-    let exportedFunctionsExpected = this.getFunctionsByName(
+    const exportedFunctionsExpected = this.getFunctionsByName(
       parsedExpectedFile,
       exportAssignmentExpected,
     );
 
     const exportAssignmentActual = this.getFirstExportAssignment(parsedActualFile);
-    let exportedFunctionsActual = this.getFunctionsByName(parsedActualFile, exportAssignmentActual);
+    const exportedFunctionsActual = this.getFunctionsByName(
+      parsedActualFile,
+      exportAssignmentActual,
+    );
 
     if (exportedFunctionsExpected.length > 0) {
       exportedFunctionsActual.forEach((f) => {
@@ -109,17 +112,17 @@ export default class Comparator {
     parsedExpectedFile: DeclaredNamespace,
     parsedActualFile: DeclaredNamespace,
   ): Difference[] {
-    let exportedClassExpected = this.getClassByName(
+    const exportedClassExpected = this.getClassByName(
       parsedExpectedFile,
       this.getFirstExportAssignment(parsedExpectedFile),
     );
 
-    let exportedClassActual = this.getClassByName(
+    const exportedClassActual = this.getClassByName(
       parsedActualFile,
       this.getFirstExportAssignment(parsedActualFile),
     );
 
-    let differences: Difference[] = [];
+    const differences: Difference[] = [];
     return differences.concat(
       this.compareClassConstructorParameters(
         exportedClassExpected,
@@ -176,8 +179,8 @@ export default class Comparator {
   }
 
   private getClassByName(parsedDeclarationFile: DeclaredNamespace, name: string): DeclaredClass {
-    let classes = parsedDeclarationFile.classes;
-    let classesWithName = classes.filter((c) => {
+    const classes = parsedDeclarationFile.classes;
+    const classesWithName = classes.filter((c) => {
       return c.name === name;
     });
 

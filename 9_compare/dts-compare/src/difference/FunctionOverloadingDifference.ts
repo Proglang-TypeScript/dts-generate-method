@@ -1,5 +1,4 @@
 import Difference from './Difference';
-import { DeclaredFunction } from '../parser/model/DeclaredFunction';
 
 export default class FunctionOverloadingDifference implements Difference {
   private functionIdentifier: string;

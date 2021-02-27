@@ -26,7 +26,7 @@ const optionDefinitions = [
   { name: 'module-name', type: String, defaultValue: null },
 ];
 
-let options = commandLineArgs(optionDefinitions);
+const options = commandLineArgs(optionDefinitions);
 
 const comparator = new Comparator();
 
@@ -35,8 +35,8 @@ formatters.set('json', new JsonFormatter());
 formatters.set('csv', new CSVFormatter());
 
 try {
-  let expectedFileParser = new DeclarationFileParser(options['expected-declaration-file']);
-  let actualFileParser = new DeclarationFileParser(options['actual-declaration-file']);
+  const expectedFileParser = new DeclarationFileParser(options['expected-declaration-file']);
+  const actualFileParser = new DeclarationFileParser(options['actual-declaration-file']);
 
   const resultComparison = comparator.compare(expectedFileParser.parse(), actualFileParser.parse());
 
@@ -49,12 +49,15 @@ try {
     );
 
   if (options['output-file'] === '') {
+    // eslint-disable-next-line no-console
     console.log(content);
   } else {
     fs.writeFileSync(options['output-file'], content);
   }
 } catch (error) {
+  // eslint-disable-next-line no-console
   console.error('Error: ');
+  // eslint-disable-next-line no-console
   console.error(error);
   process.exit(1);
 }

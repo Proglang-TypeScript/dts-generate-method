@@ -11,6 +11,7 @@ export default class JsonFormatter implements Formatter {
 
     const getCircularReplacer = () => {
       const seen = new WeakSet();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return (key: string, value: any) => {
         if (typeof value === 'object' && value !== null) {
           if (seen.has(value)) {

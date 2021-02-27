@@ -53,7 +53,10 @@ export class ASTNodesHandler {
   private mapSymbolInterfaces: WeakMap<ts.Symbol, DeclaredInterface> = new WeakMap();
   private mapGenericTypes: WeakMap<ts.Symbol, DeclaredPropertyTypeGenericKeyword> = new WeakMap();
   private mapSymbolTypeAliases: WeakMap<ts.Symbol, DeclaredPropertyType> = new WeakMap();
-  private mapCircularReferences: WeakMap<{}, DeclaredPropertyType> = new WeakMap();
+  private mapCircularReferences: WeakMap<
+    Record<string, unknown>,
+    DeclaredPropertyType
+  > = new WeakMap();
   private declaredFunctions: DeclaredFunction[] = [];
 
   private tsChecker: ts.TypeChecker;
@@ -67,9 +70,9 @@ export class ASTNodesHandler {
   }
 
   addNamespace(node: ts.ModuleDeclaration, declarationMap: DeclaredNamespace): DeclaredNamespace {
-    let namespaceName: string = node.name.text;
+    const namespaceName: string = node.name.text;
 
-    let declaredNamespace = new DeclaredNamespace(namespaceName);
+    const declaredNamespace = new DeclaredNamespace(namespaceName);
     declarationMap.addNamespace(declaredNamespace);
 
     return declaredNamespace;
@@ -79,7 +82,7 @@ export class ASTNodesHandler {
     node: SimplifiedFunctionDeclaration,
     parentDeclarationObject: AddFunction,
   ): DeclaredFunction {
-    let declaredFunction = this.getDeclaredFunction(node);
+    const declaredFunction = this.getDeclaredFunction(node);
     parentDeclarationObject.addFunction(declaredFunction);
 
     return declaredFunction;
@@ -96,7 +99,7 @@ export class ASTNodesHandler {
   }
 
   addClassDeclaration(node: ts.ClassDeclaration, parentDeclarationObject: AddClass) {
-    let declaredClass = this.getDeclaredClass(node);
+    const declaredClass = this.getDeclaredClass(node);
 
     parentDeclarationObject.addClass(declaredClass);
   }
@@ -112,9 +115,9 @@ export class ASTNodesHandler {
   }
 
   private getDeclaredFunction(node: SimplifiedFunctionDeclaration): DeclaredFunction {
-    let functionName = node.name ? node.name.getText() : '';
+    const functionName = node.name ? node.name.getText() : '';
 
-    let declaredFunction = new DeclaredFunction(
+    const declaredFunction = new DeclaredFunction(
       functionName,
       this.getDeclaredPropertyType(node.type),
     );
@@ -194,7 +197,7 @@ export class ASTNodesHandler {
           break;
 
         case ts.SyntaxKind.MethodSignature:
-          let a = m as ts.MethodSignature;
+          const a = m as ts.MethodSignature;
 
           a.typeParameters;
           declaredInterface.addMethod(this.getDeclaredFunction(m as ts.MethodSignature));
@@ -237,14 +240,14 @@ export class ASTNodesHandler {
   }
 
   private getDeclaredClass(classDeclaration: ts.ClassDeclaration): DeclaredClass {
-    let declaredClass = new DeclaredClass(
+    const declaredClass = new DeclaredClass(
       classDeclaration.name ? classDeclaration.name.getText() : '',
     );
 
     classDeclaration.members.forEach((m) => {
       switch (m.kind) {
         case ts.SyntaxKind.Constructor:
-          let constructor = this.getDeclaredFunction(m as ts.ConstructorDeclaration);
+          const constructor = this.getDeclaredFunction(m as ts.ConstructorDeclaration);
           constructor.name = 'constructor';
           constructor.isConstructor = true;
 
@@ -275,7 +278,7 @@ export class ASTNodesHandler {
   }
 
   private getDeclaredProperty(p: SimplifiedPropertyDeclaration): DeclaredProperty {
-    let parameterName = (p.name ? p.name.getText() : '').trim().replace(/'|"/g, '');
+    const parameterName = (p.name ? p.name.getText() : '').trim().replace(/'|"/g, '');
 
     const isOptional = p.questionToken !== undefined;
 
@@ -362,7 +365,7 @@ export class ASTNodesHandler {
         case ts.SyntaxKind.UnionType:
           const unionTypeNode = type as ts.UnionTypeNode;
 
-          let unionDeclaredProperties: DeclaredPropertyType[] = [];
+          const unionDeclaredProperties: DeclaredPropertyType[] = [];
           unionTypeNode.types.forEach((t) => {
             unionDeclaredProperties.push(this.getDeclaredPropertyType(t));
           });
@@ -374,7 +377,7 @@ export class ASTNodesHandler {
         case ts.SyntaxKind.IntersectionType:
           const intersectionTypeNode = type as ts.IntersectionTypeNode;
 
-          let intersectionDeclaredProperties: DeclaredPropertyType[] = [];
+          const intersectionDeclaredProperties: DeclaredPropertyType[] = [];
           intersectionTypeNode.types.forEach((t) => {
             intersectionDeclaredProperties.push(this.getDeclaredPropertyType(t));
           });
@@ -443,7 +446,7 @@ export class ASTNodesHandler {
         case ts.SyntaxKind.TupleType:
           const tupleTypeNode = type as ts.TupleTypeNode;
 
-          let tupleDeclaredProperties: DeclaredPropertyType[] = [];
+          const tupleDeclaredProperties: DeclaredPropertyType[] = [];
           tupleTypeNode.elementTypes.forEach((t) => {
             tupleDeclaredProperties.push(this.getDeclaredPropertyType(t));
           });
@@ -489,7 +492,7 @@ export class ASTNodesHandler {
       }
     }
 
-    let parameterType = type ? type.getText() : '';
+    const parameterType = type ? type.getText() : '';
 
     return new DeclaredPropertyTypePrimitiveKeyword(parameterType);
   }
