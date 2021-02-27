@@ -1,5 +1,6 @@
-.git
-.gitignore
-dist
-.vscode
-node_modules
+# Ignore everything
+**
+
+!src/**
+!package*.json
+!tsconfig.json

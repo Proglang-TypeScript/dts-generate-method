@@ -1,30 +1,29 @@
 FROM node:lts-alpine AS builder
 
-RUN apk update
-
 WORKDIR /usr/local/app
-COPY package*.json ./
 
-RUN npm audit
-RUN npm install
+COPY package*.json ./
+ENV NODE_ENV=development
+RUN npm ci
 
 COPY . .
-
-RUN npm run test && \
-	npm run build && \
-	npm prune --production
+RUN npm run build
 
 # -------------------------------------------------
 
 FROM node:lts-alpine
 
-RUN apk update
-
 WORKDIR /usr/local/app
+RUN chown node:node -R /usr/local/app
+USER node
 
-COPY --from=builder /usr/local/app/node_modules ./node_modules
+ENV NODE_ENV=production
+
+COPY package*.json ./
 COPY --from=builder /usr/local/app/dist ./dist
-COPY --from=builder /usr/local/app/package.json ./package.json
-COPY --from=builder /usr/local/app/package-lock.json ./package-lock.json
 
-ENTRYPOINT [ "node", "dist/index.js" ]
+RUN npm ci
+
+RUN mkdir /usr/local/app/output
+
+ENTRYPOINT [ "node", "./dist/index.js" ]

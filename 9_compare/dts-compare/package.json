@@ -7,11 +7,10 @@
     "dts-parse": "dist/parse.js"
   },
   "scripts": {
-    "compare": "npm run build && dts-compare",
-    "parse": "npm run build && dts-parse",
+    "compare": "npm run build && node dist/index.js",
+    "parse": "npm run build && node dist/parse.js",
     "prebuild": "rm -rf dist",
-    "build": "npx tsc",
-    "postbuild": "npm link",
+    "build": "tsc",
     "test": "jest",
     "lint": "eslint --max-warnings 0 'src/**/*.ts'",
     "prettier": "prettier --write 'src/**/*.ts'"
