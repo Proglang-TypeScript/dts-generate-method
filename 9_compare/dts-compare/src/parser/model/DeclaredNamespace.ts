@@ -1,6 +1,6 @@
-import { DeclaredFunction } from "./DeclaredFunction";
-import { DeclaredInterface } from "./DeclaredInterface";
-import { DeclaredClass } from "./DeclaredClass";
+import { DeclaredFunction } from './DeclaredFunction';
+import { DeclaredInterface } from './DeclaredInterface';
+import { DeclaredClass } from './DeclaredClass';
 
 export class DeclaredNamespace {
   name: string;

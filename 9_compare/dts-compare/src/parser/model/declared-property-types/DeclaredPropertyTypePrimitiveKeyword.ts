@@ -1,12 +1,11 @@
-import DeclaredPropertyType from "./DeclaredPropertyType";
+import DeclaredPropertyType from './DeclaredPropertyType';
 
-export class DeclaredPropertyTypePrimitiveKeyword
-  implements DeclaredPropertyType {
+export class DeclaredPropertyTypePrimitiveKeyword implements DeclaredPropertyType {
   kind: string;
   value: string;
 
   constructor(value: string) {
-    this.kind = "primitive_keyword";
+    this.kind = 'primitive_keyword';
     this.value = value;
   }
 }

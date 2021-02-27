@@ -1,16 +1,16 @@
-import Difference from "../difference/Difference";
-import { Comparison } from "./comparison";
-import { DeclaredNamespace } from "../parser/model/DeclaredNamespace";
-import ParameterTypeUnsolvableDifference from "../difference/ParameterTypeUnsolvableDifference";
-import ParameterTypeSolvableDifference from "../difference/ParameterTypeSolvableDifference";
-import { DeclaredProperty } from "../parser/model/DeclaredProperty";
-import { DeclaredInterface } from "../parser/model/DeclaredInterface";
-import { InterfaceComparison } from "./interfaceComparison";
-import { DeclaredPropertyTypeInterface } from "../parser/model/declared-property-types/DeclaredPropertyTypeInterface";
-import { DeclaredPropertyTypeUnionType } from "../parser/model/declared-property-types/DeclaredPropertyTypeUnionType";
-import DeclaredPropertyType from "../parser/model/declared-property-types/DeclaredPropertyType";
-import { DeclaredPropertyTypeLiterals } from "../parser/model/declared-property-types/DeclaredPropertyTypeLiterals";
-import { DeclaredPropertyTypePrimitiveKeyword } from "../parser/model/declared-property-types/DeclaredPropertyTypePrimitiveKeyword";
+import Difference from '../difference/Difference';
+import { Comparison } from './comparison';
+import { DeclaredNamespace } from '../parser/model/DeclaredNamespace';
+import ParameterTypeUnsolvableDifference from '../difference/ParameterTypeUnsolvableDifference';
+import ParameterTypeSolvableDifference from '../difference/ParameterTypeSolvableDifference';
+import { DeclaredProperty } from '../parser/model/DeclaredProperty';
+import { DeclaredInterface } from '../parser/model/DeclaredInterface';
+import { InterfaceComparison } from './interfaceComparison';
+import { DeclaredPropertyTypeInterface } from '../parser/model/declared-property-types/DeclaredPropertyTypeInterface';
+import { DeclaredPropertyTypeUnionType } from '../parser/model/declared-property-types/DeclaredPropertyTypeUnionType';
+import DeclaredPropertyType from '../parser/model/declared-property-types/DeclaredPropertyType';
+import { DeclaredPropertyTypeLiterals } from '../parser/model/declared-property-types/DeclaredPropertyTypeLiterals';
+import { DeclaredPropertyTypePrimitiveKeyword } from '../parser/model/declared-property-types/DeclaredPropertyTypePrimitiveKeyword';
 
 export class ParametersComparison implements Comparison {
   private parameterExpected: DeclaredProperty;
@@ -22,7 +22,7 @@ export class ParametersComparison implements Comparison {
     parameterExpected: DeclaredProperty,
     parameterActual: DeclaredProperty,
     parsedExpectedFile: DeclaredNamespace,
-    parsedActualFile: DeclaredNamespace
+    parsedActualFile: DeclaredNamespace,
   ) {
     this.parameterExpected = parameterExpected;
     this.parameterActual = parameterActual;
@@ -39,20 +39,17 @@ export class ParametersComparison implements Comparison {
 
     let interfaceParameterExpected = this.getInterface(
       this.parameterExpected,
-      this.parsedExpectedFile
+      this.parsedExpectedFile,
     );
-    let interfaceParameterActual = this.getInterface(
-      this.parameterActual,
-      this.parsedActualFile
-    );
+    let interfaceParameterActual = this.getInterface(this.parameterActual, this.parsedActualFile);
 
     differences = differences.concat(
       new InterfaceComparison(
         interfaceParameterExpected,
         interfaceParameterActual,
         this.parsedExpectedFile,
-        this.parsedActualFile
-      ).compare()
+        this.parsedActualFile,
+      ).compare(),
     );
 
     return differences;
@@ -60,19 +57,16 @@ export class ParametersComparison implements Comparison {
 
   private getInterface(
     parameter: DeclaredProperty,
-    parsedFile: DeclaredNamespace
+    parsedFile: DeclaredNamespace,
   ): DeclaredInterface {
     if (!(parameter.type instanceof DeclaredPropertyTypeInterface)) {
-      return new DeclaredInterface("");
+      return new DeclaredInterface('');
     }
 
     return parameter.type.value;
   }
 
-  private areDifferent(
-    parameterExpected: DeclaredProperty,
-    parameterActual: DeclaredProperty
-  ) {
+  private areDifferent(parameterExpected: DeclaredProperty, parameterActual: DeclaredProperty) {
     if (
       parameterExpected.type instanceof DeclaredPropertyTypeInterface ||
       parameterActual.type instanceof DeclaredPropertyTypeInterface
@@ -80,14 +74,12 @@ export class ParametersComparison implements Comparison {
       return false;
     }
 
-    return (
-      this.serialize(parameterExpected) !== this.serialize(parameterActual)
-    );
+    return this.serialize(parameterExpected) !== this.serialize(parameterActual);
   }
 
   private serialize(parameter: DeclaredProperty) {
     let p = JSON.parse(JSON.stringify(parameter));
-    p.name = "";
+    p.name = '';
 
     return JSON.stringify(p);
   }
@@ -101,8 +93,7 @@ export class ParametersComparison implements Comparison {
         actualTypes.push(this.parameterActual.type);
       }
 
-      const expectedType = this.parameterExpected
-        .type as DeclaredPropertyTypeUnionType;
+      const expectedType = this.parameterExpected.type as DeclaredPropertyTypeUnionType;
       const expectedTypeValues = expectedType.value.map((t) => {
         if (t instanceof DeclaredPropertyTypeLiterals) {
           return this.getEquivalentTypeForLiteral(t);
@@ -121,62 +112,40 @@ export class ParametersComparison implements Comparison {
         }).length > 0;
 
       if (expectedContainsActualType === true) {
-        return new ParameterTypeSolvableDifference(
-          this.parameterExpected,
-          this.parameterActual
-        );
+        return new ParameterTypeSolvableDifference(this.parameterExpected, this.parameterActual);
       }
     }
 
     if (this.parameterExpected.optional === true) {
       if (
-        this.typesAreEqual(
-          this.parameterExpected.type,
-          this.parameterActual.type
-        ) ||
-        this.parameterActual.type.value === "undefined"
+        this.typesAreEqual(this.parameterExpected.type, this.parameterActual.type) ||
+        this.parameterActual.type.value === 'undefined'
       ) {
-        return new ParameterTypeSolvableDifference(
-          this.parameterExpected,
-          this.parameterActual
-        );
+        return new ParameterTypeSolvableDifference(this.parameterExpected, this.parameterActual);
       }
     }
 
-    if (this.parameterExpected.type.value === "any") {
-      return new ParameterTypeSolvableDifference(
-        this.parameterExpected,
-        this.parameterActual
-      );
+    if (this.parameterExpected.type.value === 'any') {
+      return new ParameterTypeSolvableDifference(this.parameterExpected, this.parameterActual);
     }
 
     if (this.parameterExpected.type instanceof DeclaredPropertyTypeLiterals) {
-      const equivalentType = this.getEquivalentTypeForLiteral(
-        this.parameterExpected.type
-      );
+      const equivalentType = this.getEquivalentTypeForLiteral(this.parameterExpected.type);
       if (this.typesAreEqual(equivalentType, this.parameterActual.type)) {
-        return new ParameterTypeSolvableDifference(
-          this.parameterExpected,
-          this.parameterActual
-        );
+        return new ParameterTypeSolvableDifference(this.parameterExpected, this.parameterActual);
       }
     }
 
-    return new ParameterTypeUnsolvableDifference(
-      this.parameterExpected,
-      this.parameterActual
-    );
+    return new ParameterTypeUnsolvableDifference(this.parameterExpected, this.parameterActual);
   }
 
   private getEquivalentTypeForLiteral(
-    declaredPropertyTypeLiterals: DeclaredPropertyTypeLiterals
+    declaredPropertyTypeLiterals: DeclaredPropertyTypeLiterals,
   ): DeclaredPropertyType {
-    const literalValue: any = Function(
-      `return ${declaredPropertyTypeLiterals.value};`
-    )();
+    const literalValue: any = Function(`return ${declaredPropertyTypeLiterals.value};`)();
     const typeOfLiteralValue = typeof literalValue;
 
-    const consideredValues = ["string", "number", "boolean"];
+    const consideredValues = ['string', 'number', 'boolean'];
     if (consideredValues.indexOf(typeOfLiteralValue) !== -1) {
       return new DeclaredPropertyTypePrimitiveKeyword(typeOfLiteralValue);
     }
@@ -184,10 +153,7 @@ export class ParametersComparison implements Comparison {
     return declaredPropertyTypeLiterals;
   }
 
-  private typesAreEqual(
-    a: DeclaredPropertyType,
-    b: DeclaredPropertyType
-  ): boolean {
+  private typesAreEqual(a: DeclaredPropertyType, b: DeclaredPropertyType): boolean {
     return JSON.stringify(a) === JSON.stringify(b);
   }
 }

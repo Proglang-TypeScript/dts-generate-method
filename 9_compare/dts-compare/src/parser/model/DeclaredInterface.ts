@@ -1,8 +1,8 @@
-import { DeclaredFunction } from "./DeclaredFunction";
-import { DeclaredProperty } from "./DeclaredProperty";
-import { DeclaredClass } from "./DeclaredClass";
-import { DeclaredIndexSignature } from "./DeclaredIndexSignature";
-import { DeclaredPropertyTypeGenericKeyword } from "./declared-property-types/DeclaredPropertyTypeGenericKeyword";
+import { DeclaredFunction } from './DeclaredFunction';
+import { DeclaredProperty } from './DeclaredProperty';
+import { DeclaredClass } from './DeclaredClass';
+import { DeclaredIndexSignature } from './DeclaredIndexSignature';
+import { DeclaredPropertyTypeGenericKeyword } from './declared-property-types/DeclaredPropertyTypeGenericKeyword';
 
 export class DeclaredInterface {
   name: string;

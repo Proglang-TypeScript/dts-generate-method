@@ -1,5 +1,5 @@
-import { DeclaredProperty } from "./DeclaredProperty";
-import DeclaredPropertyType from "./declared-property-types/DeclaredPropertyType";
+import { DeclaredProperty } from './DeclaredProperty';
+import DeclaredPropertyType from './declared-property-types/DeclaredPropertyType';
 
 export class DeclaredIndexSignature {
   parameter: DeclaredProperty;

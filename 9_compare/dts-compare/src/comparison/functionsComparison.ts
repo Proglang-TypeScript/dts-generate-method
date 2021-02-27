@@ -1,11 +1,11 @@
-import Difference from "../difference/Difference";
-import { Comparison } from "./comparison";
-import { DeclaredNamespace } from "../parser/model/DeclaredNamespace";
-import { DeclaredFunction } from "../parser/model/DeclaredFunction";
-import FunctionMissingDifference from "../difference/FunctionMissingDifference";
-import FunctionExtraDifference from "../difference/FunctionExtraDifference";
-import { FunctionParametersComparison } from "./functionParametersComparison";
-import FunctionOverloadingDifference from "../difference/FunctionOverloadingDifference";
+import Difference from '../difference/Difference';
+import { Comparison } from './comparison';
+import { DeclaredNamespace } from '../parser/model/DeclaredNamespace';
+import { DeclaredFunction } from '../parser/model/DeclaredFunction';
+import FunctionMissingDifference from '../difference/FunctionMissingDifference';
+import FunctionExtraDifference from '../difference/FunctionExtraDifference';
+import { FunctionParametersComparison } from './functionParametersComparison';
+import FunctionOverloadingDifference from '../difference/FunctionOverloadingDifference';
 
 export class FunctionsComparison implements Comparison {
   private functionsExpected: DeclaredFunction[];
@@ -17,7 +17,7 @@ export class FunctionsComparison implements Comparison {
     functionsExpected: DeclaredFunction[],
     functionsActual: DeclaredFunction[],
     parsedExpectedFile: DeclaredNamespace,
-    parsedActualFile: DeclaredNamespace
+    parsedActualFile: DeclaredNamespace,
   ) {
     this.functionsExpected = functionsExpected;
     this.functionsActual = functionsActual;
@@ -28,23 +28,17 @@ export class FunctionsComparison implements Comparison {
   compare(): Difference[] {
     let differences: Difference[] = [];
 
-    const expectedFunctionsMap = this.createMapOfFunctions(
-      this.functionsExpected
-    );
+    const expectedFunctionsMap = this.createMapOfFunctions(this.functionsExpected);
     const actualFunctionsMap = this.createMapOfFunctions(this.functionsActual);
 
     this.functionsExpected.forEach((functionExpected) => {
-      if (
-        !actualFunctionsMap.has(this.getFunctionIdentifier(functionExpected))
-      ) {
+      if (!actualFunctionsMap.has(this.getFunctionIdentifier(functionExpected))) {
         differences.push(new FunctionMissingDifference(functionExpected));
       }
     });
 
     this.functionsActual.forEach((functionActual) => {
-      if (
-        !expectedFunctionsMap.has(this.getFunctionIdentifier(functionActual))
-      ) {
+      if (!expectedFunctionsMap.has(this.getFunctionIdentifier(functionActual))) {
         differences.push(new FunctionExtraDifference(functionActual));
       }
     });
@@ -58,8 +52,8 @@ export class FunctionsComparison implements Comparison {
           new FunctionOverloadingDifference(
             key,
             expectedFunctionsMap.get(key) || 0,
-            actualFunctionsMap.get(key) || 0
-          )
+            actualFunctionsMap.get(key) || 0,
+          ),
         );
       }
     }
@@ -91,13 +85,11 @@ export class FunctionsComparison implements Comparison {
             functionExpected,
             functionActual,
             this.parsedExpectedFile,
-            this.parsedActualFile
+            this.parsedActualFile,
           ).compare();
 
           if (functionDifferences.length === 0) {
-            functionsWithNoDifferences
-              .add(functionExpected)
-              .add(functionActual);
+            functionsWithNoDifferences.add(functionExpected).add(functionActual);
           }
 
           functionDifferences.forEach((d) => {
@@ -120,9 +112,7 @@ export class FunctionsComparison implements Comparison {
       }
 
       return (
-        !functionsWithNoDifferences.has(
-          functionsPerDifference.functionExpected
-        ) &&
+        !functionsWithNoDifferences.has(functionsPerDifference.functionExpected) &&
         !functionsWithNoDifferences.has(functionsPerDifference.functionActual)
       );
     });
@@ -132,9 +122,7 @@ export class FunctionsComparison implements Comparison {
     return `${f.name}`;
   }
 
-  private createMapOfFunctions(
-    functions: DeclaredFunction[]
-  ): Map<string, number> {
+  private createMapOfFunctions(functions: DeclaredFunction[]): Map<string, number> {
     const functionsMap = new Map<string, number>();
 
     functions.forEach((f) => {

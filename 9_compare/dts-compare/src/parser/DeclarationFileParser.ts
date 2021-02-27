@@ -1,11 +1,11 @@
-import ts from "typescript";
-import { DeclaredNamespace } from "./model/DeclaredNamespace";
-import { ASTNodesHandler } from "./ASTNodesHandler";
-import { AddFunction } from "./AddFunction";
-import { AddInterface } from "./AddInterface";
+import ts from 'typescript';
+import { DeclaredNamespace } from './model/DeclaredNamespace';
+import { ASTNodesHandler } from './ASTNodesHandler';
+import { AddFunction } from './AddFunction';
+import { AddInterface } from './AddInterface';
 
-import fs from "fs";
-import { AddClass } from "./AddClass";
+import fs from 'fs';
+import { AddClass } from './AddClass';
 
 export default class DeclarationFileParser {
   private astNodesHandler: ASTNodesHandler;
@@ -25,15 +25,11 @@ export default class DeclarationFileParser {
 
     this.tags = new Set<string>();
 
-    this.astNodesHandler = new ASTNodesHandler(
-      this.checker,
-      this.sourceFile,
-      this.tags
-    );
+    this.astNodesHandler = new ASTNodesHandler(this.checker, this.sourceFile, this.tags);
   }
 
   parse(): DeclaredNamespace {
-    let declarationMap = new DeclaredNamespace("__GLOBAL__");
+    let declarationMap = new DeclaredNamespace('__GLOBAL__');
 
     this.addSyntaxErrors(this.sourceFile.fileName, declarationMap);
 
@@ -52,15 +48,13 @@ export default class DeclarationFileParser {
         case ts.SyntaxKind.ExportAssignment:
           const exportAssignmentNode = node as ts.ExportAssignment;
 
-          declarationMap.addExportAssignment(
-            exportAssignmentNode.expression.getText()
-          );
+          declarationMap.addExportAssignment(exportAssignmentNode.expression.getText());
           break;
 
         case ts.SyntaxKind.ModuleDeclaration:
           let declaredNamespace = dis.astNodesHandler.addNamespace(
             node as ts.ModuleDeclaration,
-            declarationMap
+            declarationMap,
           );
 
           ts.forEachChild(node, dis.visit(declaredNamespace));
@@ -69,7 +63,7 @@ export default class DeclarationFileParser {
         case ts.SyntaxKind.FunctionDeclaration:
           dis.astNodesHandler.addFunctionDeclaration(
             node as ts.FunctionDeclaration,
-            declarationMap as AddFunction
+            declarationMap as AddFunction,
           );
 
           break;
@@ -77,7 +71,7 @@ export default class DeclarationFileParser {
         case ts.SyntaxKind.InterfaceDeclaration:
           dis.astNodesHandler.addInterfaceDeclaration(
             node as ts.InterfaceDeclaration,
-            declarationMap as AddInterface
+            declarationMap as AddInterface,
           );
 
           break;
@@ -85,7 +79,7 @@ export default class DeclarationFileParser {
         case ts.SyntaxKind.ClassDeclaration:
           dis.astNodesHandler.addClassDeclaration(
             node as ts.ClassDeclaration,
-            declarationMap as AddClass
+            declarationMap as AddClass,
           );
 
           break;
@@ -99,15 +93,13 @@ export default class DeclarationFileParser {
   private addSyntaxErrors(fileName: string, declarationMap: DeclaredNamespace) {
     const servicesHost: ts.LanguageServiceHost = {
       getScriptFileNames: () => [fileName],
-      getScriptVersion: (fileName: string) => "1",
+      getScriptVersion: (fileName: string) => '1',
       getScriptSnapshot: (fileName: string) => {
         if (!fs.existsSync(fileName)) {
           return undefined;
         }
 
-        return ts.ScriptSnapshot.fromString(
-          fs.readFileSync(fileName).toString()
-        );
+        return ts.ScriptSnapshot.fromString(fs.readFileSync(fileName).toString());
       },
       getCurrentDirectory: () => process.cwd(),
       getCompilationSettings: () => {
@@ -119,10 +111,7 @@ export default class DeclarationFileParser {
       readDirectory: ts.sys.readDirectory,
     };
 
-    const services = ts.createLanguageService(
-      servicesHost,
-      ts.createDocumentRegistry()
-    );
+    const services = ts.createLanguageService(servicesHost, ts.createDocumentRegistry());
 
     let diagnostics = services
       .getCompilerOptionsDiagnostics()
@@ -130,19 +119,12 @@ export default class DeclarationFileParser {
       .concat(services.getSemanticDiagnostics(fileName));
 
     diagnostics.forEach((diagnostic) => {
-      let message = ts.flattenDiagnosticMessageText(
-        diagnostic.messageText,
-        "\n"
-      );
+      let message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
       if (diagnostic.file) {
-        let { line, character } = diagnostic.file.getLineAndCharacterOfPosition(
-          diagnostic.start!
-        );
+        let { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start!);
 
         declarationMap.errorMessages.push(
-          `Error ${diagnostic.file.fileName} (${line + 1},${
-            character + 1
-          }): ${message}`
+          `Error ${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`,
         );
       } else {
         declarationMap.errorMessages.push(`Error: ${message}`);

@@ -1,19 +1,19 @@
-import Difference from "./Difference";
-import { DeclaredFunction } from "../parser/model/DeclaredFunction";
+import Difference from './Difference';
+import { DeclaredFunction } from '../parser/model/DeclaredFunction';
 
 export default class FunctionOverloadingDifference implements Difference {
   private functionIdentifier: string;
   private expectedNumberOfOverloadings: number;
   private actualNumberOfOverloadings: number;
 
-  static CODE = "function-overloading-difference";
+  static CODE = 'function-overloading-difference';
 
   code = FunctionOverloadingDifference.CODE;
 
   constructor(
     functionIdentifier: string,
     expectedNumberOfOverloadings: number,
-    actualNumberOfOverloadings: number
+    actualNumberOfOverloadings: number,
   ) {
     this.functionIdentifier = functionIdentifier;
     this.expectedNumberOfOverloadings = expectedNumberOfOverloadings;

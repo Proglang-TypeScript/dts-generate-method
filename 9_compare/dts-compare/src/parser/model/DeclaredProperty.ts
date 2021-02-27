@@ -1,5 +1,5 @@
-import DeclaredPropertyType from "./declared-property-types/DeclaredPropertyType";
-import DATA_MODIFIERS from "./data-modifiers";
+import DeclaredPropertyType from './declared-property-types/DeclaredPropertyType';
+import DATA_MODIFIERS from './data-modifiers';
 
 export class DeclaredProperty {
   name: string;

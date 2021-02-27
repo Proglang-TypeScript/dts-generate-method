@@ -1,10 +1,10 @@
-import Difference from "../difference/Difference";
-import { Comparison } from "./comparison";
-import { DeclaredFunction } from "../parser/model/DeclaredFunction";
-import { DeclaredNamespace } from "../parser/model/DeclaredNamespace";
-import { ParametersComparison } from "./parametersComparison";
-import ParameterMissingDifference from "../difference/ParameterMissingDifference";
-import ParameterExtraDifference from "../difference/ParameterExtraDifference";
+import Difference from '../difference/Difference';
+import { Comparison } from './comparison';
+import { DeclaredFunction } from '../parser/model/DeclaredFunction';
+import { DeclaredNamespace } from '../parser/model/DeclaredNamespace';
+import { ParametersComparison } from './parametersComparison';
+import ParameterMissingDifference from '../difference/ParameterMissingDifference';
+import ParameterExtraDifference from '../difference/ParameterExtraDifference';
 
 export class FunctionParametersComparison implements Comparison {
   private functionExpected: DeclaredFunction;
@@ -16,7 +16,7 @@ export class FunctionParametersComparison implements Comparison {
     functionExpected: DeclaredFunction,
     functionActual: DeclaredFunction,
     parsedExpectedFile: DeclaredNamespace,
-    parsedActualFile: DeclaredNamespace
+    parsedActualFile: DeclaredNamespace,
   ) {
     this.functionExpected = functionExpected;
     this.functionActual = functionActual;
@@ -30,11 +30,7 @@ export class FunctionParametersComparison implements Comparison {
 
     let differences: Difference[] = [];
 
-    for (
-      let i = 0;
-      i < Math.max(parametersExpected.length, parametersActual.length);
-      i++
-    ) {
+    for (let i = 0; i < Math.max(parametersExpected.length, parametersActual.length); i++) {
       const parameterExpected = parametersExpected[i];
       const parameterActual = parametersActual[i];
 
@@ -44,24 +40,20 @@ export class FunctionParametersComparison implements Comparison {
             parameterExpected,
             parameterActual,
             this.parsedExpectedFile,
-            this.parsedActualFile
-          ).compare()
+            this.parsedActualFile,
+          ).compare(),
         );
 
         continue;
       }
 
       if (parameterExpected && !parameterActual) {
-        differences = differences.concat(
-          new ParameterMissingDifference(parameterExpected)
-        );
+        differences = differences.concat(new ParameterMissingDifference(parameterExpected));
         continue;
       }
 
       if (!parameterExpected && parameterActual) {
-        differences = differences.concat(
-          new ParameterExtraDifference(parameterActual)
-        );
+        differences = differences.concat(new ParameterExtraDifference(parameterActual));
         continue;
       }
     }

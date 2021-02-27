@@ -1,6 +1,6 @@
-import { DeclaredFunction } from "./DeclaredFunction";
-import { DeclaredProperty } from "./DeclaredProperty";
-import { DeclaredPropertyTypeGenericKeyword } from "./declared-property-types/DeclaredPropertyTypeGenericKeyword";
+import { DeclaredFunction } from './DeclaredFunction';
+import { DeclaredProperty } from './DeclaredProperty';
+import { DeclaredPropertyTypeGenericKeyword } from './declared-property-types/DeclaredPropertyTypeGenericKeyword';
 
 export class DeclaredClass {
   name: string;

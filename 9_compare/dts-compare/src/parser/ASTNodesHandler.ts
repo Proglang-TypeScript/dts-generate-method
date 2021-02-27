@@ -1,39 +1,34 @@
-import * as ts from "typescript";
-import { DeclaredNamespace } from "./model/DeclaredNamespace";
-import { AddFunction } from "./AddFunction";
-import { DeclaredFunction } from "./model/DeclaredFunction";
-import { DeclaredInterface } from "./model/DeclaredInterface";
-import { AddInterface } from "./AddInterface";
+import * as ts from 'typescript';
+import { DeclaredNamespace } from './model/DeclaredNamespace';
+import { AddFunction } from './AddFunction';
+import { DeclaredFunction } from './model/DeclaredFunction';
+import { DeclaredInterface } from './model/DeclaredInterface';
+import { AddInterface } from './AddInterface';
 
-import DeclaredPropertyType from "./model/declared-property-types/DeclaredPropertyType";
-import { DeclaredProperty } from "./model/DeclaredProperty";
-import { DeclaredPropertyTypePrimitiveKeyword } from "./model/declared-property-types/DeclaredPropertyTypePrimitiveKeyword";
-import { DeclaredPropertyTypeFunctionType } from "./model/declared-property-types/DeclaredPropertyTypeFunctionType";
-import { DeclaredPropertyTypeInterface } from "./model/declared-property-types/DeclaredPropertyTypeInterface";
-import { DeclaredPropertyTypeUnionType } from "./model/declared-property-types/DeclaredPropertyTypeUnionType";
-import { DeclaredPropertyTypeLiterals } from "./model/declared-property-types/DeclaredPropertyTypeLiterals";
-import { DeclaredPropertyArrayType } from "./model/declared-property-types/DeclaredPropertyArrayType";
-import { AddClass } from "./AddClass";
-import { DeclaredClass } from "./model/DeclaredClass";
-import { DeclaredPropertyTypeReferenceType } from "./model/declared-property-types/DeclaredPropertyTypeReferenceType";
-import TAGS from "./tags/tags";
-import { DeclaredPropertyTypeAnyKeyword } from "./model/declared-property-types/DeclaredPropertyTypeAnyKeyword";
-import { DeclaredPropertyTypeTupleType } from "./model/declared-property-types/DeclaredPropertyTypeTupleType";
-import { DeclaredIndexSignature } from "./model/DeclaredIndexSignature";
-import { DeclaredPropertyTypeGenericKeyword } from "./model/declared-property-types/DeclaredPropertyTypeGenericKeyword";
-import { DeclaredPropertyTypeUndefinedKeyword } from "./model/declared-property-types/DeclaredPropertyTypeUndefinedKeyword";
-import DATA_MODIFIERS from "./model/data-modifiers";
-import { DeclaredPropertyTypeIntersectionType } from "./model/declared-property-types/DeclaredPropertyTypeIntersectionType";
-import { DeclaredPropertyTypeObjectKeyword } from "./model/declared-property-types/DeclaredPropertyTypeObjectKeyword";
-import { DeclaredPropertyTypeVoidKeyword } from "./model/declared-property-types/DeclaredPropertyTypeVoidKeyword";
+import DeclaredPropertyType from './model/declared-property-types/DeclaredPropertyType';
+import { DeclaredProperty } from './model/DeclaredProperty';
+import { DeclaredPropertyTypePrimitiveKeyword } from './model/declared-property-types/DeclaredPropertyTypePrimitiveKeyword';
+import { DeclaredPropertyTypeFunctionType } from './model/declared-property-types/DeclaredPropertyTypeFunctionType';
+import { DeclaredPropertyTypeInterface } from './model/declared-property-types/DeclaredPropertyTypeInterface';
+import { DeclaredPropertyTypeUnionType } from './model/declared-property-types/DeclaredPropertyTypeUnionType';
+import { DeclaredPropertyTypeLiterals } from './model/declared-property-types/DeclaredPropertyTypeLiterals';
+import { DeclaredPropertyArrayType } from './model/declared-property-types/DeclaredPropertyArrayType';
+import { AddClass } from './AddClass';
+import { DeclaredClass } from './model/DeclaredClass';
+import { DeclaredPropertyTypeReferenceType } from './model/declared-property-types/DeclaredPropertyTypeReferenceType';
+import TAGS from './tags/tags';
+import { DeclaredPropertyTypeAnyKeyword } from './model/declared-property-types/DeclaredPropertyTypeAnyKeyword';
+import { DeclaredPropertyTypeTupleType } from './model/declared-property-types/DeclaredPropertyTypeTupleType';
+import { DeclaredIndexSignature } from './model/DeclaredIndexSignature';
+import { DeclaredPropertyTypeGenericKeyword } from './model/declared-property-types/DeclaredPropertyTypeGenericKeyword';
+import { DeclaredPropertyTypeUndefinedKeyword } from './model/declared-property-types/DeclaredPropertyTypeUndefinedKeyword';
+import DATA_MODIFIERS from './model/data-modifiers';
+import { DeclaredPropertyTypeIntersectionType } from './model/declared-property-types/DeclaredPropertyTypeIntersectionType';
+import { DeclaredPropertyTypeObjectKeyword } from './model/declared-property-types/DeclaredPropertyTypeObjectKeyword';
+import { DeclaredPropertyTypeVoidKeyword } from './model/declared-property-types/DeclaredPropertyTypeVoidKeyword';
 
 interface SimplifiedFunctionDeclaration {
-  name?:
-    | ts.Identifier
-    | ts.StringLiteral
-    | ts.NumericLiteral
-    | ts.PropertyName
-    | undefined;
+  name?: ts.Identifier | ts.StringLiteral | ts.NumericLiteral | ts.PropertyName | undefined;
   type?: ts.TypeNode | undefined;
   parameters: ts.NodeArray<ts.ParameterDeclaration>;
   modifiers?: ts.NodeArray<ts.Modifier> | undefined;
@@ -55,42 +50,23 @@ interface SimplifiedPropertyDeclaration {
 }
 
 export class ASTNodesHandler {
-  private mapSymbolInterfaces: WeakMap<
-    ts.Symbol,
-    DeclaredInterface
-  > = new WeakMap();
-  private mapGenericTypes: WeakMap<
-    ts.Symbol,
-    DeclaredPropertyTypeGenericKeyword
-  > = new WeakMap();
-  private mapSymbolTypeAliases: WeakMap<
-    ts.Symbol,
-    DeclaredPropertyType
-  > = new WeakMap();
-  private mapCircularReferences: WeakMap<
-    {},
-    DeclaredPropertyType
-  > = new WeakMap();
+  private mapSymbolInterfaces: WeakMap<ts.Symbol, DeclaredInterface> = new WeakMap();
+  private mapGenericTypes: WeakMap<ts.Symbol, DeclaredPropertyTypeGenericKeyword> = new WeakMap();
+  private mapSymbolTypeAliases: WeakMap<ts.Symbol, DeclaredPropertyType> = new WeakMap();
+  private mapCircularReferences: WeakMap<{}, DeclaredPropertyType> = new WeakMap();
   private declaredFunctions: DeclaredFunction[] = [];
 
   private tsChecker: ts.TypeChecker;
   private sourceFile: ts.SourceFile;
   private tags: Set<string>;
 
-  constructor(
-    tsChecker: ts.TypeChecker,
-    sourceFile: ts.SourceFile,
-    tags: Set<string>
-  ) {
+  constructor(tsChecker: ts.TypeChecker, sourceFile: ts.SourceFile, tags: Set<string>) {
     this.tsChecker = tsChecker;
     this.sourceFile = sourceFile;
     this.tags = tags;
   }
 
-  addNamespace(
-    node: ts.ModuleDeclaration,
-    declarationMap: DeclaredNamespace
-  ): DeclaredNamespace {
+  addNamespace(node: ts.ModuleDeclaration, declarationMap: DeclaredNamespace): DeclaredNamespace {
     let namespaceName: string = node.name.text;
 
     let declaredNamespace = new DeclaredNamespace(namespaceName);
@@ -101,7 +77,7 @@ export class ASTNodesHandler {
 
   addFunctionDeclaration(
     node: SimplifiedFunctionDeclaration,
-    parentDeclarationObject: AddFunction
+    parentDeclarationObject: AddFunction,
   ): DeclaredFunction {
     let declaredFunction = this.getDeclaredFunction(node);
     parentDeclarationObject.addFunction(declaredFunction);
@@ -111,7 +87,7 @@ export class ASTNodesHandler {
 
   addInterfaceDeclaration(
     node: SimplifiedInterfaceDeclaration,
-    parentDeclarationObject: AddInterface
+    parentDeclarationObject: AddInterface,
   ) {
     const declaredInterface = this.getDeclaredInterface(node);
     parentDeclarationObject.addInterface(declaredInterface);
@@ -119,10 +95,7 @@ export class ASTNodesHandler {
     return declaredInterface;
   }
 
-  addClassDeclaration(
-    node: ts.ClassDeclaration,
-    parentDeclarationObject: AddClass
-  ) {
+  addClassDeclaration(node: ts.ClassDeclaration, parentDeclarationObject: AddClass) {
     let declaredClass = this.getDeclaredClass(node);
 
     parentDeclarationObject.addClass(declaredClass);
@@ -132,20 +105,18 @@ export class ASTNodesHandler {
     this.declaredFunctions.forEach((declaredFunction) => {
       if (this.mapCircularReferences.has(declaredFunction.returnType)) {
         declaredFunction.returnType = this.mapCircularReferences.get(
-          declaredFunction.returnType
+          declaredFunction.returnType,
         ) as DeclaredPropertyType;
       }
     });
   }
 
-  private getDeclaredFunction(
-    node: SimplifiedFunctionDeclaration
-  ): DeclaredFunction {
-    let functionName = node.name ? node.name.getText() : "";
+  private getDeclaredFunction(node: SimplifiedFunctionDeclaration): DeclaredFunction {
+    let functionName = node.name ? node.name.getText() : '';
 
     let declaredFunction = new DeclaredFunction(
       functionName,
-      this.getDeclaredPropertyType(node.type)
+      this.getDeclaredPropertyType(node.type),
     );
 
     this.declaredFunctions.push(declaredFunction);
@@ -156,9 +127,7 @@ export class ASTNodesHandler {
 
     if (node.typeParameters) {
       node.typeParameters.forEach((typeParameter) => {
-        declaredFunction.typeParameters.push(
-          this.getPropertyTypeGeneric(typeParameter)
-        );
+        declaredFunction.typeParameters.push(this.getPropertyTypeGeneric(typeParameter));
       });
     }
 
@@ -172,15 +141,13 @@ export class ASTNodesHandler {
   }
 
   private getPropertyTypeGeneric(
-    node: ts.TypeParameterDeclaration
+    node: ts.TypeParameterDeclaration,
   ): DeclaredPropertyTypeGenericKeyword {
     const symbol = this.tsChecker.getSymbolAtLocation(node.name as ts.Node);
     const type = new DeclaredPropertyTypeGenericKeyword(
       node.name.getText(),
-      node.constraint
-        ? this.getDeclaredPropertyType(node.constraint)
-        : undefined,
-      node.default ? this.getDeclaredPropertyType(node.default) : undefined
+      node.constraint ? this.getDeclaredPropertyType(node.constraint) : undefined,
+      node.default ? this.getDeclaredPropertyType(node.default) : undefined,
     );
 
     if (symbol === undefined) {
@@ -198,9 +165,7 @@ export class ASTNodesHandler {
     return this.mapGenericTypes.get(symbol) || type;
   }
 
-  private getDeclaredInterface(
-    node: SimplifiedInterfaceDeclaration
-  ): DeclaredInterface {
+  private getDeclaredInterface(node: SimplifiedInterfaceDeclaration): DeclaredInterface {
     const symbol = this.tsChecker.getSymbolAtLocation(node.name as ts.Node);
 
     if (symbol !== undefined) {
@@ -210,9 +175,7 @@ export class ASTNodesHandler {
       }
     }
 
-    const declaredInterface = new DeclaredInterface(
-      node.name ? node.name.getText() : ""
-    );
+    const declaredInterface = new DeclaredInterface(node.name ? node.name.getText() : '');
 
     if (symbol !== undefined) {
       symbol.declarations.forEach((d) => {
@@ -234,22 +197,20 @@ export class ASTNodesHandler {
           let a = m as ts.MethodSignature;
 
           a.typeParameters;
-          declaredInterface.addMethod(
-            this.getDeclaredFunction(m as ts.MethodSignature)
-          );
+          declaredInterface.addMethod(this.getDeclaredFunction(m as ts.MethodSignature));
           break;
 
         case ts.SyntaxKind.CallSignature:
           this.tags.add(TAGS.CALL_SIGNATURE);
           declaredInterface.addCallSignature(
-            this.getDeclaredFunction(m as ts.CallSignatureDeclaration)
+            this.getDeclaredFunction(m as ts.CallSignatureDeclaration),
           );
           break;
 
         case ts.SyntaxKind.IndexSignature:
           this.tags.add(TAGS.INDEX_SIGNATURE);
           declaredInterface.addIndexSignature(
-            this.getDeclaredIndexSignature(m as ts.IndexSignatureDeclaration)
+            this.getDeclaredIndexSignature(m as ts.IndexSignatureDeclaration),
           );
           break;
 
@@ -261,53 +222,41 @@ export class ASTNodesHandler {
     if (node.typeParameters) {
       this.tags.add(TAGS.GENERICS_INTERFACE);
       node.typeParameters.forEach((typeParameter) => {
-        declaredInterface.typeParameters.push(
-          this.getPropertyTypeGeneric(typeParameter)
-        );
+        declaredInterface.typeParameters.push(this.getPropertyTypeGeneric(typeParameter));
       });
     }
 
     return declaredInterface;
   }
 
-  private getDeclaredIndexSignature(
-    node: ts.IndexSignatureDeclaration
-  ): DeclaredIndexSignature {
+  private getDeclaredIndexSignature(node: ts.IndexSignatureDeclaration): DeclaredIndexSignature {
     const parameter = this.getDeclaredProperty(node.parameters[0]);
     const type = this.getDeclaredPropertyType(node.type);
 
     return new DeclaredIndexSignature(parameter, type);
   }
 
-  private getDeclaredClass(
-    classDeclaration: ts.ClassDeclaration
-  ): DeclaredClass {
+  private getDeclaredClass(classDeclaration: ts.ClassDeclaration): DeclaredClass {
     let declaredClass = new DeclaredClass(
-      classDeclaration.name ? classDeclaration.name.getText() : ""
+      classDeclaration.name ? classDeclaration.name.getText() : '',
     );
 
     classDeclaration.members.forEach((m) => {
       switch (m.kind) {
         case ts.SyntaxKind.Constructor:
-          let constructor = this.getDeclaredFunction(
-            m as ts.ConstructorDeclaration
-          );
-          constructor.name = "constructor";
+          let constructor = this.getDeclaredFunction(m as ts.ConstructorDeclaration);
+          constructor.name = 'constructor';
           constructor.isConstructor = true;
 
           declaredClass.addConstructor(constructor);
           break;
 
         case ts.SyntaxKind.MethodDeclaration:
-          declaredClass.addMethod(
-            this.getDeclaredFunction(m as ts.MethodDeclaration)
-          );
+          declaredClass.addMethod(this.getDeclaredFunction(m as ts.MethodDeclaration));
           break;
 
         case ts.SyntaxKind.PropertyDeclaration:
-          declaredClass.addProperty(
-            this.getDeclaredProperty(m as ts.PropertyDeclaration)
-          );
+          declaredClass.addProperty(this.getDeclaredProperty(m as ts.PropertyDeclaration));
           break;
 
         default:
@@ -318,21 +267,15 @@ export class ASTNodesHandler {
     if (classDeclaration.typeParameters) {
       this.tags.add(TAGS.GENERICS_CLASS);
       classDeclaration.typeParameters.forEach((typeParameter) => {
-        declaredClass.typeParameters.push(
-          this.getPropertyTypeGeneric(typeParameter)
-        );
+        declaredClass.typeParameters.push(this.getPropertyTypeGeneric(typeParameter));
       });
     }
 
     return declaredClass;
   }
 
-  private getDeclaredProperty(
-    p: SimplifiedPropertyDeclaration
-  ): DeclaredProperty {
-    let parameterName = (p.name ? p.name.getText() : "")
-      .trim()
-      .replace(/'|"/g, "");
+  private getDeclaredProperty(p: SimplifiedPropertyDeclaration): DeclaredProperty {
+    let parameterName = (p.name ? p.name.getText() : '').trim().replace(/'|"/g, '');
 
     const isOptional = p.questionToken !== undefined;
 
@@ -343,7 +286,7 @@ export class ASTNodesHandler {
     const property = new DeclaredProperty(
       parameterName,
       this.getDeclaredPropertyType(p.type),
-      isOptional
+      isOptional,
     );
 
     this.addModifiersToProperty(property, p);
@@ -356,10 +299,7 @@ export class ASTNodesHandler {
     return property;
   }
 
-  private addModifiersToProperty(
-    property: DeclaredProperty,
-    p: SimplifiedPropertyDeclaration
-  ) {
+  private addModifiersToProperty(property: DeclaredProperty, p: SimplifiedPropertyDeclaration) {
     p.modifiers?.forEach((m) => {
       switch (m.kind) {
         case ts.SyntaxKind.PrivateKeyword:
@@ -390,9 +330,7 @@ export class ASTNodesHandler {
     });
   }
 
-  private getDeclaredPropertyType(
-    type: ts.TypeNode | undefined
-  ): DeclaredPropertyType {
+  private getDeclaredPropertyType(type: ts.TypeNode | undefined): DeclaredPropertyType {
     if (type) {
       switch (type.kind) {
         case ts.SyntaxKind.ParenthesizedType:
@@ -404,18 +342,14 @@ export class ASTNodesHandler {
           const functionType = type as ts.FunctionTypeNode;
 
           this.tags.add(TAGS.FUNCTION);
-          return new DeclaredPropertyTypeFunctionType(
-            this.getDeclaredFunction(functionType)
-          );
+          return new DeclaredPropertyTypeFunctionType(this.getDeclaredFunction(functionType));
           break;
 
         case ts.SyntaxKind.TypeLiteral:
           const typeLiteralNode = type as ts.TypeLiteralNode;
 
           return new DeclaredPropertyTypeInterface(
-            this.getDeclaredInterface(
-              typeLiteralNode as SimplifiedInterfaceDeclaration
-            )
+            this.getDeclaredInterface(typeLiteralNode as SimplifiedInterfaceDeclaration),
           );
           break;
 
@@ -442,15 +376,11 @@ export class ASTNodesHandler {
 
           let intersectionDeclaredProperties: DeclaredPropertyType[] = [];
           intersectionTypeNode.types.forEach((t) => {
-            intersectionDeclaredProperties.push(
-              this.getDeclaredPropertyType(t)
-            );
+            intersectionDeclaredProperties.push(this.getDeclaredPropertyType(t));
           });
 
           this.tags.add(TAGS.INTERSECTION);
-          return new DeclaredPropertyTypeIntersectionType(
-            intersectionDeclaredProperties
-          );
+          return new DeclaredPropertyTypeIntersectionType(intersectionDeclaredProperties);
           break;
 
         case ts.SyntaxKind.ArrayType:
@@ -462,40 +392,32 @@ export class ASTNodesHandler {
         case ts.SyntaxKind.TypeReference:
           const typeReferenceNode = type as ts.TypeReferenceNode;
 
-          const tsSymbol = this.tsChecker.getSymbolAtLocation(
-            typeReferenceNode.typeName
-          );
+          const tsSymbol = this.tsChecker.getSymbolAtLocation(typeReferenceNode.typeName);
 
           if (tsSymbol !== undefined) {
             if (
-              tsSymbol.escapedName.toString() === "Array" &&
+              tsSymbol.escapedName.toString() === 'Array' &&
               typeReferenceNode.typeArguments?.length === 1
             ) {
-              return this.getDeclaredPropertyArrayType(
-                typeReferenceNode.typeArguments[0]
-              );
+              return this.getDeclaredPropertyArrayType(typeReferenceNode.typeArguments[0]);
             }
 
             if (
-              tsSymbol.escapedName.toString() === "ReadonlyArray" &&
+              tsSymbol.escapedName.toString() === 'ReadonlyArray' &&
               typeReferenceNode.typeArguments?.length === 1
             ) {
               this.tags.add(TAGS.READONLY_ARRAY);
-              return this.getDeclaredPropertyArrayType(
-                typeReferenceNode.typeArguments[0]
-              );
+              return this.getDeclaredPropertyArrayType(typeReferenceNode.typeArguments[0]);
             }
 
-            if (tsSymbol.escapedName.toString() === "Function") {
+            if (tsSymbol.escapedName.toString() === 'Function') {
               this.tags.add(TAGS.TYPE_REFERENCE_FUNCTION);
               this.tags.add(TAGS.FUNCTION);
-              return new DeclaredPropertyTypeReferenceType(
-                tsSymbol.escapedName.toString()
-              );
+              return new DeclaredPropertyTypeReferenceType(tsSymbol.escapedName.toString());
             }
 
             const typeAliasDeclaredPropertyType = this.getTypeAliasDeclaredPropertyTypeForSymbol(
-              tsSymbol
+              tsSymbol,
             );
             if (typeAliasDeclaredPropertyType !== null) {
               this.tags.add(TAGS.ALIAS);
@@ -514,9 +436,7 @@ export class ASTNodesHandler {
             }
           }
 
-          return new DeclaredPropertyTypeReferenceType(
-            typeReferenceNode.getText()
-          );
+          return new DeclaredPropertyTypeReferenceType(typeReferenceNode.getText());
 
           break;
 
@@ -555,21 +475,21 @@ export class ASTNodesHandler {
         case ts.SyntaxKind.StringKeyword:
           this.tags.add(TAGS.STRING);
 
-          return new DeclaredPropertyTypePrimitiveKeyword("string");
+          return new DeclaredPropertyTypePrimitiveKeyword('string');
 
         case ts.SyntaxKind.NumberKeyword:
           this.tags.add(TAGS.NUMBER);
 
-          return new DeclaredPropertyTypePrimitiveKeyword("number");
+          return new DeclaredPropertyTypePrimitiveKeyword('number');
 
         case ts.SyntaxKind.BooleanKeyword:
           this.tags.add(TAGS.BOOLEAN);
 
-          return new DeclaredPropertyTypePrimitiveKeyword("boolean");
+          return new DeclaredPropertyTypePrimitiveKeyword('boolean');
       }
     }
 
-    let parameterType = type ? type.getText() : "";
+    let parameterType = type ? type.getText() : '';
 
     return new DeclaredPropertyTypePrimitiveKeyword(parameterType);
   }
@@ -582,24 +502,19 @@ export class ASTNodesHandler {
       );
     });
 
-    if (
-      interfaceDeclarations === undefined ||
-      interfaceDeclarations.length === 0
-    ) {
+    if (interfaceDeclarations === undefined || interfaceDeclarations.length === 0) {
       return null;
     }
 
     return this.getDeclaredInterface(
-      (interfaceDeclarations[0] as ts.InterfaceDeclaration) as SimplifiedInterfaceDeclaration
+      (interfaceDeclarations[0] as ts.InterfaceDeclaration) as SimplifiedInterfaceDeclaration,
     );
   }
 
   private getTypeAliasDeclaredPropertyTypeForSymbol(
-    tsSymbol: ts.Symbol
+    tsSymbol: ts.Symbol,
   ): DeclaredPropertyType | null {
-    const typeAliasDeclarationForSymbol = this.mapSymbolTypeAliases.get(
-      tsSymbol
-    );
+    const typeAliasDeclarationForSymbol = this.mapSymbolTypeAliases.get(tsSymbol);
     if (typeAliasDeclarationForSymbol !== undefined) {
       return typeAliasDeclarationForSymbol;
     }
@@ -611,10 +526,7 @@ export class ASTNodesHandler {
       );
     });
 
-    if (
-      typeAliasDeclarations === undefined ||
-      typeAliasDeclarations.length === 0
-    ) {
+    if (typeAliasDeclarations === undefined || typeAliasDeclarations.length === 0) {
       return null;
     }
 
@@ -623,24 +535,17 @@ export class ASTNodesHandler {
     const dummyTypeSafeguardForCircularReferences = {};
     this.mapSymbolTypeAliases.set(
       tsSymbol,
-      dummyTypeSafeguardForCircularReferences as DeclaredPropertyType
+      dummyTypeSafeguardForCircularReferences as DeclaredPropertyType,
     );
-    const declaredPropertyType = this.getDeclaredPropertyType(
-      typeAliasDeclaration.type
-    );
+    const declaredPropertyType = this.getDeclaredPropertyType(typeAliasDeclaration.type);
 
     this.mapSymbolTypeAliases.set(tsSymbol, declaredPropertyType);
-    this.mapCircularReferences.set(
-      dummyTypeSafeguardForCircularReferences,
-      declaredPropertyType
-    );
+    this.mapCircularReferences.set(dummyTypeSafeguardForCircularReferences, declaredPropertyType);
 
     return declaredPropertyType;
   }
 
-  private getTypeParameterForSymbol(
-    tsSymbol: ts.Symbol
-  ): ts.TypeParameterDeclaration | null {
+  private getTypeParameterForSymbol(tsSymbol: ts.Symbol): ts.TypeParameterDeclaration | null {
     const typeParameters = tsSymbol.getDeclarations()?.filter((d) => {
       return (
         d.kind === ts.SyntaxKind.TypeParameter &&
@@ -655,9 +560,7 @@ export class ASTNodesHandler {
     return typeParameters[0] as ts.TypeParameterDeclaration;
   }
 
-  private getDeclaredPropertyArrayType(
-    node: ts.TypeNode
-  ): DeclaredPropertyArrayType {
+  private getDeclaredPropertyArrayType(node: ts.TypeNode): DeclaredPropertyArrayType {
     this.tags.add(TAGS.ARRAY);
     return new DeclaredPropertyArrayType(this.getDeclaredPropertyType(node));
   }

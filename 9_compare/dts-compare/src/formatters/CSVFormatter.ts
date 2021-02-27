@@ -1,21 +1,17 @@
-import { ResultComparison } from "../Comparator";
-import Formatter from "./Formatter";
-import ParameterTypeSolvableDifference from "../difference/ParameterTypeSolvableDifference";
-import ParameterTypeUnsolvableDifference from "../difference/ParameterTypeUnsolvableDifference";
-import ParameterExtraDifference from "../difference/ParameterExtraDifference";
-import ParameterMissingDifference from "../difference/ParameterMissingDifference";
-import TemplateDifference from "../difference/TemplateDifference";
-import FunctionMissingDifference from "../difference/FunctionMissingDifference";
-import FunctionExtraDifference from "../difference/FunctionExtraDifference";
-import FunctionOverloadingDifference from "../difference/FunctionOverloadingDifference";
-import ExportAssignmentDifference from "../difference/ExportAssignmentDifference";
+import { ResultComparison } from '../Comparator';
+import Formatter from './Formatter';
+import ParameterTypeSolvableDifference from '../difference/ParameterTypeSolvableDifference';
+import ParameterTypeUnsolvableDifference from '../difference/ParameterTypeUnsolvableDifference';
+import ParameterExtraDifference from '../difference/ParameterExtraDifference';
+import ParameterMissingDifference from '../difference/ParameterMissingDifference';
+import TemplateDifference from '../difference/TemplateDifference';
+import FunctionMissingDifference from '../difference/FunctionMissingDifference';
+import FunctionExtraDifference from '../difference/FunctionExtraDifference';
+import FunctionOverloadingDifference from '../difference/FunctionOverloadingDifference';
+import ExportAssignmentDifference from '../difference/ExportAssignmentDifference';
 
 export default class CSVFormatter implements Formatter {
-  format(
-    comparedModule: string,
-    r: ResultComparison,
-    tags: Set<string>
-  ): string {
+  format(comparedModule: string, r: ResultComparison, tags: Set<string>): string {
     let line: string[] = [];
 
     const differencesInCsv: { [k: string]: number } = {};
@@ -39,6 +35,6 @@ export default class CSVFormatter implements Formatter {
     line.push(r.template);
     line = line.concat(Object.values(differencesInCsv).map((v) => String(v)));
 
-    return line.join(",");
+    return line.join(',');
   }
 }
