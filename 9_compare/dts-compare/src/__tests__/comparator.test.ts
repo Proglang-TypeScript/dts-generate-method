@@ -307,6 +307,60 @@ describe('Comparator', () => {
     });
   });
 
+  describe('parameters', () => {
+    describe('callback parameters', () => {
+      it('should detect differences in the parameters of callback parameters', () => {
+        const parsedClassExpected = new DeclarationFileParser(
+          `${__dirname}/files/callback-parameters/callback-parameter-with-union.d.ts`,
+        ).parse();
+        const parsedClassActual = new DeclarationFileParser(
+          `${__dirname}/files/callback-parameters/callback-parameter.d.ts`,
+        ).parse();
+
+        const comparator = new Comparator();
+        const differences = comparator.compare(parsedClassExpected, parsedClassActual).differences;
+        expect(differences).toContainEqual(
+          new ParameterTypeSolvableDifference(
+            new DeclaredProperty(
+              'a',
+              new DeclaredPropertyTypeUnionType([
+                new DeclaredPropertyTypePrimitiveKeyword('string'),
+                new DeclaredPropertyTypePrimitiveKeyword('number'),
+              ]),
+              false,
+            ),
+            new DeclaredProperty('a', new DeclaredPropertyTypePrimitiveKeyword('string'), false),
+          ),
+        );
+      });
+
+      it('should detect differences in the parameters of callback parameters on multiple levels of recursion', () => {
+        const parsedClassExpected = new DeclarationFileParser(
+          `${__dirname}/files/callback-parameters/callback-parameter-in-callback-parameter-with-union.d.ts`,
+        ).parse();
+        const parsedClassActual = new DeclarationFileParser(
+          `${__dirname}/files/callback-parameters/callback-parameter-in-callback-parameter.d.ts`,
+        ).parse();
+
+        const comparator = new Comparator();
+        const differences = comparator.compare(parsedClassExpected, parsedClassActual).differences;
+        expect(differences).toContainEqual(
+          new ParameterTypeSolvableDifference(
+            new DeclaredProperty(
+              'a2',
+              new DeclaredPropertyTypeUnionType([
+                new DeclaredPropertyTypePrimitiveKeyword('string'),
+                new DeclaredPropertyTypePrimitiveKeyword('number'),
+              ]),
+              false,
+            ),
+            new DeclaredProperty('a2', new DeclaredPropertyTypePrimitiveKeyword('string'), false),
+          ),
+        );
+      });
+    });
+  });
+
   describe('interfaces', () => {
     it('should detect differences in the types of the common properties', () => {
       const parsedClassExpected = new DeclarationFileParser(

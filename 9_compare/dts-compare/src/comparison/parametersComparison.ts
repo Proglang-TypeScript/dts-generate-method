@@ -11,6 +11,8 @@ import { DeclaredPropertyTypeUnionType } from '../parser/model/declared-property
 import DeclaredPropertyType from '../parser/model/declared-property-types/DeclaredPropertyType';
 import { DeclaredPropertyTypeLiterals } from '../parser/model/declared-property-types/DeclaredPropertyTypeLiterals';
 import { DeclaredPropertyTypePrimitiveKeyword } from '../parser/model/declared-property-types/DeclaredPropertyTypePrimitiveKeyword';
+import { DeclaredPropertyTypeFunctionType } from '../parser/model/declared-property-types/DeclaredPropertyTypeFunctionType';
+import { FunctionParametersComparison } from './functionParametersComparison';
 
 export class ParametersComparison implements Comparison {
   private parameterExpected: DeclaredProperty;
@@ -60,7 +62,10 @@ export class ParametersComparison implements Comparison {
     return parameter.type.value;
   }
 
-  private areDifferent(parameterExpected: DeclaredProperty, parameterActual: DeclaredProperty) {
+  private areDifferent(
+    parameterExpected: DeclaredProperty,
+    parameterActual: DeclaredProperty,
+  ): boolean {
     if (
       parameterExpected.type instanceof DeclaredPropertyTypeInterface ||
       parameterActual.type instanceof DeclaredPropertyTypeInterface
@@ -78,7 +83,7 @@ export class ParametersComparison implements Comparison {
     return JSON.stringify(p);
   }
 
-  private getDifference(): Difference {
+  private getDifference(): Difference[] {
     if (this.parameterExpected.type instanceof DeclaredPropertyTypeUnionType) {
       let actualTypes: DeclaredPropertyType[] = [];
       if (Array.isArray(this.parameterActual.type.value)) {
@@ -106,7 +111,7 @@ export class ParametersComparison implements Comparison {
         }).length > 0;
 
       if (expectedContainsActualType === true) {
-        return new ParameterTypeSolvableDifference(this.parameterExpected, this.parameterActual);
+        return [new ParameterTypeSolvableDifference(this.parameterExpected, this.parameterActual)];
       }
     }
 
@@ -115,22 +120,34 @@ export class ParametersComparison implements Comparison {
         this.typesAreEqual(this.parameterExpected.type, this.parameterActual.type) ||
         this.parameterActual.type.value === 'undefined'
       ) {
-        return new ParameterTypeSolvableDifference(this.parameterExpected, this.parameterActual);
+        return [new ParameterTypeSolvableDifference(this.parameterExpected, this.parameterActual)];
       }
     }
 
     if (this.parameterExpected.type.value === 'any') {
-      return new ParameterTypeSolvableDifference(this.parameterExpected, this.parameterActual);
+      return [new ParameterTypeSolvableDifference(this.parameterExpected, this.parameterActual)];
     }
 
     if (this.parameterExpected.type instanceof DeclaredPropertyTypeLiterals) {
       const equivalentType = this.getEquivalentTypeForLiteral(this.parameterExpected.type);
       if (this.typesAreEqual(equivalentType, this.parameterActual.type)) {
-        return new ParameterTypeSolvableDifference(this.parameterExpected, this.parameterActual);
+        return [new ParameterTypeSolvableDifference(this.parameterExpected, this.parameterActual)];
       }
     }
 
-    return new ParameterTypeUnsolvableDifference(this.parameterExpected, this.parameterActual);
+    if (
+      this.parameterExpected.type instanceof DeclaredPropertyTypeFunctionType &&
+      this.parameterActual.type instanceof DeclaredPropertyTypeFunctionType
+    ) {
+      return new FunctionParametersComparison(
+        this.parameterExpected.type.value,
+        this.parameterActual.type.value,
+        this.parsedExpectedFile,
+        this.parsedActualFile,
+      ).compare();
+    }
+
+    return [new ParameterTypeUnsolvableDifference(this.parameterExpected, this.parameterActual)];
   }
 
   private getEquivalentTypeForLiteral(
