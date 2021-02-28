@@ -37,11 +37,8 @@ export class ParametersComparison implements Comparison {
       differences = differences.concat(this.getDifference());
     }
 
-    const interfaceParameterExpected = this.getInterface(
-      this.parameterExpected,
-      this.parsedExpectedFile,
-    );
-    const interfaceParameterActual = this.getInterface(this.parameterActual, this.parsedActualFile);
+    const interfaceParameterExpected = this.getInterface(this.parameterExpected);
+    const interfaceParameterActual = this.getInterface(this.parameterActual);
 
     differences = differences.concat(
       new InterfaceComparison(

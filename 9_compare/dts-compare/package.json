@@ -11,7 +11,8 @@
     "parse": "npm run build && node dist/parse.js",
     "prebuild": "rm -rf dist",
     "build": "tsc",
-    "test": "jest",
+    "test": "npm run test:clear-cache && jest",
+    "test:clear-cache": "jest --clearCache",
     "lint": "eslint --max-warnings 0 'src/**/*.ts'",
     "prettier": "prettier --write 'src/**/*.ts'"
   },

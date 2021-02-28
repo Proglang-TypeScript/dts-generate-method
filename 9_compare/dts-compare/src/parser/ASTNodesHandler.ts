@@ -53,10 +53,8 @@ export class ASTNodesHandler {
   private mapSymbolInterfaces: WeakMap<ts.Symbol, DeclaredInterface> = new WeakMap();
   private mapGenericTypes: WeakMap<ts.Symbol, DeclaredPropertyTypeGenericKeyword> = new WeakMap();
   private mapSymbolTypeAliases: WeakMap<ts.Symbol, DeclaredPropertyType> = new WeakMap();
-  private mapCircularReferences: WeakMap<
-    Record<string, unknown>,
-    DeclaredPropertyType
-  > = new WeakMap();
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  private mapCircularReferences: WeakMap<object, DeclaredPropertyType> = new WeakMap();
   private declaredFunctions: DeclaredFunction[] = [];
 
   private tsChecker: ts.TypeChecker;
