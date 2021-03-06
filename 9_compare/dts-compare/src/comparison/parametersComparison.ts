@@ -13,6 +13,7 @@ import { DeclaredPropertyTypeLiterals } from '../parser/model/declared-property-
 import { DeclaredPropertyTypePrimitiveKeyword } from '../parser/model/declared-property-types/DeclaredPropertyTypePrimitiveKeyword';
 import { DeclaredPropertyTypeFunctionType } from '../parser/model/declared-property-types/DeclaredPropertyTypeFunctionType';
 import { FunctionParametersComparison } from './functionParametersComparison';
+import { DeclaredPropertyArrayType } from '../parser/model/declared-property-types/DeclaredPropertyArrayType';
 
 export class ParametersComparison implements Comparison {
   private parameterExpected: DeclaredProperty;
@@ -142,6 +143,15 @@ export class ParametersComparison implements Comparison {
       return new FunctionParametersComparison(
         this.parameterExpected.type.value,
         this.parameterActual.type.value,
+        this.parsedExpectedFile,
+        this.parsedActualFile,
+      ).compare();
+    }
+
+    if (this.parameterExpected.type instanceof DeclaredPropertyArrayType) {
+      return new ParametersComparison(
+        new DeclaredProperty(this.parameterExpected.name, this.parameterExpected.type.value),
+        new DeclaredProperty(this.parameterActual.name, this.parameterActual.type.value),
         this.parsedExpectedFile,
         this.parsedActualFile,
       ).compare();

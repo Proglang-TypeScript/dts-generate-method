@@ -359,6 +359,58 @@ describe('Comparator', () => {
         );
       });
     });
+
+    describe('arrays', () => {
+      it('should detect differences in the array types ', () => {
+        const parsedClassExpected = new DeclarationFileParser(
+          `${__dirname}/files/arrays/array-simple-with-union.d.ts`,
+        ).parse();
+        const parsedClassActual = new DeclarationFileParser(
+          `${__dirname}/files/arrays/array-simple.d.ts`,
+        ).parse();
+
+        const comparator = new Comparator();
+        const differences = comparator.compare(parsedClassExpected, parsedClassActual).differences;
+        expect(differences).toContainEqual(
+          new ParameterTypeSolvableDifference(
+            new DeclaredProperty(
+              'a',
+              new DeclaredPropertyTypeUnionType([
+                new DeclaredPropertyTypePrimitiveKeyword('string'),
+                new DeclaredPropertyTypePrimitiveKeyword('number'),
+              ]),
+              false,
+            ),
+            new DeclaredProperty('a', new DeclaredPropertyTypePrimitiveKeyword('string'), false),
+          ),
+        );
+      });
+
+      it('should detect differences in the array types on multiple levels of recursion', () => {
+        const parsedClassExpected = new DeclarationFileParser(
+          `${__dirname}/files/callback-parameters/callback-parameter-in-callback-parameter-with-union.d.ts`,
+        ).parse();
+        const parsedClassActual = new DeclarationFileParser(
+          `${__dirname}/files/callback-parameters/callback-parameter-in-callback-parameter.d.ts`,
+        ).parse();
+
+        const comparator = new Comparator();
+        const differences = comparator.compare(parsedClassExpected, parsedClassActual).differences;
+        expect(differences).toContainEqual(
+          new ParameterTypeSolvableDifference(
+            new DeclaredProperty(
+              'a2',
+              new DeclaredPropertyTypeUnionType([
+                new DeclaredPropertyTypePrimitiveKeyword('string'),
+                new DeclaredPropertyTypePrimitiveKeyword('number'),
+              ]),
+              false,
+            ),
+            new DeclaredProperty('a2', new DeclaredPropertyTypePrimitiveKeyword('string'), false),
+          ),
+        );
+      });
+    });
   });
 
   describe('interfaces', () => {
@@ -381,16 +433,8 @@ describe('Comparator', () => {
 
       expect(result).toContainEqual(
         new ParameterTypeUnsolvableDifference(
-          new DeclaredProperty(
-            'c',
-            new DeclaredPropertyArrayType(new DeclaredPropertyTypePrimitiveKeyword('string')),
-            false,
-          ),
-          new DeclaredProperty(
-            'c',
-            new DeclaredPropertyArrayType(new DeclaredPropertyTypePrimitiveKeyword('number')),
-            false,
-          ),
+          new DeclaredProperty('c', new DeclaredPropertyTypePrimitiveKeyword('string'), false),
+          new DeclaredProperty('c', new DeclaredPropertyTypePrimitiveKeyword('number'), false),
         ),
       );
     });
