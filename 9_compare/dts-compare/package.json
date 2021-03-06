@@ -1,7 +1,7 @@
 {
   "name": "dts-compare",
-  "version": "1.0.0",
-  "description": "Compares 2 parsed typescript declaration files",
+  "version": "1.2.0",
+  "description": "Compares and parses typescript declaration files",
   "bin": {
     "dts-compare": "dist/index.js",
     "dts-parse": "dist/parse.js"
