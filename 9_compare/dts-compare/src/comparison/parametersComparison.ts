@@ -14,6 +14,7 @@ import { DeclaredPropertyTypePrimitiveKeyword } from '../parser/model/declared-p
 import { DeclaredPropertyTypeFunctionType } from '../parser/model/declared-property-types/DeclaredPropertyTypeFunctionType';
 import { FunctionParametersComparison } from './functionParametersComparison';
 import { DeclaredPropertyArrayType } from '../parser/model/declared-property-types/DeclaredPropertyArrayType';
+import { DeclaredPropertyTypeReferenceType } from '../parser/model/declared-property-types/DeclaredPropertyTypeReferenceType';
 
 export class ParametersComparison implements Comparison {
   private parameterExpected: DeclaredProperty;
@@ -136,16 +137,22 @@ export class ParametersComparison implements Comparison {
       }
     }
 
-    if (
-      this.parameterExpected.type instanceof DeclaredPropertyTypeFunctionType &&
-      this.parameterActual.type instanceof DeclaredPropertyTypeFunctionType
-    ) {
-      return new FunctionParametersComparison(
-        this.parameterExpected.type.value,
-        this.parameterActual.type.value,
-        this.parsedExpectedFile,
-        this.parsedActualFile,
-      ).compare();
+    if (this.parameterExpected.type instanceof DeclaredPropertyTypeFunctionType) {
+      if (
+        this.parameterActual.type instanceof DeclaredPropertyTypeReferenceType &&
+        this.parameterActual.type.value === 'Function'
+      ) {
+        return [new ParameterTypeSolvableDifference(this.parameterExpected, this.parameterActual)];
+      }
+
+      if (this.parameterActual.type instanceof DeclaredPropertyTypeFunctionType) {
+        return new FunctionParametersComparison(
+          this.parameterExpected.type.value,
+          this.parameterActual.type.value,
+          this.parsedExpectedFile,
+          this.parsedActualFile,
+        ).compare();
+      }
     }
 
     if (this.parameterExpected.type instanceof DeclaredPropertyArrayType) {

@@ -17,6 +17,8 @@ import { DeclaredPropertyTypeAnyKeyword } from '../parser/model/declared-propert
 import { DeclaredPropertyTypeUndefinedKeyword } from '../parser/model/declared-property-types/DeclaredPropertyTypeUndefinedKeyword';
 import { DeclaredPropertyArrayType } from '../parser/model/declared-property-types/DeclaredPropertyArrayType';
 import { DeclaredPropertyTypeVoidKeyword } from '../parser/model/declared-property-types/DeclaredPropertyTypeVoidKeyword';
+import { DeclaredPropertyTypeReferenceType } from '../parser/model/declared-property-types/DeclaredPropertyTypeReferenceType';
+import { DeclaredPropertyTypeFunctionType } from '../parser/model/declared-property-types/DeclaredPropertyTypeFunctionType';
 
 describe('Comparator', () => {
   describe('templates', () => {
@@ -330,6 +332,39 @@ describe('Comparator', () => {
               false,
             ),
             new DeclaredProperty('a', new DeclaredPropertyTypePrimitiveKeyword('string'), false),
+          ),
+        );
+      });
+
+      it('should consider a solvable difference if the actual file has the `Function` type', () => {
+        const parsedClassExpected = new DeclarationFileParser(
+          `${__dirname}/files/callback-parameters/callback-parameter-with-union.d.ts`,
+        ).parse();
+        const parsedClassActual = new DeclarationFileParser(
+          `${__dirname}/files/callback-parameters/callback-parameter-Function-type.d.ts`,
+        ).parse();
+
+        const comparator = new Comparator();
+        const differences = comparator.compare(parsedClassExpected, parsedClassActual).differences;
+
+        const cbFunction = new DeclaredFunction(
+          '',
+          new DeclaredPropertyTypePrimitiveKeyword('number'),
+        );
+        cbFunction.addParameter(
+          new DeclaredProperty(
+            'a',
+            new DeclaredPropertyTypeUnionType([
+              new DeclaredPropertyTypePrimitiveKeyword('string'),
+              new DeclaredPropertyTypePrimitiveKeyword('number'),
+            ]),
+          ),
+        );
+
+        expect(differences).toContainEqual(
+          new ParameterTypeSolvableDifference(
+            new DeclaredProperty('cb', new DeclaredPropertyTypeFunctionType(cbFunction), false),
+            new DeclaredProperty('cb', new DeclaredPropertyTypeReferenceType('Function'), false),
           ),
         );
       });
