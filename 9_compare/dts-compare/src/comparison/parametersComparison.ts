@@ -130,6 +130,10 @@ export class ParametersComparison implements Comparison {
       return [new ParameterTypeSolvableDifference(this.parameterExpected, this.parameterActual)];
     }
 
+    if (this.parameterActual.type.value === 'any') {
+      return [new ParameterTypeSolvableDifference(this.parameterExpected, this.parameterActual)];
+    }
+
     if (this.parameterExpected.type instanceof DeclaredPropertyTypeLiterals) {
       const equivalentType = this.getEquivalentTypeForLiteral(this.parameterExpected.type);
       if (this.typesAreEqual(equivalentType, this.parameterActual.type)) {

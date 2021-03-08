@@ -446,6 +446,26 @@ describe('Comparator', () => {
         );
       });
     });
+
+    describe('any', () => {
+      it('should consider an `any` in the actual file as a `solvable` difference', () => {
+        const parsedClassExpected = new DeclarationFileParser(
+          `${__dirname}/files/any/any-in-actual.expected.d.ts`,
+        ).parse();
+        const parsedClassActual = new DeclarationFileParser(
+          `${__dirname}/files/any/any-in-actual.actual.d.ts`,
+        ).parse();
+
+        const comparator = new Comparator();
+        const differences = comparator.compare(parsedClassExpected, parsedClassActual).differences;
+        expect(differences).toContainEqual(
+          new ParameterTypeSolvableDifference(
+            new DeclaredProperty('a', new DeclaredPropertyTypePrimitiveKeyword('string'), false),
+            new DeclaredProperty('a', new DeclaredPropertyTypeAnyKeyword(), false),
+          ),
+        );
+      });
+    });
   });
 
   describe('interfaces', () => {
