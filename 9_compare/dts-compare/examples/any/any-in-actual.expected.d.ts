@@ -1,1 +1,1 @@
-export function foo(a: string[]): number;
+export function foo(a: (number | string)[]): number;
