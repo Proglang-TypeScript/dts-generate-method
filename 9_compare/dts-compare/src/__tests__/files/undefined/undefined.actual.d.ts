@@ -1,1 +1,1 @@
-export function foo(a: string, b?: number): boolean;
+export function foo(a: string, b?: number | string): boolean;

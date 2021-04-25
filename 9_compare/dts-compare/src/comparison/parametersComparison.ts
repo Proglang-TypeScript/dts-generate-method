@@ -16,6 +16,7 @@ import { FunctionParametersComparison } from './functionParametersComparison';
 import { DeclaredPropertyArrayType } from '../parser/model/declared-property-types/DeclaredPropertyArrayType';
 import { DeclaredPropertyTypeReferenceType } from '../parser/model/declared-property-types/DeclaredPropertyTypeReferenceType';
 import { DeclaredPropertyTypeUndefinedKeyword } from '../parser/model/declared-property-types/DeclaredPropertyTypeUndefinedKeyword';
+import { serialize } from '../utils/serialize';
 
 export class ParametersComparison implements Comparison {
   private parameterExpected: DeclaredProperty;
@@ -113,15 +114,26 @@ export class ParametersComparison implements Comparison {
       }
     }
 
-    if (this.parameterExpected.type instanceof DeclaredPropertyTypeUnionType) {
-      let actualTypes: DeclaredPropertyType[] = [];
-      if (Array.isArray(this.parameterActual.type.value)) {
-        actualTypes = actualTypes.concat(this.parameterActual.type.value);
-      } else {
-        actualTypes.push(this.parameterActual.type);
-      }
+    if (
+      this.parameterExpected.type instanceof DeclaredPropertyTypeUnionType &&
+      this.parameterActual.type instanceof DeclaredPropertyTypeUnionType
+    ) {
+      const actualTypes = new Set<string>();
+      this.parameterActual.type.value.forEach((v) => actualTypes.add(serialize(v)));
 
-      const expectedType = this.parameterExpected.type as DeclaredPropertyTypeUnionType;
+      const expectedTypes = new Set<string>();
+      this.parameterExpected.type.value.forEach((v) => expectedTypes.add(serialize(v)));
+
+      if (Array.from(actualTypes.values()).every((a) => expectedTypes.has(a))) {
+        return this.parameterExpected.type.value.length === this.parameterActual.type.value.length
+          ? []
+          : [new ParameterTypeSolvableDifference(this.parameterExpected, this.parameterActual)];
+      }
+    } else if (this.parameterExpected.type instanceof DeclaredPropertyTypeUnionType) {
+      const actualTypes = this.getTypesAsArray(this.parameterActual.type);
+
+      const expectedType = this.parameterExpected.type;
+
       const expectedTypeValues = expectedType.value.map((t) => {
         if (t instanceof DeclaredPropertyTypeLiterals) {
           return this.getEquivalentTypeForLiteral(t);
@@ -130,14 +142,11 @@ export class ParametersComparison implements Comparison {
         return t;
       });
 
-      const expectedContainsActualType =
-        actualTypes.filter((actualType) => {
-          return (
-            expectedTypeValues.filter((typeOfUnion) => {
-              return this.typesAreEqual(actualType, typeOfUnion);
-            }).length > 0
-          );
-        }).length > 0;
+      const expectedContainsActualType = actualTypes.some((actualType) => {
+        return expectedTypeValues.some((typeOfUnion) => {
+          return this.typesAreEqual(actualType, typeOfUnion);
+        });
+      });
 
       if (expectedContainsActualType === true) {
         return [new ParameterTypeSolvableDifference(this.parameterExpected, this.parameterActual)];
@@ -228,6 +237,17 @@ export class ParametersComparison implements Comparison {
   }
 
   private typesAreEqual(a: DeclaredPropertyType, b: DeclaredPropertyType): boolean {
-    return JSON.stringify(a) === JSON.stringify(b);
+    return serialize(a) === serialize(b);
+  }
+
+  private getTypesAsArray(t: DeclaredPropertyType): DeclaredPropertyType[] {
+    let actualTypes: DeclaredPropertyType[] = [];
+    if (Array.isArray(t.value)) {
+      actualTypes = actualTypes.concat(t.value);
+    } else {
+      actualTypes.push(t);
+    }
+
+    return actualTypes;
   }
 }
