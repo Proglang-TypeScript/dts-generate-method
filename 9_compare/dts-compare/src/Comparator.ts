@@ -59,12 +59,7 @@ export default class Comparator {
     const exportedFunctionsExpected = parsedExpectedFile.functions;
     const exportedFunctionsActual = parsedActualFile.functions;
 
-    return new FunctionsComparison(
-      exportedFunctionsExpected,
-      exportedFunctionsActual,
-      parsedExpectedFile,
-      parsedActualFile,
-    ).compare();
+    return new FunctionsComparison(exportedFunctionsExpected, exportedFunctionsActual).compare();
   }
 
   private compareTemplateModuleFunction(
@@ -97,12 +92,7 @@ export default class Comparator {
     }
 
     differences = differences.concat(
-      new FunctionsComparison(
-        exportedFunctionsExpected,
-        exportedFunctionsActual,
-        parsedExpectedFile,
-        parsedActualFile,
-      ).compare(),
+      new FunctionsComparison(exportedFunctionsExpected, exportedFunctionsActual).compare(),
     );
 
     return differences;
@@ -124,18 +114,8 @@ export default class Comparator {
 
     const differences: Difference[] = [];
     return differences.concat(
-      this.compareClassConstructorParameters(
-        exportedClassExpected,
-        exportedClassActual,
-        parsedExpectedFile,
-        parsedActualFile,
-      ),
-      this.compareClassMethods(
-        exportedClassExpected,
-        exportedClassActual,
-        parsedExpectedFile,
-        parsedActualFile,
-      ),
+      this.compareClassConstructorParameters(exportedClassExpected, exportedClassActual),
+      this.compareClassMethods(exportedClassExpected, exportedClassActual),
     );
   }
 
@@ -194,29 +174,15 @@ export default class Comparator {
   private compareClassConstructorParameters(
     classExpected: DeclaredClass,
     classActual: DeclaredClass,
-    parsedExpectedFile: DeclaredNamespace,
-    parsedActualFile: DeclaredNamespace,
   ): Difference[] {
-    return new FunctionsComparison(
-      classExpected.constructors,
-      classActual.constructors,
-      parsedExpectedFile,
-      parsedActualFile,
-    ).compare();
+    return new FunctionsComparison(classExpected.constructors, classActual.constructors).compare();
   }
 
   private compareClassMethods(
     classExpected: DeclaredClass,
     classActual: DeclaredClass,
-    parsedExpectedFile: DeclaredNamespace,
-    parsedActualFile: DeclaredNamespace,
   ): Difference[] {
-    return new FunctionsComparison(
-      classExpected.methods,
-      classActual.methods,
-      parsedExpectedFile,
-      parsedActualFile,
-    ).compare();
+    return new FunctionsComparison(classExpected.methods, classActual.methods).compare();
   }
 }
 

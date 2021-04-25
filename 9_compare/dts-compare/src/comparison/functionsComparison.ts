@@ -1,6 +1,5 @@
 import Difference from '../difference/Difference';
 import { Comparison } from './comparison';
-import { DeclaredNamespace } from '../parser/model/DeclaredNamespace';
 import { DeclaredFunction } from '../parser/model/DeclaredFunction';
 import FunctionMissingDifference from '../difference/FunctionMissingDifference';
 import FunctionExtraDifference from '../difference/FunctionExtraDifference';
@@ -10,19 +9,10 @@ import FunctionOverloadingDifference from '../difference/FunctionOverloadingDiff
 export class FunctionsComparison implements Comparison {
   private functionsExpected: DeclaredFunction[];
   private functionsActual: DeclaredFunction[];
-  private parsedExpectedFile: DeclaredNamespace;
-  private parsedActualFile: DeclaredNamespace;
 
-  constructor(
-    functionsExpected: DeclaredFunction[],
-    functionsActual: DeclaredFunction[],
-    parsedExpectedFile: DeclaredNamespace,
-    parsedActualFile: DeclaredNamespace,
-  ) {
+  constructor(functionsExpected: DeclaredFunction[], functionsActual: DeclaredFunction[]) {
     this.functionsExpected = functionsExpected;
     this.functionsActual = functionsActual;
-    this.parsedExpectedFile = parsedExpectedFile;
-    this.parsedActualFile = parsedActualFile;
   }
 
   compare(): Difference[] {
@@ -84,8 +74,6 @@ export class FunctionsComparison implements Comparison {
           const functionDifferences = new FunctionParametersComparison(
             functionExpected,
             functionActual,
-            this.parsedExpectedFile,
-            this.parsedActualFile,
           ).compare();
 
           if (functionDifferences.length === 0) {

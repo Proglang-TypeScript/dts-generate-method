@@ -1,7 +1,6 @@
 import Difference from '../difference/Difference';
 import { Comparison } from './comparison';
 import { DeclaredFunction } from '../parser/model/DeclaredFunction';
-import { DeclaredNamespace } from '../parser/model/DeclaredNamespace';
 import { ParametersComparison } from './parametersComparison';
 import ParameterMissingDifference from '../difference/ParameterMissingDifference';
 import ParameterExtraDifference from '../difference/ParameterExtraDifference';
@@ -9,19 +8,10 @@ import ParameterExtraDifference from '../difference/ParameterExtraDifference';
 export class FunctionParametersComparison implements Comparison {
   private functionExpected: DeclaredFunction;
   private functionActual: DeclaredFunction;
-  private parsedExpectedFile: DeclaredNamespace;
-  private parsedActualFile: DeclaredNamespace;
 
-  constructor(
-    functionExpected: DeclaredFunction,
-    functionActual: DeclaredFunction,
-    parsedExpectedFile: DeclaredNamespace,
-    parsedActualFile: DeclaredNamespace,
-  ) {
+  constructor(functionExpected: DeclaredFunction, functionActual: DeclaredFunction) {
     this.functionExpected = functionExpected;
     this.functionActual = functionActual;
-    this.parsedExpectedFile = parsedExpectedFile;
-    this.parsedActualFile = parsedActualFile;
   }
 
   compare(): Difference[] {
@@ -36,12 +26,7 @@ export class FunctionParametersComparison implements Comparison {
 
       if (parameterExpected && parameterActual) {
         differences = differences.concat(
-          new ParametersComparison(
-            parameterExpected,
-            parameterActual,
-            this.parsedExpectedFile,
-            this.parsedActualFile,
-          ).compare(),
+          new ParametersComparison(parameterExpected, parameterActual).compare(),
         );
 
         continue;

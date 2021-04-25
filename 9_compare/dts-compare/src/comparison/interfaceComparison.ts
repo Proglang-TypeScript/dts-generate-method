@@ -1,6 +1,5 @@
 import Difference from '../difference/Difference';
 import { Comparison } from './comparison';
-import { DeclaredNamespace } from '../parser/model/DeclaredNamespace';
 import { DeclaredInterface } from '../parser/model/DeclaredInterface';
 import { ParametersComparison } from './parametersComparison';
 import ParameterMissingDifference from '../difference/ParameterMissingDifference';
@@ -9,19 +8,10 @@ import ParameterExtraDifference from '../difference/ParameterExtraDifference';
 export class InterfaceComparison implements Comparison {
   private interfaceExpected: DeclaredInterface;
   private interfaceActual: DeclaredInterface;
-  private parsedExpectedFile: DeclaredNamespace;
-  private parsedActualFile: DeclaredNamespace;
 
-  constructor(
-    interfaceExpected: DeclaredInterface,
-    interfaceActual: DeclaredInterface,
-    parsedExpectedFile: DeclaredNamespace,
-    parsedActualFile: DeclaredNamespace,
-  ) {
+  constructor(interfaceExpected: DeclaredInterface, interfaceActual: DeclaredInterface) {
     this.interfaceExpected = interfaceExpected;
     this.interfaceActual = interfaceActual;
-    this.parsedExpectedFile = parsedExpectedFile;
-    this.parsedActualFile = parsedActualFile;
   }
 
   compare(): Difference[] {
@@ -42,12 +32,7 @@ export class InterfaceComparison implements Comparison {
         differences = differences.concat(new ParameterMissingDifference(propertyExpected));
       } else {
         differences = differences.concat(
-          new ParametersComparison(
-            propertyExpected,
-            propertiesActual.get(nameExpected),
-            this.parsedExpectedFile,
-            this.parsedActualFile,
-          ).compare(),
+          new ParametersComparison(propertyExpected, propertiesActual.get(nameExpected)).compare(),
         );
       }
     });

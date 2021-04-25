@@ -1,6 +1,5 @@
 import Difference from '../difference/Difference';
 import { Comparison } from './comparison';
-import { DeclaredNamespace } from '../parser/model/DeclaredNamespace';
 import ParameterTypeUnsolvableDifference from '../difference/ParameterTypeUnsolvableDifference';
 import ParameterTypeSolvableDifference from '../difference/ParameterTypeSolvableDifference';
 import { DeclaredProperty } from '../parser/model/DeclaredProperty';
@@ -21,19 +20,10 @@ import { serialize } from '../utils/serialize';
 export class ParametersComparison implements Comparison {
   private parameterExpected: DeclaredProperty;
   private parameterActual: DeclaredProperty;
-  private parsedExpectedFile: DeclaredNamespace;
-  private parsedActualFile: DeclaredNamespace;
 
-  constructor(
-    parameterExpected: DeclaredProperty,
-    parameterActual: DeclaredProperty,
-    parsedExpectedFile: DeclaredNamespace,
-    parsedActualFile: DeclaredNamespace,
-  ) {
+  constructor(parameterExpected: DeclaredProperty, parameterActual: DeclaredProperty) {
     this.parameterExpected = parameterExpected;
     this.parameterActual = parameterActual;
-    this.parsedExpectedFile = parsedExpectedFile;
-    this.parsedActualFile = parsedActualFile;
   }
 
   compare(): Difference[] {
@@ -47,12 +37,7 @@ export class ParametersComparison implements Comparison {
     const interfaceParameterActual = this.getInterface(this.parameterActual);
 
     differences = differences.concat(
-      new InterfaceComparison(
-        interfaceParameterExpected,
-        interfaceParameterActual,
-        this.parsedExpectedFile,
-        this.parsedActualFile,
-      ).compare(),
+      new InterfaceComparison(interfaceParameterExpected, interfaceParameterActual).compare(),
     );
 
     return differences;
@@ -93,8 +78,6 @@ export class ParametersComparison implements Comparison {
         new ParametersComparison(
           this.getEquivalentForOptional(this.parameterExpected),
           this.parameterActual,
-          this.parsedExpectedFile,
-          this.parsedActualFile,
         ).compare().length === 0
       ) {
         return [];
@@ -106,8 +89,6 @@ export class ParametersComparison implements Comparison {
         new ParametersComparison(
           this.parameterExpected,
           this.getEquivalentForOptional(this.parameterActual),
-          this.parsedExpectedFile,
-          this.parsedActualFile,
         ).compare().length === 0
       ) {
         return [];
@@ -189,8 +170,6 @@ export class ParametersComparison implements Comparison {
         return new FunctionParametersComparison(
           this.parameterExpected.type.value,
           this.parameterActual.type.value,
-          this.parsedExpectedFile,
-          this.parsedActualFile,
         ).compare();
       }
     }
@@ -199,8 +178,6 @@ export class ParametersComparison implements Comparison {
       return new ParametersComparison(
         new DeclaredProperty(this.parameterExpected.name, this.parameterExpected.type.value),
         new DeclaredProperty(this.parameterActual.name, this.parameterActual.type.value),
-        this.parsedExpectedFile,
-        this.parsedActualFile,
       ).compare();
     }
 
