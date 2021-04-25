@@ -449,21 +449,36 @@ describe('Comparator', () => {
 
     describe('any', () => {
       it('should consider an `any` in the actual file as a `solvable` difference', () => {
-        const parsedClassExpected = new DeclarationFileParser(
+        const parsedFileExpected = new DeclarationFileParser(
           `${__dirname}/files/any/any-in-actual.expected.d.ts`,
         ).parse();
-        const parsedClassActual = new DeclarationFileParser(
+        const parsedFileActual = new DeclarationFileParser(
           `${__dirname}/files/any/any-in-actual.actual.d.ts`,
         ).parse();
 
         const comparator = new Comparator();
-        const differences = comparator.compare(parsedClassExpected, parsedClassActual).differences;
+        const differences = comparator.compare(parsedFileExpected, parsedFileActual).differences;
         expect(differences).toContainEqual(
           new ParameterTypeSolvableDifference(
             new DeclaredProperty('a', new DeclaredPropertyTypePrimitiveKeyword('string'), false),
             new DeclaredProperty('a', new DeclaredPropertyTypeAnyKeyword(), false),
           ),
         );
+      });
+    });
+
+    describe('optional parameters', () => {
+      it('should treat an optional parameter with a type and the union of that type and `undefined` as equivalent', () => {
+        const parsedExpected = new DeclarationFileParser(
+          `${__dirname}/files/undefined/undefined.expected.d.ts`,
+        ).parse();
+        const parsedActual = new DeclarationFileParser(
+          `${__dirname}/files/undefined/undefined.actual.d.ts`,
+        ).parse();
+
+        const comparator = new Comparator();
+        expect(comparator.compare(parsedExpected, parsedActual).differences).toHaveLength(0);
+        expect(comparator.compare(parsedActual, parsedExpected).differences).toHaveLength(0);
       });
     });
   });

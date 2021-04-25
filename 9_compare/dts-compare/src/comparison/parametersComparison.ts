@@ -15,6 +15,7 @@ import { DeclaredPropertyTypeFunctionType } from '../parser/model/declared-prope
 import { FunctionParametersComparison } from './functionParametersComparison';
 import { DeclaredPropertyArrayType } from '../parser/model/declared-property-types/DeclaredPropertyArrayType';
 import { DeclaredPropertyTypeReferenceType } from '../parser/model/declared-property-types/DeclaredPropertyTypeReferenceType';
+import { DeclaredPropertyTypeUndefinedKeyword } from '../parser/model/declared-property-types/DeclaredPropertyTypeUndefinedKeyword';
 
 export class ParametersComparison implements Comparison {
   private parameterExpected: DeclaredProperty;
@@ -86,6 +87,32 @@ export class ParametersComparison implements Comparison {
   }
 
   private getDifference(): Difference[] {
+    if (this.parameterExpected.optional) {
+      if (
+        new ParametersComparison(
+          this.getEquivalentForOptional(this.parameterExpected),
+          this.parameterActual,
+          this.parsedExpectedFile,
+          this.parsedActualFile,
+        ).compare().length === 0
+      ) {
+        return [];
+      }
+    }
+
+    if (this.parameterActual.optional) {
+      if (
+        new ParametersComparison(
+          this.parameterExpected,
+          this.getEquivalentForOptional(this.parameterActual),
+          this.parsedExpectedFile,
+          this.parsedActualFile,
+        ).compare().length === 0
+      ) {
+        return [];
+      }
+    }
+
     if (this.parameterExpected.type instanceof DeclaredPropertyTypeUnionType) {
       let actualTypes: DeclaredPropertyType[] = [];
       if (Array.isArray(this.parameterActual.type.value)) {
@@ -169,6 +196,21 @@ export class ParametersComparison implements Comparison {
     }
 
     return [new ParameterTypeUnsolvableDifference(this.parameterExpected, this.parameterActual)];
+  }
+
+  private getEquivalentForOptional(optionalProperty: DeclaredProperty): DeclaredProperty {
+    let newUnionType: DeclaredPropertyTypeUnionType;
+    if (optionalProperty.type instanceof DeclaredPropertyTypeUnionType) {
+      newUnionType = new DeclaredPropertyTypeUnionType(optionalProperty.type.value);
+    } else {
+      newUnionType = new DeclaredPropertyTypeUnionType(
+        ([] as DeclaredPropertyType[]).concat(optionalProperty.type),
+      );
+    }
+
+    newUnionType.value.push(new DeclaredPropertyTypeUndefinedKeyword());
+
+    return new DeclaredProperty(optionalProperty.name, newUnionType, false);
   }
 
   private getEquivalentTypeForLiteral(
