@@ -136,7 +136,9 @@ export class ParametersComparison implements Comparison {
       );
     }
 
-    newUnionType.value.push(new DeclaredPropertyTypeUndefinedKeyword());
+    if (!newUnionType.value.some((v) => v instanceof DeclaredPropertyTypeUndefinedKeyword)) {
+      newUnionType.value.push(new DeclaredPropertyTypeUndefinedKeyword());
+    }
 
     return new DeclaredProperty(optionalProperty.name, newUnionType, false);
   }

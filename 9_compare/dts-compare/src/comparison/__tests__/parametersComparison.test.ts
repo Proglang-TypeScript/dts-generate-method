@@ -10,6 +10,7 @@ import { DeclaredPropertyTypeReferenceType } from '../../parser/model/declared-p
 import { DeclaredPropertyTypeAnyKeyword } from '../../parser/model/declared-property-types/DeclaredPropertyTypeAnyKeyword';
 import { DeclaredPropertyArrayType } from '../../parser/model/declared-property-types/DeclaredPropertyArrayType';
 import ParameterTypeUnsolvableDifference from '../../difference/ParameterTypeUnsolvableDifference';
+import { DeclaredPropertyTypeUndefinedKeyword } from '../../parser/model/declared-property-types/DeclaredPropertyTypeUndefinedKeyword';
 
 describe('Parameters comparison', () => {
   describe('callback parameters', () => {
@@ -172,22 +173,39 @@ describe('Parameters comparison', () => {
   describe('optional parameters', () => {
     it('should treat an optional parameter with a type and the union of that type and `undefined` as equivalent', () => {
       let parsedExpected = new DeclarationFileParser(
-        `${__dirname}/files/undefined/undefined.expected.d.ts`,
+        `${__dirname}/files/undefined/undefined-equivalent.expected.d.ts`,
       ).parse();
       let parsedActual = new DeclarationFileParser(
-        `${__dirname}/files/undefined/undefined.actual.d.ts`,
+        `${__dirname}/files/undefined/undefined-equivalent.actual.d.ts`,
       ).parse();
 
       expect(new Comparator().compare(parsedExpected, parsedActual).differences).toHaveLength(0);
 
       parsedActual = new DeclarationFileParser(
-        `${__dirname}/files/undefined/undefined.expected.d.ts`,
+        `${__dirname}/files/undefined/undefined-equivalent.expected.d.ts`,
       ).parse();
       parsedExpected = new DeclarationFileParser(
-        `${__dirname}/files/undefined/undefined.actual.d.ts`,
+        `${__dirname}/files/undefined/undefined-equivalent.actual.d.ts`,
       ).parse();
 
       expect(new Comparator().compare(parsedActual, parsedExpected).differences).toHaveLength(0);
+    });
+
+    it('should return a solvable difference if the actual optional type is `undefined`', () => {
+      const parsedExpected = new DeclarationFileParser(
+        `${__dirname}/files/undefined/undefined.expected.d.ts`,
+      ).parse();
+      const parsedActual = new DeclarationFileParser(
+        `${__dirname}/files/undefined/undefined.actual.d.ts`,
+      ).parse();
+
+      const differences = new Comparator().compare(parsedExpected, parsedActual).differences;
+      expect(differences).toContainEqual(
+        new ParameterTypeSolvableDifference(
+          new DeclaredProperty('c', new DeclaredPropertyTypePrimitiveKeyword('number'), true),
+          new DeclaredProperty('c', new DeclaredPropertyTypeUndefinedKeyword(), true),
+        ),
+      );
     });
   });
 
