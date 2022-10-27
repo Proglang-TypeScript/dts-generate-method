@@ -42,7 +42,7 @@ try {
   };
 
   getAllTags().forEach((t) => {
-    result.tags[t] = Number(parser.tags.has(t));
+    result.tags[t] = Number(parser.tags.get(t));
   });
 
   const content = JSON.stringify(result, getCircularReplacer(), 4);

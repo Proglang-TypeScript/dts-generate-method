@@ -3,7 +3,7 @@ import { DeclaredNamespace } from './model/DeclaredNamespace';
 import { ASTNodesHandler } from './ASTNodesHandler';
 import { AddFunction } from './AddFunction';
 import { AddInterface } from './AddInterface';
-
+import { Histogram} from './Histogram'
 import fs from 'fs';
 import { AddClass } from './AddClass';
 
@@ -12,7 +12,7 @@ export default class DeclarationFileParser {
   private program: ts.Program;
   private checker: ts.TypeChecker;
   private sourceFile: ts.SourceFile;
-  tags: Set<string>;
+  tags: Histogram;
 
   constructor(fileName: string) {
     this.program = ts.createProgram([fileName], {});
@@ -23,7 +23,7 @@ export default class DeclarationFileParser {
       return s.fileName === fileName;
     })[0];
 
-    this.tags = new Set<string>();
+    this.tags = new Histogram;
 
     this.astNodesHandler = new ASTNodesHandler(this.checker, this.sourceFile, this.tags);
   }

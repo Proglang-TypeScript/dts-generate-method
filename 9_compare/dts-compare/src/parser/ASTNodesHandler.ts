@@ -26,6 +26,8 @@ import DATA_MODIFIERS from './model/data-modifiers';
 import { DeclaredPropertyTypeIntersectionType } from './model/declared-property-types/DeclaredPropertyTypeIntersectionType';
 import { DeclaredPropertyTypeObjectKeyword } from './model/declared-property-types/DeclaredPropertyTypeObjectKeyword';
 import { DeclaredPropertyTypeVoidKeyword } from './model/declared-property-types/DeclaredPropertyTypeVoidKeyword';
+import { Histogram} from './Histogram'
+
 
 interface SimplifiedFunctionDeclaration {
   name?: ts.Identifier | ts.StringLiteral | ts.NumericLiteral | ts.PropertyName | undefined;
@@ -59,9 +61,9 @@ export class ASTNodesHandler {
 
   private tsChecker: ts.TypeChecker;
   private sourceFile: ts.SourceFile;
-  private tags: Set<string>;
+  private tags: Histogram;
 
-  constructor(tsChecker: ts.TypeChecker, sourceFile: ts.SourceFile, tags: Set<string>) {
+  constructor(tsChecker: ts.TypeChecker, sourceFile: ts.SourceFile, tags: Histogram) {
     this.tsChecker = tsChecker;
     this.sourceFile = sourceFile;
     this.tags = tags;
@@ -202,14 +204,14 @@ export class ASTNodesHandler {
           break;
 
         case ts.SyntaxKind.CallSignature:
-          this.tags.add(TAGS.CALL_SIGNATURE);
+          this.tags.inc(TAGS.CALL_SIGNATURE);
           declaredInterface.addCallSignature(
             this.getDeclaredFunction(m as ts.CallSignatureDeclaration),
           );
           break;
 
         case ts.SyntaxKind.IndexSignature:
-          this.tags.add(TAGS.INDEX_SIGNATURE);
+          this.tags.inc(TAGS.INDEX_SIGNATURE);
           declaredInterface.addIndexSignature(
             this.getDeclaredIndexSignature(m as ts.IndexSignatureDeclaration),
           );
@@ -221,7 +223,7 @@ export class ASTNodesHandler {
     });
 
     if (node.typeParameters) {
-      this.tags.add(TAGS.GENERICS_INTERFACE);
+      this.tags.inc(TAGS.GENERICS_INTERFACE);
       node.typeParameters.forEach((typeParameter) => {
         declaredInterface.typeParameters.push(this.getPropertyTypeGeneric(typeParameter));
       });
@@ -266,7 +268,7 @@ export class ASTNodesHandler {
     });
 
     if (classDeclaration.typeParameters) {
-      this.tags.add(TAGS.GENERICS_CLASS);
+      this.tags.inc(TAGS.GENERICS_CLASS);
       classDeclaration.typeParameters.forEach((typeParameter) => {
         declaredClass.typeParameters.push(this.getPropertyTypeGeneric(typeParameter));
       });
@@ -281,7 +283,7 @@ export class ASTNodesHandler {
     const isOptional = p.questionToken !== undefined;
 
     if (isOptional === true) {
-      this.tags.add(TAGS.OPTIONAL);
+      this.tags.inc(TAGS.OPTIONAL);
     }
 
     const property = new DeclaredProperty(
@@ -293,7 +295,7 @@ export class ASTNodesHandler {
     this.addModifiersToProperty(property, p);
 
     if (p.dotDotDotToken !== undefined) {
-      this.tags.add(TAGS.DOT_DOT_DOT_TOKEN);
+      this.tags.inc(TAGS.DOT_DOT_DOT_TOKEN);
       property.setDotDotDotToken(true);
     }
 
@@ -304,27 +306,27 @@ export class ASTNodesHandler {
     p.modifiers?.forEach((m) => {
       switch (m.kind) {
         case ts.SyntaxKind.PrivateKeyword:
-          this.tags.add(TAGS.PRIVATE);
+          this.tags.inc(TAGS.PRIVATE);
           property.addModifier(DATA_MODIFIERS.PRIVATE);
           break;
 
         case ts.SyntaxKind.ProtectedKeyword:
-          this.tags.add(TAGS.PROTECTED);
+          this.tags.inc(TAGS.PROTECTED);
           property.addModifier(DATA_MODIFIERS.PROTECTED);
           break;
 
         case ts.SyntaxKind.StaticKeyword:
-          this.tags.add(TAGS.STATIC);
+          this.tags.inc(TAGS.STATIC);
           property.addModifier(DATA_MODIFIERS.STATIC);
           break;
 
         case ts.SyntaxKind.ReadonlyKeyword:
-          this.tags.add(TAGS.READONLY);
+          this.tags.inc(TAGS.READONLY);
           property.addModifier(DATA_MODIFIERS.READONLY);
           break;
 
         case ts.SyntaxKind.PublicKeyword:
-          this.tags.add(TAGS.PUBLIC);
+          this.tags.inc(TAGS.PUBLIC);
           property.addModifier(DATA_MODIFIERS.PUBLIC);
           break;
       }
@@ -342,7 +344,7 @@ export class ASTNodesHandler {
         case ts.SyntaxKind.FunctionType:
           const functionType = type as ts.FunctionTypeNode;
 
-          this.tags.add(TAGS.FUNCTION);
+          this.tags.inc(TAGS.FUNCTION);
           return new DeclaredPropertyTypeFunctionType(this.getDeclaredFunction(functionType));
           break;
 
@@ -357,7 +359,7 @@ export class ASTNodesHandler {
         case ts.SyntaxKind.LiteralType:
           const literalTypeNode = type as ts.LiteralTypeNode;
 
-          this.tags.add(TAGS.LITERALS);
+          this.tags.inc(TAGS.LITERALS);
           return new DeclaredPropertyTypeLiterals(literalTypeNode.getText());
 
         case ts.SyntaxKind.UnionType:
@@ -368,7 +370,7 @@ export class ASTNodesHandler {
             unionDeclaredProperties.push(this.getDeclaredPropertyType(t));
           });
 
-          this.tags.add(TAGS.UNION);
+          this.tags.inc(TAGS.UNION);
           return new DeclaredPropertyTypeUnionType(unionDeclaredProperties);
           break;
 
@@ -380,7 +382,7 @@ export class ASTNodesHandler {
             intersectionDeclaredProperties.push(this.getDeclaredPropertyType(t));
           });
 
-          this.tags.add(TAGS.INTERSECTION);
+          this.tags.inc(TAGS.INTERSECTION);
           return new DeclaredPropertyTypeIntersectionType(intersectionDeclaredProperties);
           break;
 
@@ -407,13 +409,13 @@ export class ASTNodesHandler {
               tsSymbol.escapedName.toString() === 'ReadonlyArray' &&
               typeReferenceNode.typeArguments?.length === 1
             ) {
-              this.tags.add(TAGS.READONLY_ARRAY);
+              this.tags.inc(TAGS.READONLY_ARRAY);
               return this.getDeclaredPropertyArrayType(typeReferenceNode.typeArguments[0]);
             }
 
             if (tsSymbol.escapedName.toString() === 'Function') {
-              this.tags.add(TAGS.TYPE_REFERENCE_FUNCTION);
-              this.tags.add(TAGS.FUNCTION);
+              this.tags.inc(TAGS.TYPE_REFERENCE_FUNCTION);
+              this.tags.inc(TAGS.FUNCTION);
               return new DeclaredPropertyTypeReferenceType(tsSymbol.escapedName.toString());
             }
 
@@ -421,7 +423,7 @@ export class ASTNodesHandler {
               tsSymbol,
             );
             if (typeAliasDeclaredPropertyType !== null) {
-              this.tags.add(TAGS.ALIAS);
+              this.tags.inc(TAGS.ALIAS);
               return typeAliasDeclaredPropertyType;
             }
 
@@ -432,7 +434,7 @@ export class ASTNodesHandler {
 
             const typeParameter = this.getTypeParameterForSymbol(tsSymbol);
             if (typeParameter !== null) {
-              this.tags.add(TAGS.GENERICS_FUNCTION);
+              this.tags.inc(TAGS.GENERICS_FUNCTION);
               return this.getPropertyTypeGeneric(typeParameter);
             }
           }
@@ -449,42 +451,42 @@ export class ASTNodesHandler {
             tupleDeclaredProperties.push(this.getDeclaredPropertyType(t));
           });
 
-          this.tags.add(TAGS.TUPLE);
+          this.tags.inc(TAGS.TUPLE);
           return new DeclaredPropertyTypeTupleType(tupleDeclaredProperties);
           break;
 
         case ts.SyntaxKind.AnyKeyword:
-          this.tags.add(TAGS.ANY);
+          this.tags.inc(TAGS.ANY);
 
           return new DeclaredPropertyTypeAnyKeyword();
 
         case ts.SyntaxKind.UndefinedKeyword:
-          this.tags.add(TAGS.UNDEFINED);
+          this.tags.inc(TAGS.UNDEFINED);
 
           return new DeclaredPropertyTypeUndefinedKeyword();
 
         case ts.SyntaxKind.ObjectKeyword:
-          this.tags.add(TAGS.OBJECT);
+          this.tags.inc(TAGS.OBJECT);
 
           return new DeclaredPropertyTypeObjectKeyword();
 
         case ts.SyntaxKind.VoidKeyword:
-          this.tags.add(TAGS.VOID);
+          this.tags.inc(TAGS.VOID);
 
           return new DeclaredPropertyTypeVoidKeyword();
 
         case ts.SyntaxKind.StringKeyword:
-          this.tags.add(TAGS.STRING);
+          this.tags.inc(TAGS.STRING);
 
           return new DeclaredPropertyTypePrimitiveKeyword('string');
 
         case ts.SyntaxKind.NumberKeyword:
-          this.tags.add(TAGS.NUMBER);
+          this.tags.inc(TAGS.NUMBER);
 
           return new DeclaredPropertyTypePrimitiveKeyword('number');
 
         case ts.SyntaxKind.BooleanKeyword:
-          this.tags.add(TAGS.BOOLEAN);
+          this.tags.inc(TAGS.BOOLEAN);
 
           return new DeclaredPropertyTypePrimitiveKeyword('boolean');
       }
@@ -562,7 +564,7 @@ export class ASTNodesHandler {
   }
 
   private getDeclaredPropertyArrayType(node: ts.TypeNode): DeclaredPropertyArrayType {
-    this.tags.add(TAGS.ARRAY);
+    this.tags.inc(TAGS.ARRAY);
     return new DeclaredPropertyArrayType(this.getDeclaredPropertyType(node));
   }
 }
