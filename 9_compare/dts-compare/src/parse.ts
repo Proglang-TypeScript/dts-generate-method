@@ -5,7 +5,6 @@ import commandLineArgs from 'command-line-args';
 import fs from 'fs';
 import { getAllTags } from './parser/tags/tags';
 
-
 const optionDefinitions = [
   {
     name: 'input-declaration-file',

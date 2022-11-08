@@ -26,8 +26,7 @@ import DATA_MODIFIERS from './model/data-modifiers';
 import { DeclaredPropertyTypeIntersectionType } from './model/declared-property-types/DeclaredPropertyTypeIntersectionType';
 import { DeclaredPropertyTypeObjectKeyword } from './model/declared-property-types/DeclaredPropertyTypeObjectKeyword';
 import { DeclaredPropertyTypeVoidKeyword } from './model/declared-property-types/DeclaredPropertyTypeVoidKeyword';
-import { Histogram} from './Histogram'
-
+import { Histogram } from './Histogram';
 
 interface SimplifiedFunctionDeclaration {
   name?: ts.Identifier | ts.StringLiteral | ts.NumericLiteral | ts.PropertyName | undefined;
@@ -130,7 +129,7 @@ export class ASTNodesHandler {
 
     if (node.typeParameters) {
       node.typeParameters.forEach((typeParameter) => {
-        declaredFunction.typeParameters.push(this.getPropertyTypeGeneric(typeParameter));
+        declaredFunction.addTypeParameter(this.getPropertyTypeGeneric(typeParameter));
       });
     }
 
@@ -157,12 +156,19 @@ export class ASTNodesHandler {
       return type;
     }
 
-    if (!this.mapGenericTypes.has(symbol)) {
-      symbol.declarations.forEach((d) => {
-        if (d.kind === ts.SyntaxKind.TypeParameter) {
-          this.mapGenericTypes.set(symbol, type);
-        }
-      });
+    // if (!this.mapGenericTypes.has(symbol)) {
+    //   symbol.declarations.forEach((d) => {
+    //     if (d.kind === ts.SyntaxKind.TypeParameter) {
+    //       this.mapGenericTypes.set(symbol, type);
+    //     }
+    //   });
+    // }
+
+    if (
+      !this.mapGenericTypes.has(symbol) &&
+      symbol.declarations.some((d) => d.kind === ts.SyntaxKind.TypeParameter)
+    ) {
+      this.mapGenericTypes.set(symbol, type);
     }
 
     return this.mapGenericTypes.get(symbol) || type;
@@ -180,13 +186,20 @@ export class ASTNodesHandler {
 
     const declaredInterface = new DeclaredInterface(node.name ? node.name.getText() : '');
 
-    if (symbol !== undefined) {
-      symbol.declarations.forEach((d) => {
-        if (d.kind === ts.SyntaxKind.InterfaceDeclaration) {
-          this.mapSymbolInterfaces.set(symbol, declaredInterface);
-        }
-      });
+    //symbol.declarations.some((d) => d.kind === ts.SyntaxKind.TypeParameter)
+    if (
+      symbol !== undefined &&
+      symbol.declarations.some((d) => d.kind === ts.SyntaxKind.InterfaceDeclaration)
+    ) {
+      this.mapSymbolInterfaces.set(symbol, declaredInterface);
     }
+    // if (symbol !== undefined) {
+    //   symbol.declarations.forEach((d) => {
+    //     if (d.kind === ts.SyntaxKind.InterfaceDeclaration) {
+    //       this.mapSymbolInterfaces.set(symbol, declaredInterface);
+    //     }
+    //   });
+    // }
 
     node.members.forEach((m) => {
       switch (m.kind) {
@@ -225,7 +238,7 @@ export class ASTNodesHandler {
     if (node.typeParameters) {
       this.tags.inc(TAGS.GENERICS_INTERFACE);
       node.typeParameters.forEach((typeParameter) => {
-        declaredInterface.typeParameters.push(this.getPropertyTypeGeneric(typeParameter));
+        declaredInterface.addTypeParameter(this.getPropertyTypeGeneric(typeParameter));
       });
     }
 
@@ -284,6 +297,9 @@ export class ASTNodesHandler {
 
     if (isOptional === true) {
       this.tags.inc(TAGS.OPTIONAL);
+      if (p.type?.kind == ts.SyntaxKind.OptionalType) {
+        this.tags.inc(TAGS.OPTIONAL_OPTIONAL_ANTI_PATTERN);
+      }
     }
 
     const property = new DeclaredProperty(
@@ -339,6 +355,12 @@ export class ASTNodesHandler {
         case ts.SyntaxKind.ParenthesizedType:
           const parenthesizedTypeNode = type as ts.ParenthesizedTypeNode;
           return this.getDeclaredPropertyType(parenthesizedTypeNode.type);
+          break;
+
+        case ts.SyntaxKind.OptionalType:
+          this.tags.inc(TAGS.OPTIONAL_TYPE);
+          const optTypeNode = type as ts.OptionalTypeNode;
+          return this.getDeclaredPropertyType(optTypeNode.type);
           break;
 
         case ts.SyntaxKind.FunctionType:
@@ -499,10 +521,8 @@ export class ASTNodesHandler {
 
   private getInterfaceForSymbol(tsSymbol: ts.Symbol): DeclaredInterface | null {
     const interfaceDeclarations = tsSymbol.getDeclarations()?.filter((d) => {
-      return (
-        d.kind === ts.SyntaxKind.InterfaceDeclaration &&
-        d.getSourceFile().fileName === this.sourceFile.fileName
-      );
+      d.kind === ts.SyntaxKind.InterfaceDeclaration &&
+        d.getSourceFile().fileName === this.sourceFile.fileName;
     });
 
     if (interfaceDeclarations === undefined || interfaceDeclarations.length === 0) {

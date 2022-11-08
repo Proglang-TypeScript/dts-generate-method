@@ -3,7 +3,7 @@ import { DeclaredNamespace } from './model/DeclaredNamespace';
 import { ASTNodesHandler } from './ASTNodesHandler';
 import { AddFunction } from './AddFunction';
 import { AddInterface } from './AddInterface';
-import { Histogram} from './Histogram'
+import { Histogram } from './Histogram';
 import fs from 'fs';
 import { AddClass } from './AddClass';
 
@@ -23,7 +23,7 @@ export default class DeclarationFileParser {
       return s.fileName === fileName;
     })[0];
 
-    this.tags = new Histogram;
+    this.tags = new Histogram();
 
     this.astNodesHandler = new ASTNodesHandler(this.checker, this.sourceFile, this.tags);
   }
@@ -42,7 +42,7 @@ export default class DeclarationFileParser {
 
   private visit(declarationMap: DeclaredNamespace) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (node: any) => {
+    return (node: ts.Node) => {
       switch (node.kind) {
         case ts.SyntaxKind.ExportAssignment:
           const exportAssignmentNode = node as ts.ExportAssignment;
