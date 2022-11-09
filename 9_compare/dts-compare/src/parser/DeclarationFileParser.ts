@@ -46,7 +46,7 @@ export default class DeclarationFileParser {
     ts.forEachChild(this.sourceFile, this.visitSimple(histogram));
 
     // this.astNodesHandler.fixCircularReferences();
-    console.log(histogram.size);
+    //console.log(histogram.size);
     return histogram;
   }
 
@@ -102,10 +102,16 @@ export default class DeclarationFileParser {
   private visitSimple(histogram: Histogram) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (node: ts.Node) => {
-      let nodeString = ts.SyntaxKind[Number(node.kind)];
+      let mkNodeString = (n: ts.Node) => ts.SyntaxKind[Number(n.kind)]
+      let nodeString = mkNodeString(node)
       //console.log (nodeString)
-      histogram.inc(nodeString);
+
       // let x = ts.
+      //ts.forEachChild(node, ( x => console.log(mkNodeString(x)=== "TypeParameter") ))
+      let usesGenerics = ts.forEachChild(node, x =>
+        mkNodeString(x) == "TypeParameter")
+      nodeString = usesGenerics ? ("GENERIC-" + nodeString) : nodeString
+      histogram.inc(nodeString);
       ts.forEachChild(node, this.visitSimple(histogram));
     };
   }
