@@ -40,6 +40,16 @@ export default class DeclarationFileParser {
     return declarationMap;
   }
 
+  parseSimple(): Histogram {
+    const histogram = new Histogram();
+
+    ts.forEachChild(this.sourceFile, this.visitSimple(histogram));
+
+    // this.astNodesHandler.fixCircularReferences();
+    console.log(histogram.size);
+    return histogram;
+  }
+
   private visit(declarationMap: DeclaredNamespace) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (node: ts.Node) => {
@@ -86,6 +96,17 @@ export default class DeclarationFileParser {
         default:
           ts.forEachChild(node, this.visit(declarationMap));
       }
+    };
+  }
+
+  private visitSimple(histogram: Histogram) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (node: ts.Node) => {
+      let nodeString = ts.SyntaxKind[Number(node.kind)];
+      //console.log (nodeString)
+      histogram.inc(nodeString);
+      // let x = ts.
+      ts.forEachChild(node, this.visitSimple(histogram));
     };
   }
 
