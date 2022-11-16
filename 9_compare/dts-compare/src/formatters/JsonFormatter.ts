@@ -1,7 +1,6 @@
 import { ResultComparison } from '../Comparator';
 import Formatter from './Formatter';
-import { Histogram} from '../parser/Histogram'
-
+import { Histogram } from '../parser/Histogram';
 
 export default class JsonFormatter implements Formatter {
   format(comparedModule: string, r: ResultComparison, tags: Histogram): string {

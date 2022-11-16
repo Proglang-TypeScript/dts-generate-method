@@ -3,7 +3,6 @@
 import DeclarationFileParser from './parser/DeclarationFileParser';
 import commandLineArgs from 'command-line-args';
 import fs from 'fs';
-import { getAllTags } from './parser/tags/tags';
 
 const optionDefinitions = [
   {

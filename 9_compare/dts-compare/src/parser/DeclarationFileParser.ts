@@ -98,9 +98,9 @@ export default class DeclarationFileParser {
   private visitOnlyCountTags(histogram: Histogram) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (node: ts.Node) => {
-      let mkNodeString = (n: ts.Node) => ts.SyntaxKind[Number(n.kind)];
+      const mkNodeString = (n: ts.Node) => ts.SyntaxKind[Number(n.kind)];
       let nodeString = mkNodeString(node);
-      let usesGenerics = ts.forEachChild(node, (x) => mkNodeString(x) == 'TypeParameter');
+      const usesGenerics = ts.forEachChild(node, (x) => mkNodeString(x) == 'TypeParameter');
       nodeString = usesGenerics ? 'GENERIC-' + nodeString : nodeString;
       histogram.inc(nodeString);
       ts.forEachChild(node, this.visitOnlyCountTags(histogram));

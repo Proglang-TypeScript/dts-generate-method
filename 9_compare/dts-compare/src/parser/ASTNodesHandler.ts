@@ -441,9 +441,8 @@ export class ASTNodesHandler {
               return new DeclaredPropertyTypeReferenceType(tsSymbol.escapedName.toString());
             }
 
-            const typeAliasDeclaredPropertyType = this.getTypeAliasDeclaredPropertyTypeForSymbol(
-              tsSymbol,
-            );
+            const typeAliasDeclaredPropertyType =
+              this.getTypeAliasDeclaredPropertyTypeForSymbol(tsSymbol);
             if (typeAliasDeclaredPropertyType !== null) {
               this.tags.inc(TAGS.ALIAS);
               return typeAliasDeclaredPropertyType;
@@ -530,7 +529,7 @@ export class ASTNodesHandler {
     }
 
     return this.getDeclaredInterface(
-      (interfaceDeclarations[0] as ts.InterfaceDeclaration) as SimplifiedInterfaceDeclaration,
+      interfaceDeclarations[0] as ts.InterfaceDeclaration as SimplifiedInterfaceDeclaration,
     );
   }
 
