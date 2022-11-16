@@ -20,7 +20,7 @@ const options = commandLineArgs(optionDefinitions);
 const parser = new DeclarationFileParser(options['input-declaration-file']);
 
 try {
-  const result = parser.parseSimple();
+  const result = parser.countTags();
 
   // const getCircularReplacer = () => {
   //   const seen = new WeakSet();

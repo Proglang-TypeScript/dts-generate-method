@@ -40,13 +40,9 @@ export default class DeclarationFileParser {
     return declarationMap;
   }
 
-  parseSimple(): Histogram {
+  countTags(): Histogram {
     const histogram = new Histogram();
-
-    ts.forEachChild(this.sourceFile, this.visitSimple(histogram));
-
-    // this.astNodesHandler.fixCircularReferences();
-    //console.log(histogram.size);
+    ts.forEachChild(this.sourceFile, this.visitOnlyCountTags(histogram));
     return histogram;
   }
 
@@ -99,20 +95,15 @@ export default class DeclarationFileParser {
     };
   }
 
-  private visitSimple(histogram: Histogram) {
+  private visitOnlyCountTags(histogram: Histogram) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (node: ts.Node) => {
-      let mkNodeString = (n: ts.Node) => ts.SyntaxKind[Number(n.kind)]
-      let nodeString = mkNodeString(node)
-      //console.log (nodeString)
-
-      // let x = ts.
-      //ts.forEachChild(node, ( x => console.log(mkNodeString(x)=== "TypeParameter") ))
-      let usesGenerics = ts.forEachChild(node, x =>
-        mkNodeString(x) == "TypeParameter")
-      nodeString = usesGenerics ? ("GENERIC-" + nodeString) : nodeString
+      let mkNodeString = (n: ts.Node) => ts.SyntaxKind[Number(n.kind)];
+      let nodeString = mkNodeString(node);
+      let usesGenerics = ts.forEachChild(node, (x) => mkNodeString(x) == 'TypeParameter');
+      nodeString = usesGenerics ? 'GENERIC-' + nodeString : nodeString;
       histogram.inc(nodeString);
-      ts.forEachChild(node, this.visitSimple(histogram));
+      ts.forEachChild(node, this.visitOnlyCountTags(histogram));
     };
   }
 
