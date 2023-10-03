@@ -42,4 +42,8 @@ export class DeclaredInterface {
   addIndexSignature(i: DeclaredIndexSignature) {
     this.indexSignatures.push(i);
   }
+
+  addTypeParameter(i: DeclaredPropertyTypeGenericKeyword) {
+    this.typeParameters.push(i);
+  }
 }

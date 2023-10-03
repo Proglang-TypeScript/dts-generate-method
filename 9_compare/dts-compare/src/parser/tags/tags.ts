@@ -1,5 +1,7 @@
 enum TAGS {
   OPTIONAL = 'optional-parameter',
+  OPTIONAL_TYPE = 'optional-type',
+  OPTIONAL_OPTIONAL_ANTI_PATTERN = 'optional-optional-anti-pattern',
   ANY = 'type-any',
   ALIAS = 'alias-type',
   LITERALS = 'literals',
