@@ -3,7 +3,7 @@ import { DeclaredNamespace } from './model/DeclaredNamespace';
 import { ASTNodesHandler } from './ASTNodesHandler';
 import { AddFunction } from './AddFunction';
 import { AddInterface } from './AddInterface';
-
+import { Histogram } from './Histogram';
 import fs from 'fs';
 import { AddClass } from './AddClass';
 
@@ -12,7 +12,7 @@ export default class DeclarationFileParser {
   private program: ts.Program;
   private checker: ts.TypeChecker;
   private sourceFile: ts.SourceFile;
-  tags: Set<string>;
+  tags: Histogram;
 
   constructor(fileName: string) {
     this.program = ts.createProgram([fileName], {});
@@ -23,7 +23,7 @@ export default class DeclarationFileParser {
       return s.fileName === fileName;
     })[0];
 
-    this.tags = new Set<string>();
+    this.tags = new Histogram();
 
     this.astNodesHandler = new ASTNodesHandler(this.checker, this.sourceFile, this.tags);
   }
@@ -40,9 +40,15 @@ export default class DeclarationFileParser {
     return declarationMap;
   }
 
+  countTags(): Histogram {
+    const histogram = new Histogram();
+    ts.forEachChild(this.sourceFile, this.visitOnlyCountTags(histogram));
+    return histogram;
+  }
+
   private visit(declarationMap: DeclaredNamespace) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (node: any) => {
+    return (node: ts.Node) => {
       switch (node.kind) {
         case ts.SyntaxKind.ExportAssignment:
           const exportAssignmentNode = node as ts.ExportAssignment;
@@ -86,6 +92,18 @@ export default class DeclarationFileParser {
         default:
           ts.forEachChild(node, this.visit(declarationMap));
       }
+    };
+  }
+
+  private visitOnlyCountTags(histogram: Histogram) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (node: ts.Node) => {
+      const mkNodeString = (n: ts.Node) => ts.SyntaxKind[Number(n.kind)];
+      let nodeString = mkNodeString(node);
+      const usesGenerics = ts.forEachChild(node, (x) => mkNodeString(x) == 'TypeParameter');
+      nodeString = usesGenerics ? 'GENERIC-' + nodeString : nodeString;
+      histogram.inc(nodeString);
+      ts.forEachChild(node, this.visitOnlyCountTags(histogram));
     };
   }
 

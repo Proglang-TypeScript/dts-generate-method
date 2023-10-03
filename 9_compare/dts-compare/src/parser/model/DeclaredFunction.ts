@@ -24,6 +24,11 @@ export class DeclaredFunction {
     return this;
   }
 
+  addTypeParameter(p: DeclaredPropertyTypeGenericKeyword): DeclaredFunction {
+    this.typeParameters.push(p);
+    return this;
+  }
+
   addModifier(m: string): DeclaredFunction {
     this.modifiers.push(m);
     return this;
