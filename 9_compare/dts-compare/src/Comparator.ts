@@ -129,7 +129,7 @@ export default class Comparator {
       if (c) {
         return 'module-class';
       }
-    } catch (error) {}
+    } catch {}
 
     if (
       this.getFunctionsByName(

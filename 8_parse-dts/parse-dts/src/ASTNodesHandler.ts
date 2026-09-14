@@ -16,10 +16,10 @@ import { AddClass } from './AddClass';
 import { DeclaredClass } from './DeclaredClass';
 
 interface SimplifiedFunctionDeclaration {
-	name?: ts.Identifier | ts.StringLiteral | ts.NumericLiteral | ts.ComputedPropertyName | undefined;
+	name?: ts.PropertyName;
 	type?: ts.TypeNode | undefined;
 	parameters: ts.NodeArray<ts.ParameterDeclaration>;
-	modifiers?: ts.NodeArray<ts.Modifier> | undefined
+	modifiers?: ts.NodeArray<ts.ModifierLike> | undefined
 }
 
 interface SimplifiedInterfaceDeclaration {

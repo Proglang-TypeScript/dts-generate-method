@@ -73,7 +73,7 @@ describe('Parser', () => {
         ),
       );
 
-      expect(parser.tags).toContainEqual(TAGS.CALL_SIGNATURE);
+      expect(parser.tags.has(TAGS.CALL_SIGNATURE)).toBe(true);
     });
 
     it('should handle circular references', () => {
@@ -103,7 +103,7 @@ describe('Parser', () => {
         ).addModifier(DATA_MODIFIERS.PRIVATE),
       );
 
-      expect(parser.tags).toContainEqual(TAGS.PRIVATE);
+      expect(parser.tags.has(TAGS.PRIVATE)).toBe(true);
 
       expect(parsedFile.classes[0].properties).toContainEqual(
         new DeclaredProperty(
@@ -113,7 +113,7 @@ describe('Parser', () => {
         ).addModifier(DATA_MODIFIERS.PROTECTED),
       );
 
-      expect(parser.tags).toContainEqual(TAGS.PROTECTED);
+      expect(parser.tags.has(TAGS.PROTECTED)).toBe(true);
 
       expect(parsedFile.classes[0].properties).toContainEqual(
         new DeclaredProperty(
@@ -123,7 +123,7 @@ describe('Parser', () => {
         ).addModifier(DATA_MODIFIERS.STATIC),
       );
 
-      expect(parser.tags).toContainEqual(TAGS.STATIC);
+      expect(parser.tags.has(TAGS.STATIC)).toBe(true);
 
       expect(parsedFile.classes[0].properties).toContainEqual(
         new DeclaredProperty(
@@ -133,7 +133,7 @@ describe('Parser', () => {
         ).addModifier(DATA_MODIFIERS.READONLY),
       );
 
-      expect(parser.tags).toContainEqual(TAGS.READONLY);
+      expect(parser.tags.has(TAGS.READONLY)).toBe(true);
 
       expect(parsedFile.classes[0].properties).toContainEqual(
         new DeclaredProperty(
@@ -143,7 +143,7 @@ describe('Parser', () => {
         ).addModifier(DATA_MODIFIERS.PUBLIC),
       );
 
-      expect(parser.tags).toContainEqual(TAGS.PUBLIC);
+      expect(parser.tags.has(TAGS.PUBLIC)).toBe(true);
     });
   });
 
@@ -162,7 +162,7 @@ describe('Parser', () => {
         ).setDotDotDotToken(true),
       );
 
-      expect(parser.tags).toContainEqual(TAGS.DOT_DOT_DOT_TOKEN);
+      expect(parser.tags.has(TAGS.DOT_DOT_DOT_TOKEN)).toBe(true);
     });
   });
 
@@ -180,7 +180,7 @@ describe('Parser', () => {
         ]),
       );
 
-      expect(parser.tags).toContainEqual(TAGS.INTERSECTION);
+      expect(parser.tags.has(TAGS.INTERSECTION)).toBe(true);
     });
 
     it('should detect type aliases', () => {
@@ -203,7 +203,7 @@ describe('Parser', () => {
         parsedFile.functions[0].parameters[1].type.value[1].value.returnType,
       );
 
-      expect(parser.tags).toContainEqual(TAGS.ALIAS);
+      expect(parser.tags.has(TAGS.ALIAS)).toBe(true);
     });
 
     it('should detect the union type', () => {
@@ -219,7 +219,7 @@ describe('Parser', () => {
         ]),
       );
 
-      expect(parser.tags).toContainEqual(TAGS.UNION);
+      expect(parser.tags.has(TAGS.UNION)).toBe(true);
     });
 
     it('should detect the object keyword', () => {
@@ -232,7 +232,7 @@ describe('Parser', () => {
         new DeclaredPropertyTypeObjectKeyword(),
       );
 
-      expect(parser.tags).toContainEqual(TAGS.OBJECT);
+      expect(parser.tags.has(TAGS.OBJECT)).toBe(true);
     });
 
     it('should detect the void keyword', () => {
@@ -243,7 +243,7 @@ describe('Parser', () => {
 
       expect(parsedFile.functions[0].returnType).toEqual(new DeclaredPropertyTypeVoidKeyword());
 
-      expect(parser.tags).toContainEqual(TAGS.VOID);
+      expect(parser.tags.has(TAGS.VOID)).toBe(true);
     });
 
     it('should detect the string keyword', () => {
@@ -256,7 +256,7 @@ describe('Parser', () => {
         new DeclaredPropertyTypePrimitiveKeyword('string'),
       );
 
-      expect(parser.tags).toContainEqual(TAGS.STRING);
+      expect(parser.tags.has(TAGS.STRING)).toBe(true);
     });
 
     it('should detect the number keyword', () => {
@@ -269,7 +269,7 @@ describe('Parser', () => {
         new DeclaredPropertyTypePrimitiveKeyword('number'),
       );
 
-      expect(parser.tags).toContainEqual(TAGS.NUMBER);
+      expect(parser.tags.has(TAGS.NUMBER)).toBe(true);
     });
 
     it('should detect the boolean keyword', () => {
@@ -282,7 +282,7 @@ describe('Parser', () => {
         new DeclaredPropertyTypePrimitiveKeyword('boolean'),
       );
 
-      expect(parser.tags).toContainEqual(TAGS.BOOLEAN);
+      expect(parser.tags.has(TAGS.BOOLEAN)).toBe(true);
     });
 
     it('should detect the "Function" keyword', () => {
@@ -295,8 +295,8 @@ describe('Parser', () => {
         new DeclaredPropertyTypeReferenceType('Function'),
       );
 
-      expect(parser.tags).toContainEqual(TAGS.TYPE_REFERENCE_FUNCTION);
-      expect(parser.tags).toContainEqual(TAGS.FUNCTION);
+      expect(parser.tags.has(TAGS.TYPE_REFERENCE_FUNCTION)).toBe(true);
+      expect(parser.tags.has(TAGS.FUNCTION)).toBe(true);
     });
 
     it('should detect "Readonly" arrays', () => {
@@ -309,8 +309,8 @@ describe('Parser', () => {
         new DeclaredPropertyArrayType(new DeclaredPropertyTypePrimitiveKeyword('string')),
       );
 
-      expect(parser.tags).toContainEqual(TAGS.ARRAY);
-      expect(parser.tags).toContainEqual(TAGS.READONLY_ARRAY);
+      expect(parser.tags.has(TAGS.ARRAY)).toBe(true);
+      expect(parser.tags.has(TAGS.READONLY_ARRAY)).toBe(true);
     });
   });
 });

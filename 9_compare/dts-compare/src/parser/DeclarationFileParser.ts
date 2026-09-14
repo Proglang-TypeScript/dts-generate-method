@@ -47,7 +47,6 @@ export default class DeclarationFileParser {
   }
 
   private visit(declarationMap: DeclaredNamespace) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (node: ts.Node) => {
       switch (node.kind) {
         case ts.SyntaxKind.ExportAssignment:
@@ -96,7 +95,6 @@ export default class DeclarationFileParser {
   }
 
   private visitOnlyCountTags(histogram: Histogram) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (node: ts.Node) => {
       const mkNodeString = (n: ts.Node) => ts.SyntaxKind[Number(n.kind)];
       let nodeString = mkNodeString(node);

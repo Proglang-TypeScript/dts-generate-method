@@ -47,6 +47,8 @@ try {
       resultComparison,
       expectedFileParser.tags,
     );
+  if (content === undefined)
+    throw new Error(`Unsupported output format: ${options['output-format']}`);
 
   if (options['output-file'] === '') {
     // eslint-disable-next-line no-console

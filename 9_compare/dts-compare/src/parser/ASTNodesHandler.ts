@@ -32,7 +32,7 @@ interface SimplifiedFunctionDeclaration {
   name?: ts.Identifier | ts.StringLiteral | ts.NumericLiteral | ts.PropertyName | undefined;
   type?: ts.TypeNode | undefined;
   parameters: ts.NodeArray<ts.ParameterDeclaration>;
-  modifiers?: ts.NodeArray<ts.Modifier> | undefined;
+  modifiers?: ts.NodeArray<ts.ModifierLike> | undefined;
   typeParameters?: ts.NodeArray<ts.TypeParameterDeclaration>;
 }
 
@@ -46,7 +46,7 @@ interface SimplifiedPropertyDeclaration {
   name?: ts.PropertyName | ts.BindingName;
   type?: ts.TypeNode | undefined;
   questionToken?: ts.Token<ts.SyntaxKind.QuestionToken> | undefined;
-  modifiers?: ts.ModifiersArray | undefined;
+  modifiers?: ts.NodeArray<ts.ModifierLike> | undefined;
   dotDotDotToken?: ts.DotDotDotToken | undefined;
 }
 
@@ -54,7 +54,6 @@ export class ASTNodesHandler {
   private mapSymbolInterfaces: WeakMap<ts.Symbol, DeclaredInterface> = new WeakMap();
   private mapGenericTypes: WeakMap<ts.Symbol, DeclaredPropertyTypeGenericKeyword> = new WeakMap();
   private mapSymbolTypeAliases: WeakMap<ts.Symbol, DeclaredPropertyType> = new WeakMap();
-  // eslint-disable-next-line @typescript-eslint/ban-types
   private mapCircularReferences: WeakMap<object, DeclaredPropertyType> = new WeakMap();
   private declaredFunctions: DeclaredFunction[] = [];
 
@@ -166,7 +165,7 @@ export class ASTNodesHandler {
 
     if (
       !this.mapGenericTypes.has(symbol) &&
-      symbol.declarations.some((d) => d.kind === ts.SyntaxKind.TypeParameter)
+      symbol.declarations?.some((d) => d.kind === ts.SyntaxKind.TypeParameter)
     ) {
       this.mapGenericTypes.set(symbol, type);
     }
@@ -189,7 +188,7 @@ export class ASTNodesHandler {
     //symbol.declarations.some((d) => d.kind === ts.SyntaxKind.TypeParameter)
     if (
       symbol !== undefined &&
-      symbol.declarations.some((d) => d.kind === ts.SyntaxKind.InterfaceDeclaration)
+      symbol.declarations?.some((d) => d.kind === ts.SyntaxKind.InterfaceDeclaration)
     ) {
       this.mapSymbolInterfaces.set(symbol, declaredInterface);
     }
@@ -212,8 +211,7 @@ export class ASTNodesHandler {
         case ts.SyntaxKind.MethodSignature:
           const a = m as ts.MethodSignature;
 
-          a.typeParameters;
-          declaredInterface.addMethod(this.getDeclaredFunction(m as ts.MethodSignature));
+          declaredInterface.addMethod(this.getDeclaredFunction(a));
           break;
 
         case ts.SyntaxKind.CallSignature:
@@ -468,7 +466,7 @@ export class ASTNodesHandler {
           const tupleTypeNode = type as ts.TupleTypeNode;
 
           const tupleDeclaredProperties: DeclaredPropertyType[] = [];
-          tupleTypeNode.elementTypes.forEach((t) => {
+          tupleTypeNode.elements.forEach((t) => {
             tupleDeclaredProperties.push(this.getDeclaredPropertyType(t));
           });
 
@@ -520,8 +518,10 @@ export class ASTNodesHandler {
 
   private getInterfaceForSymbol(tsSymbol: ts.Symbol): DeclaredInterface | null {
     const interfaceDeclarations = tsSymbol.getDeclarations()?.filter((d) => {
-      d.kind === ts.SyntaxKind.InterfaceDeclaration &&
-        d.getSourceFile().fileName === this.sourceFile.fileName;
+      return (
+        d.kind === ts.SyntaxKind.InterfaceDeclaration &&
+        d.getSourceFile().fileName === this.sourceFile.fileName
+      );
     });
 
     if (interfaceDeclarations === undefined || interfaceDeclarations.length === 0) {

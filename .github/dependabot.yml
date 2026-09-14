@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "updates": [
+    {
+      "package-ecosystem": "npm",
+      "directory": "/9_compare/dts-compare",
+      "schedule": {
+        "interval": "weekly"
+      }
+    },
+    {
+      "package-ecosystem": "npm",
+      "directory": "/8_parse-dts/parse-dts",
+      "schedule": {
+        "interval": "weekly"
+      }
+    },
+    {
+      "package-ecosystem": "npm",
+      "directory": "/8_parse-dts/compare-module-function",
+      "schedule": {
+        "interval": "weekly"
+      }
+    }
+  ]
+}
