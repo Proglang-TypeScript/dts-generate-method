@@ -1,0 +1,50 @@
+{
+  "name": "Validated package migrations",
+  "on": [
+    "push",
+    "pull_request"
+  ],
+  "permissions": {
+    "contents": "read"
+  },
+  "jobs": {
+    "check": {
+      "runs-on": "ubuntu-latest",
+      "strategy": {
+        "matrix": {
+          "directory": [
+            "9_compare/dts-compare",
+            "8_parse-dts/parse-dts",
+            "8_parse-dts/compare-module-function"
+          ]
+        }
+      },
+      "defaults": {
+        "run": {
+          "working-directory": "${{ matrix.directory }}"
+        }
+      },
+      "steps": [
+        {
+          "uses": "actions/checkout@v7"
+        },
+        {
+          "uses": "actions/setup-node@v7",
+          "with": {
+            "node-version": "24"
+          }
+        },
+        {
+          "run": "npm ci --ignore-scripts"
+        },
+        {
+          "run": "npm run build && npm audit"
+        },
+        {
+          "if": "matrix.directory == '9_compare/dts-compare'",
+          "run": "npm test -- --runInBand && npm run lint"
+        }
+      ]
+    }
+  }
+}
