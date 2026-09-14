@@ -28,7 +28,7 @@
     "command-line-args": "6.0.2",
     "eslint-config-prettier": "10.1.8",
     "object-hash": "3.0.0",
-    "typescript": "6.0.3"
+    "typescript": "7.0.2"
   },
   "devDependencies": {
     "@types/command-line-args": "5.2.3",
