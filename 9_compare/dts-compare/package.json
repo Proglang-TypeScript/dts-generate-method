@@ -43,7 +43,7 @@
     "jest": "30.5.1",
     "prettier": "3.9.6",
     "pretty-quick": "4.2.2",
-    "ts-jest": "29.4.12",
+    "ts-jest": "29.4.13",
     "globals": "17.12.0",
     "@eslint/js": "10.0.1"
   },
